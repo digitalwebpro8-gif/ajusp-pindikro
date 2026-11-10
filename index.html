@@ -1,0 +1,833 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Découvrez l'Association Jeunesse Unie et Solidaire de Pindikro. Ensemble pour un avenir meilleur.">
+  <meta name="theme-color" content="#17643D">
+  <title>AJUSP | Ensemble pour un avenir meilleur</title>
+
+  <style>
+    :root {
+      --vert: #17643D;
+      --vert-fonce: #10452D;
+      --jaune: #F2C94C;
+      --bleu: #14263F;
+      --blanc: #FFFFFF;
+      --fond: #F7F9F6;
+      --texte: #26352D;
+      --gris: #68756D;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--fond);
+      color: var(--texte);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .topbar {
+      background: var(--bleu);
+      color: white;
+      padding: 8px 6%;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header {
+      background: white;
+      min-height: 82px;
+      padding: 12px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 3px 15px #0000000b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+    }
+
+    .brand img {
+      width: 62px;
+      height: 62px;
+      object-fit: contain;
+    }
+
+    .brand-name {
+      color: var(--vert);
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--bleu);
+      font-size: 10px;
+      line-height: 1.3;
+      max-width: 230px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 19px;
+    }
+
+    nav a {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bleu);
+      transition: .2s;
+    }
+
+    nav a:hover {
+      color: var(--vert);
+    }
+
+    .nav-button {
+      background: var(--vert);
+      color: white;
+      padding: 11px 17px;
+      border-radius: 6px;
+    }
+
+    .menu-toggle {
+      display: none;
+      border: 0;
+      background: var(--vert);
+      color: white;
+      font-size: 25px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .hero {
+      min-height: 550px;
+      background:
+        linear-gradient(90deg, rgba(10,43,28,.91), rgba(10,43,28,.48)),
+        url("images/pindikro-communaute.jpg") center/cover no-repeat,
+        var(--vert-fonce);
+      display: flex;
+      align-items: center;
+      padding: 75px 8%;
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 690px;
+    }
+
+    .hero-label {
+      display: inline-block;
+      color: var(--jaune);
+      border: 1px solid var(--jaune);
+      padding: 7px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 1.12;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 17px;
+      max-width: 590px;
+      margin-bottom: 30px;
+      color: #F1F5F1;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 13px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 13px 22px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      transition: .2s;
+    }
+
+    .btn-yellow {
+      background: var(--jaune);
+      color: var(--bleu);
+    }
+
+    .btn-outline {
+      border: 1px solid white;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .section {
+      padding: 75px 7%;
+    }
+
+    .section-heading {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 42px;
+    }
+
+    .section-heading span {
+      color: var(--vert);
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .section-heading h2 {
+      color: var(--bleu);
+      font-size: clamp(27px, 4vw, 38px);
+      margin: 8px 0 12px;
+    }
+
+    .section-heading p {
+      color: var(--gris);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 45px;
+      align-items: center;
+    }
+
+    .about-image {
+      min-height: 360px;
+      border-radius: 15px;
+      background:
+        url("images/communaute-pindikro.jpg") center/cover no-repeat,
+        #DCE8DE;
+    }
+
+    .about-text h2 {
+      color: var(--bleu);
+      font-size: 32px;
+      margin-bottom: 18px;
+    }
+
+    .about-text p {
+      color: var(--gris);
+      margin-bottom: 15px;
+    }
+
+    .domains {
+      background: white;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 27px 22px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px #14263F0B;
+      border-bottom: 4px solid var(--jaune);
+      transition: .25s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      background: #E8F2EA;
+      color: var(--vert);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      margin-bottom: 17px;
+    }
+
+    .card h3 {
+      color: var(--bleu);
+      margin-bottom: 9px;
+      font-size: 18px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--gris);
+    }
+
+    .projects {
+      background: #F0F5F0;
+    }
+
+    .project-box {
+      background: white;
+      border-radius: 12px;
+      padding: 35px;
+      text-align: center;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .project-box h3 {
+      color: var(--bleu);
+      font-size: 23px;
+      margin-bottom: 12px;
+    }
+
+    .project-box p {
+      color: var(--gris);
+      margin-bottom: 20px;
+    }
+
+    .news-gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .info-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 5px 25px #14263F0B;
+    }
+
+    .info-panel h3 {
+      color: var(--bleu);
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+
+    .info-panel p {
+      color: var(--gris);
+      margin-bottom: 18px;
+    }
+
+    .gallery-preview {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .gallery-preview img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #E5EAE5;
+    }
+
+    .support {
+      background: var(--vert-fonce);
+      color: white;
+      text-align: center;
+      padding: 65px 7%;
+    }
+
+    .support h2 {
+      font-size: clamp(26px, 4vw, 37px);
+      margin-bottom: 13px;
+    }
+
+    .support p {
+      max-width: 700px;
+      margin: 0 auto 25px;
+      color: #E4EEE6;
+    }
+
+    footer {
+      background: var(--bleu);
+      color: white;
+      padding: 45px 7% 20px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 35px;
+      margin-bottom: 30px;
+    }
+
+    footer h3, footer h4 {
+      margin-bottom: 15px;
+      color: var(--jaune);
+    }
+
+    footer p, footer a {
+      color: #D7E0E5;
+      font-size: 14px;
+    }
+
+    footer a {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .copyright {
+      border-top: 1px solid #FFFFFF22;
+      padding-top: 18px;
+      text-align: center;
+      font-size: 12px;
+      color: #B8C4CE;
+    }
+
+    @media(max-width: 1050px) {
+      nav {
+        gap: 11px;
+      }
+
+      nav a {
+        font-size: 12px;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width: 760px) {
+      .topbar {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .topbar span:last-child {
+        display: none;
+      }
+
+      header {
+        padding: 10px 5%;
+      }
+
+      .brand img {
+        width: 50px;
+        height: 50px;
+      }
+
+      .brand-name {
+        font-size: 17px;
+      }
+
+      .brand small {
+        font-size: 9px;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px 6%;
+        flex-direction: column;
+        align-items: stretch;
+        box-shadow: 0 10px 15px #00000012;
+      }
+
+      nav.active {
+        display: flex;
+      }
+
+      nav a {
+        padding: 10px 0;
+        border-bottom: 1px solid #EEEEEE;
+        font-size: 14px;
+      }
+
+      .hero {
+        min-height: 500px;
+        padding: 65px 7%;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .section {
+        padding: 55px 6%;
+      }
+
+      .about-grid,
+      .news-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .about-image {
+        min-height: 280px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .card {
+        padding: 20px 15px;
+      }
+
+      .card h3 {
+        font-size: 15px;
+      }
+
+      .card p {
+        font-size: 13px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+    }
+
+    @media(max-width: 420px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 35px;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <span>Association Jeunesse Unie et Solidaire de Pindikro</span>
+    <span>Ensemble pour un avenir meilleur</span>
+  </div>
+
+  <header>
+    <a href="index.html" class="brand">
+      <img src="images/logo-ajusp.png" alt="Logo AJUSP">
+      <div>
+        <div class="brand-name">AJUSP</div>
+        <small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small>
+      </div>
+    </a>
+
+    <button class="menu-toggle" id="menuToggle"
+      aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+
+    <nav id="mainNav">
+      <a href="index.html">Accueil</a>
+      <a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+      <a href="association.html">Notre association</a>
+      <a href="projets.html">Nos projets</a>
+      <a href="actualites.html">Actualités</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="soutien.html">Nous soutenir</a>
+      <a href="contact-adhesion.html">Adhésion</a>
+      <a href="espace-membre/connexion.html" class="nav-button">Espace membre</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- BANNIERE PRINCIPALE -->
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-label">ENSEMBLE POUR UN AVENIR MEILLEUR</span>
+        <h1>Unis pour le développement de Pindikro</h1>
+        <p>
+          L'Association Jeunesse Unie et Solidaire de Pindikro
+          rassemble les filles et fils du village autour d'une
+          ambition commune : construire un avenir meilleur
+          pour toute la communauté.
+        </p>
+        <div class="buttons">
+          <a href="association.html" class="btn btn-yellow">
+            Découvrir l'AJUSP
+          </a>
+          <a href="soutien.html" class="btn btn-outline">
+            Soutenir nos actions
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRESENTATION -->
+    <section class="section">
+      <div class="about-grid">
+        <div class="about-image"
+          role="img" aria-label="Communauté villageoise de Pindikro"></div>
+
+        <div class="about-text">
+          <span style="color:var(--vert);font-weight:bold;">
+            QUI SOMMES-NOUS ?
+          </span>
+          <h2>Une association au service de Pindikro</h2>
+          <p>
+            L'AJUSP est une association qui œuvre pour le
+            développement de Pindikro et le renforcement
+            des liens entre ses filles et fils.
+          </p>
+          <p>
+            Elle encourage la solidarité, la participation
+            communautaire et la réalisation d'initiatives
+            utiles au progrès du village.
+          </p>
+          <p>
+            Notre ambition est de mobiliser toutes les générations
+            autour d'une vision commune.
+          </p>
+          <a href="association.html" class="btn btn-yellow">
+            En savoir plus
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOMAINES D'ACTION -->
+    <section class="section domains">
+      <div class="section-heading">
+        <span>Nos engagements</span>
+        <h2>Nos domaines d'intervention</h2>
+        <p>
+          Des actions concrètes pour contribuer au développement
+          durable de notre communauté.
+        </p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card-icon">🎓</div>
+          <h3>Éducation et formation</h3>
+          <p>
+            Encourager l'éducation, la formation et
+            l'accompagnement des jeunes.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🏗️</div>
+          <h3>Infrastructures</h3>
+          <p>
+            Soutenir les initiatives d'amélioration
+            du cadre de vie du village.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">💼</div>
+          <h3>Développement économique</h3>
+          <p>
+            Valoriser les potentialités locales et
+            encourager les activités économiques.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🤝</div>
+          <h3>Solidarité communautaire</h3>
+          <p>
+            Renforcer l'entraide, la cohésion sociale
+            et l'unité entre les habitants.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- PROJETS -->
+    <section class="section projects">
+      <div class="section-heading">
+        <span>Agir ensemble</span>
+        <h2>Nos projets pour Pindikro</h2>
+        <p>
+          Découvrez les initiatives que l'AJUSP souhaite
+          développer avec la participation de la communauté.
+        </p>
+      </div>
+
+      <div class="project-box">
+        <h3>Construisons ensemble l'avenir de Pindikro</h3>
+        <p>
+          Chaque projet représente une occasion de transformer
+          nos ambitions collectives en réalisations concrètes.
+        </p>
+        <a href="projets.html" class="btn btn-yellow">
+          Découvrir nos projets
+        </a>
+      </div>
+    </section>
+
+    <!-- ACTUALITES ET GALERIE -->
+    <section class="section">
+      <div class="section-heading">
+        <span>La vie de l'association</span>
+        <h2>Actualités et moments forts</h2>
+        <p>
+          Suivez les activités de l'association et découvrez
+          la vie de notre communauté.
+        </p>
+      </div>
+
+      <div class="news-gallery">
+        <div class="info-panel">
+          <h3>Actualités de l'AJUSP</h3>
+          <p>
+            Retrouvez les communiqués, les réunions,
+            les événements et les différentes activités
+            organisées par l'association.
+          </p>
+          <a href="actualites.html" class="btn btn-yellow">
+            Toutes les actualités
+          </a>
+        </div>
+
+        <div class="info-panel">
+          <h3>Galerie de Pindikro</h3>
+          <p>
+            Des images pour partager les moments de solidarité,
+            les rencontres et les activités de notre communauté.
+          </p>
+          <div class="gallery-preview">
+            <img src="images/pindikro-communaute.jpg"
+              alt="Communauté de Pindikro">
+            <img src="images/communaute-pindikro.jpg"
+              alt="Activités communautaires à Pindikro">
+          </div>
+          <br>
+          <a href="galerie.html" class="btn btn-yellow">
+            Voir la galerie
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOUTIEN -->
+    <section class="support">
+      <h2>Ensemble, faisons avancer Pindikro !</h2>
+      <p>
+        Votre engagement, vos cotisations, vos dons et vos
+        idées peuvent contribuer à la réalisation de nos
+        projets de développement.
+      </p>
+      <div class="buttons" style="justify-content:center;">
+        <a href="contact-adhesion.html" class="btn btn-yellow">
+          Rejoindre l'AJUSP
+        </a>
+        <a href="soutien.html" class="btn btn-outline">
+          Faire un don
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIED DE PAGE -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h3>AJUSP – Pindikro</h3>
+        <p>
+          Association Jeunesse Unie et Solidaire de Pindikro.
+          Ensemble pour un avenir meilleur.
+        </p>
+      </div>
+
+      <div>
+        <h4>Navigation</h4>
+        <a href="association.html">Notre association</a>
+        <a href="projets.html">Nos projets</a>
+        <a href="actualites.html">Actualités</a>
+        <a href="galerie.html">Galerie</a>
+      </div>
+
+      <div>
+        <h4>Nous rejoindre</h4>
+        <a href="contact-adhesion.html">Adhésion</a>
+        <a href="soutien.html">Faire un don</a>
+        <a href="espace-membre/connexion.html">Espace membre</a>
+      </div>
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> AJUSP – Association Jeunesse Unie
+      et Solidaire de Pindikro. Tous droits réservés.
+    </div>
+  </footer>
+
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const mainNav = document.getElementById("mainNav");
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = mainNav.classList.toggle("active");
+      menuToggle.setAttribute("aria-expanded", isOpen);
+      menuToggle.textContent = isOpen ? "✕" : "☰";
+    });
+
+    mainNav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        mainNav.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.textContent = "☰";
+      });
+    });
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+  </script>
+
+</body>
+</html>
