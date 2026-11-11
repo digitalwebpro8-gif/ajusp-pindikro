@@ -1,0 +1,37 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Actualités – AJUSP Pindikro"><title>Actualités | AJUSP</title><style>
+:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{text-decoration:none;color:inherit}.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
+.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
+nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
+.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
+.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}
+.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
+h2{color:var(--navy);font-size:27px;margin:8px 0 15px}h3{color:var(--navy);margin-bottom:8px}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)}
+.card p,.muted{color:var(--muted)}.photo{width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:20px 0}
+ul{padding-left:22px;margin:12px 0 20px}li{margin:6px 0}.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
+form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:720px}
+label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}textarea{min-height:120px}
+button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
+footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
+@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}.grid{grid-template-columns:1fr}}
+</style></head><body>
+<header class="site-header">
+  <a class="brand" href="index.html"><img src="logo-ajusp.jpeg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
+  <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+  <nav>
+    <a href="index.html">Accueil</a><a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+    <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
+    <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
+    <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
+    <a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
+  </nav>
+</header><section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Actualités</h1><p>Les informations, annonces et activités de l'Association Jeunesse Unie et Solidaire de Pindikro.</p></section><main class="wrap">
+<p class="lead">Retrouvez ici les communications officielles, les réunions, les événements et les nouvelles de l'association.</p>
+<div class="card"><h3>Bienvenue dans l'espace actualités de l'AJUSP</h3><p>Les prochaines publications de l'association apparaîtront sur cette page. Les responsables pourront les administrer depuis l'espace prévu à cet effet lorsque le tableau de bord sera connecté à Supabase.</p></div>
+</main><footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer><script>document.getElementById("year").textContent=new Date().getFullYear();</script><script>
+const t=document.querySelector('.toggle'),n=document.querySelector('nav');
+t?.addEventListener('click',()=>{const o=n.classList.toggle('open');t.setAttribute('aria-expanded',o);t.textContent=o?'✕':'☰'});
+</script></body></html>
