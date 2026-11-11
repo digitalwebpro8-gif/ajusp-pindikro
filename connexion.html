@@ -118,7 +118,9 @@ forgotButton.addEventListener("click",async()=>{
   if(error)throw error;
   showStatus(loginStatus,"Si cette adresse correspond à un compte, un lien de réinitialisation vient d'être envoyé. Consultez votre boîte de réception et vos courriers indésirables.","success");
  }catch(error){
-  console.error(error);showStatus(loginStatus,"Impossible d'envoyer le lien pour le moment. Vérifiez la configuration des URL de redirection Supabase puis réessayez.","error");
+  console.error("Erreur détaillée de réinitialisation Supabase :",error);
+  const detail = error && error.message ? error.message : "Erreur inconnue";
+  showStatus(loginStatus,"Supabase indique : "+detail,"error");
  }finally{forgotButton.disabled=false;forgotButton.textContent="Mot de passe oublié ?";}
 });
 
