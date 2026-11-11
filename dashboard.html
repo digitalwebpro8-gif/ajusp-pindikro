@@ -2,239 +2,429 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Administration | AJUSP Pindikro</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root {
-  --green:#176B3A;
-  --yellow:#F2C230;
-  --navy:#142B45;
-  --bg:#F4F6F8;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#263238}
-header{background:var(--navy);color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-header h2{margin:0;font-size:20px}
-header span{color:var(--yellow)}
-button{border:0;border-radius:6px;padding:11px 16px;cursor:pointer;font-weight:bold}
-.logout{background:#fff;color:var(--navy)}
-.container{max-width:1150px;margin:30px auto;padding:0 18px}
-.welcome{margin-bottom:25px}
-.welcome h1{color:var(--navy);margin-bottom:7px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
-.card{background:white;padding:22px;border-radius:12px;box-shadow:0 2px 9px #0000000d;border-left:5px solid var(--green)}
-.card:nth-child(2){border-color:var(--yellow)}
-.card:nth-child(3){border-color:var(--navy)}
-.card:nth-child(4){border-color:#D97706}
-.card p{margin:0;color:#65717d}
-.card h2{font-size:30px;margin:12px 0 0;color:var(--navy)}
-.panel{background:white;padding:22px;border-radius:12px;margin-top:25px;box-shadow:0 2px 9px #0000000d;overflow-x:auto}
-.panel h2{color:var(--navy);margin-top:0}
-table{width:100%;border-collapse:collapse;min-width:550px}
-th,td{text-align:left;padding:13px;border-bottom:1px solid #eee;font-size:14px}
-th{background:#f5f7f8;color:var(--navy)}
-.status{padding:5px 9px;border-radius:20px;background:#fff3cd;font-size:12px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
-.actions button{background:var(--green);color:white}
-.actions button.secondary{background:var(--navy)}
-#message{padding:12px;border-radius:7px;margin:15px 0;display:none}
-.error{background:#ffe5e5;color:#a00000}
-.info{background:#e4f4e9;color:#176B3A}
-footer{text-align:center;padding:25px;color:#777;font-size:13px}
-@media(max-width:600px){header{padding:18px}.welcome h1{font-size:23px}.panel{padding:15px}}
-</style>
-</head>
-<body>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord | AJUSP Pindikro</title>
 
-<header>
-  <h2>AJUSP <span>| Administration</span></h2>
-  <button class="logout" id="logoutButton">Déconnexion</button>
-</header>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<main class="container">
-  <div class="welcome">
-    <h1>Tableau de bord</h1>
-    <p>Bienvenue dans l'espace d'administration de l'AJUSP Pindikro.</p>
-    <p id="adminName">Vérification de votre compte...</p>
-  </div>
-
-  <div id="message"></div>
-
-  <section class="cards">
-    <div class="card">
-      <p>Adhérents</p>
-      <h2 id="membersCount">...</h2>
-    </div>
-    <div class="card">
-      <p>Demandes d'adhésion</p>
-      <h2 id="requestsCount">...</h2>
-    </div>
-    <div class="card">
-      <p>Projets</p>
-      <h2 id="projectsCount">...</h2>
-    </div>
-    <div class="card">
-      <p>Actualités publiées</p>
-      <h2 id="newsCount">...</h2>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>Dernières demandes d'adhésion</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Nom complet</th>
-          <th>Téléphone</th>
-          <th>E-mail</th>
-          <th>Statut</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody id="requestsTable">
-        <tr><td colspan="5">Chargement...</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section class="panel">
-    <h2>Accès rapides</h2>
-    <div class="actions">
-      <button onclick="showMessage('La gestion des adhérents sera ajoutée à la prochaine étape.')">Gérer les adhérents</button>
-      <button class="secondary" onclick="showMessage('La publication des actualités sera ajoutée à la prochaine étape.')">Gérer les actualités</button>
-      <button class="secondary" onclick="showMessage('La gestion des projets sera ajoutée à la prochaine étape.')">Gérer les projets</button>
-      <button class="secondary" onclick="loadDashboard()">Actualiser les données</button>
-    </div>
-  </section>
-</main>
-
-<footer>AJUSP Pindikro – Ensemble pour un avenir meilleur</footer>
-
-<script>
-const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
-const supabase=window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-function showMessage(text,type="info"){
-  const box=document.getElementById("message");
-  box.textContent=text;
-  box.className=type;
-  box.style.display="block";
-}
-
-async function checkAdmin(){
-  const {data:{user},error}=await supabase.auth.getUser();
-
-  if(error || !user){
-    window.location.href="espace-membre/connexion.html";
-    return false;
-  }
-
-  const {data:profile,error:profileError}=await supabase
-    .from("profiles")
-    .select("full_name,role,status")
-    .eq("id",user.id)
-    .single();
-
-  if(profileError || !profile || profile.role!=="admin" || profile.status!=="active"){
-    await supabase.auth.signOut();
-    alert("Accès réservé aux administrateurs autorisés.");
-    window.location.href="espace-membre/connexion.html";
-    return false;
-  }
-
-  document.getElementById("adminName").textContent=
-    "Administrateur : "+(profile.full_name || user.email);
-
-  return true;
-}
-
-async function getCount(table,filter=null){
-  let query=supabase.from(table).select("*",{count:"exact",head:true});
-  if(filter) query=query.eq(filter.column,filter.value);
-  const {count,error}=await query;
-  if(error) throw error;
-  return count ?? 0;
-}
-
-async function loadDashboard(){
-  try{
-    const [members,requests,projects,news]=await Promise.all([
-      getCount("profiles",{column:"status",value:"active"}),
-      getCount("membership_requests"),
-      getCount("projects"),
-      getCount("news",{column:"is_published",value:true})
-    ]);
-
-    document.getElementById("membersCount").textContent=members;
-    document.getElementById("requestsCount").textContent=requests;
-    document.getElementById("projectsCount").textContent=projects;
-    document.getElementById("newsCount").textContent=news;
-
-    const {data,error}=await supabase
-      .from("membership_requests")
-      .select("full_name,phone,email,status,created_at")
-      .order("created_at",{ascending:false})
-      .limit(8);
-
-    if(error) throw error;
-
-    const tbody=document.getElementById("requestsTable");
-    tbody.innerHTML="";
-
-    if(!data || data.length===0){
-      tbody.innerHTML='<tr><td colspan="5">Aucune demande pour le moment.</td></tr>';
-      return;
+  <style>
+    :root {
+      --green: #176B3A;
+      --yellow: #F2C230;
+      --navy: #142B45;
+      --background: #F4F6F8;
+      --white: #FFFFFF;
+      --text: #263238;
     }
 
-    data.forEach(item=>{
-      const tr=document.createElement("tr");
-      const values=[
-        item.full_name,
-        item.phone,
-        item.email,
-        item.status,
-        item.created_at ? new Date(item.created_at).toLocaleDateString("fr-FR") : ""
-      ];
+    * {
+      box-sizing: border-box;
+    }
 
-      values.forEach((value,index)=>{
-        const td=document.createElement("td");
-        td.textContent=value || "Non renseigné";
-        if(index===3){
-          const span=document.createElement("span");
-          span.className="status";
-          span.textContent=value || "Non renseigné";
-          td.textContent="";
-          td.appendChild(span);
-        }
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
 
-  }catch(error){
-    console.error(error);
-    showMessage(
-      "Certaines données n'ont pas pu être chargées. Vérifiez les autorisations Supabase (RLS) et les tables.",
-      "error"
+    header {
+      background: var(--navy);
+      color: white;
+      padding: 18px 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    header h2 span {
+      color: var(--yellow);
+    }
+
+    button {
+      border: none;
+      border-radius: 6px;
+      padding: 12px 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logout {
+      background: white;
+      color: var(--navy);
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 32px auto;
+      padding: 0 18px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    #adminName {
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 2px 9px #0000000d;
+      border-left: 5px solid var(--green);
+    }
+
+    .card:nth-child(2) {
+      border-color: var(--yellow);
+    }
+
+    .card:nth-child(3) {
+      border-color: var(--navy);
+    }
+
+    .card:nth-child(4) {
+      border-color: #D97706;
+    }
+
+    .card p {
+      margin: 0;
+      color: #65717D;
+    }
+
+    .card h2 {
+      font-size: 29px;
+      margin: 13px 0 0;
+      color: var(--navy);
+    }
+
+    .panel {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      margin-top: 25px;
+      box-shadow: 0 2px 9px #0000000d;
+    }
+
+    .panel h2 {
+      color: var(--navy);
+      margin-top: 0;
+    }
+
+    .notice {
+      background: #FFF8E1;
+      border-left: 4px solid var(--yellow);
+      padding: 15px;
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+
+    #message {
+      display: none;
+      padding: 14px;
+      border-radius: 7px;
+      margin: 18px 0;
+      line-height: 1.5;
+    }
+
+    #message.error {
+      display: block;
+      background: #FFE5E5;
+      color: #A00000;
+    }
+
+    #message.info {
+      display: block;
+      background: #E4F4E9;
+      color: var(--green);
+    }
+
+    .loading {
+      color: #777;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @media(max-width: 600px) {
+      header {
+        padding: 16px;
+      }
+
+      header h2 {
+        font-size: 18px;
+      }
+
+      .welcome h1 {
+        font-size: 24px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h2>AJUSP <span>| Administration</span></h2>
+    <button class="logout" id="logoutButton">Déconnexion</button>
+  </header>
+
+  <main class="container">
+
+    <section class="welcome">
+      <h1>Tableau de bord</h1>
+      <p>Bienvenue dans l'espace d'administration de l'AJUSP Pindikro.</p>
+      <p id="adminName" class="loading">Vérification de votre compte...</p>
+    </section>
+
+    <div id="message"></div>
+
+    <section class="cards">
+
+      <div class="card">
+        <p>Comptes actifs</p>
+        <h2 id="membersCount">...</h2>
+      </div>
+
+      <div class="card">
+        <p>Demandes d'adhésion</p>
+        <h2 id="requestsCount">À configurer</h2>
+      </div>
+
+      <div class="card">
+        <p>Projets</p>
+        <h2 id="projectsCount">À configurer</h2>
+      </div>
+
+      <div class="card">
+        <p>Actualités publiées</p>
+        <h2 id="newsCount">À configurer</h2>
+      </div>
+
+    </section>
+
+    <section class="panel">
+      <h2>Gestion des adhérents</h2>
+      <div class="notice">
+        <strong>Prochaine étape :</strong>
+        nous allons connecter cette rubrique à la base de données
+        pour consulter les inscriptions, vérifier les dossiers et
+        valider les nouveaux adhérents.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Gestion des actualités</h2>
+      <div class="notice">
+        Cette rubrique permettra de publier, modifier et supprimer
+        les annonces et les informations de l'association.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Gestion des projets</h2>
+      <div class="notice">
+        Cette rubrique permettra de présenter et de suivre
+        les projets de l'AJUSP Pindikro.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    AJUSP Pindikro – Ensemble pour un avenir meilleur
+  </footer>
+
+  <script>
+  (async function () {
+
+    // CONFIGURATION SUPABASE
+    const AJUSP_SUPABASE_URL =
+      "https://pcgshqscsdyyszbjkvjq.supabase.co";
+
+    const AJUSP_SUPABASE_KEY =
+      "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+
+    // Création du client Supabase
+    const client = window.supabase.createClient(
+      AJUSP_SUPABASE_URL,
+      AJUSP_SUPABASE_KEY
     );
-  }
-}
 
-document.getElementById("logoutButton").addEventListener("click",async()=>{
-  await supabase.auth.signOut();
-  window.location.href="espace-membre/connexion.html";
-});
+    const message = document.getElementById("message");
 
-(async()=>{
-  const authorized=await checkAdmin();
-  if(authorized) await loadDashboard();
-})();
-</script>
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = type;
+    }
+
+    function goToLogin() {
+      window.location.href =
+        "/espace-membre/connexion.html";
+    }
+
+    // VÉRIFICATION DU COMPTE ADMINISTRATEUR
+    async function checkAdmin() {
+
+      const { data, error } = await client.auth.getUser();
+
+      if (error || !data.user) {
+        showMessage(
+          "Votre session n'est plus active. Veuillez vous reconnecter.",
+          "error"
+        );
+
+        setTimeout(goToLogin, 2000);
+        return false;
+      }
+
+      const user = data.user;
+
+      const { data: profile, error: profileError } = await client
+        .from("profiles")
+        .select("id, full_name, role, status")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError || !profile) {
+        console.error("Erreur profil :", profileError);
+
+        showMessage(
+          "Impossible de vérifier votre profil. Vérifiez les autorisations de lecture de la table profiles dans Supabase.",
+          "error"
+        );
+
+        document.getElementById("adminName").textContent =
+          "Profil non vérifié";
+
+        return false;
+      }
+
+      if (
+        profile.role !== "admin" ||
+        profile.status !== "active"
+      ) {
+        showMessage(
+          "Accès refusé : cet espace est réservé aux administrateurs actifs.",
+          "error"
+        );
+
+        await client.auth.signOut();
+        setTimeout(goToLogin, 2000);
+        return false;
+      }
+
+      document.getElementById("adminName").textContent =
+        "Administrateur : " +
+        (profile.full_name || user.email);
+
+      document.getElementById("adminName").className = "";
+
+      showMessage(
+        "Connexion administrateur vérifiée avec succès.",
+        "info"
+      );
+
+      return true;
+    }
+
+    // CHARGEMENT DU NOMBRE DE COMPTES ACTIFS
+    async function loadMembersCount() {
+
+      const { count, error } = await client
+        .from("profiles")
+        .select("id", {
+          count: "exact",
+          head: true
+        })
+        .eq("status", "active");
+
+      if (error) {
+        console.error("Erreur compteur :", error);
+        document.getElementById("membersCount").textContent = "—";
+        return;
+      }
+
+      document.getElementById("membersCount").textContent =
+        count ?? 0;
+    }
+
+    // DÉCONNEXION
+    document
+      .getElementById("logoutButton")
+      .addEventListener("click", async function () {
+
+        const { error } = await client.auth.signOut();
+
+        if (error) {
+          showMessage(
+            "La déconnexion a échoué. Réessayez.",
+            "error"
+          );
+          return;
+        }
+
+        goToLogin();
+      });
+
+    // INITIALISATION DU TABLEAU DE BORD
+    try {
+
+      if (!window.supabase) {
+        throw new Error(
+          "La bibliothèque Supabase n'a pas pu être chargée."
+        );
+      }
+
+      const authorized = await checkAdmin();
+
+      if (authorized) {
+        await loadMembersCount();
+      }
+
+    } catch (error) {
+
+      console.error("Erreur générale :", error);
+
+      showMessage(
+        "Une erreur est survenue lors du chargement du tableau de bord : " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  })();
+  </script>
+
 </body>
 </html>
