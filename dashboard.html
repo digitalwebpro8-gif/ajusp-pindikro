@@ -2,443 +2,667 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Administration | AJUSP Pindikro</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration | AJUSP Pindikro</title>
 
-<style>
-:root {
-  --green:#176B3A;
-  --yellow:#F2C230;
-  --navy:#142B45;
-  --background:#F4F6F8;
-  --white:#FFFFFF;
-  --text:#263238;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--background);color:var(--text)}
-header{background:var(--navy);color:white;padding:18px 4%;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-header h2{margin:0;font-size:21px}
-header h2 span{color:var(--yellow)}
-button{border:0;border-radius:6px;padding:10px 14px;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-.logout{background:white;color:var(--navy)}
-.container{max-width:1150px;margin:32px auto;padding:0 18px}
-.welcome{margin-bottom:25px}
-.welcome h1{color:var(--navy);margin-bottom:8px}
-#adminName{color:var(--green);font-weight:bold}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
-.card,.panel{background:white;padding:22px;border-radius:12px;box-shadow:0 2px 9px #0000000d}
-.card{border-left:5px solid var(--green)}
-.card:nth-child(2){border-color:var(--yellow)}
-.card:nth-child(3){border-color:var(--navy)}
-.card:nth-child(4){border-color:#D97706}
-.card p{margin:0;color:#65717D}
-.card h2{font-size:29px;margin:13px 0 0;color:var(--navy)}
-.panel{margin-top:25px}
-.panel h2{color:var(--navy);margin-top:0}
-.notice{background:#FFF8E1;border-left:4px solid var(--yellow);padding:15px;border-radius:6px;line-height:1.6}
-#message{display:none;padding:14px;border-radius:7px;margin:18px 0;line-height:1.5}
-#message.error{display:block;background:#FFE5E5;color:#A00000}
-#message.info{display:block;background:#E4F4E9;color:var(--green)}
-#message.warning{display:block;background:#FFF8E1;color:#805900}
-.loading{color:#777}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:720px}
-th,td{padding:12px;text-align:left;border-bottom:1px solid #E5E7EB;font-size:14px;vertical-align:top}
-th{background:#F4F6F8;color:var(--navy)}
-.actions{display:flex;gap:7px;flex-wrap:wrap}
-.approve{background:var(--green);color:white}
-.reject{background:#B42318;color:white}
-.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold}
-.pending{background:#FFF2CC;color:#805900}
-.approved{background:#DDF5E5;color:#176B3A}
-.rejected{background:#FFE1E1;color:#A00000}
-.empty{padding:20px;text-align:center;color:#65717D}
-.small-button{background:#E8EDF2;color:var(--navy);margin-bottom:15px}
-footer{text-align:center;padding:25px;color:#777;font-size:13px}
-@media(max-width:600px){
- header{padding:16px}
- header h2{font-size:18px}
- .welcome h1{font-size:24px}
- .panel{padding:16px}
-}
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --green: #17643D;
+      --dark: #10452D;
+      --yellow: #F2C94C;
+      --navy: #14263F;
+      --bg: #F7F9F6;
+      --white: #fff;
+      --red: #c0392b;
+      --gray: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: #243044;
+    }
+
+    header {
+      background: var(--dark);
+      color: white;
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: #e4eee7;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: var(--yellow);
+      color: var(--navy);
+    }
+
+    main {
+      max-width: 1250px;
+      margin: 30px auto;
+      padding: 0 18px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .welcome p {
+      color: var(--gray);
+      margin-top: 5px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      border-left: 5px solid var(--green);
+    }
+
+    .card:nth-child(2) { border-left-color: var(--yellow); }
+    .card:nth-child(3) { border-left-color: var(--navy); }
+    .card:nth-child(4) { border-left-color: #4b9b78; }
+
+    .card p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    .number {
+      display: block;
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 12px;
+      color: var(--dark);
+    }
+
+    .panel {
+      background: white;
+      padding: 22px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      margin-bottom: 25px;
+    }
+
+    .panel h2 {
+      color: var(--dark);
+      margin-top: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .refresh {
+      background: var(--green);
+      color: white;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    th, td {
+      padding: 13px 11px;
+      border-bottom: 1px solid #e7ece8;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f0f5f1;
+      color: var(--dark);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .approved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .approve {
+      background: var(--green);
+      color: white;
+      margin: 2px;
+    }
+
+    .reject {
+      background: var(--red);
+      color: white;
+      margin: 2px;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--gray);
+      padding: 25px;
+    }
+
+    .message {
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .message.error {
+      display: block;
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .message.success {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-links a {
+      display: block;
+      padding: 16px;
+      background: #f0f5f1;
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 7px;
+    }
+
+    .quick-links a:hover {
+      background: #e0eee4;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    @media(max-width:600px) {
+      header { padding: 18px; }
+      header h1 { font-size: 19px; }
+      main { margin-top: 20px; }
+      .panel { padding: 15px; }
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <h2>AJUSP <span>| Administration</span></h2>
-  <button class="logout" id="logoutButton">Déconnexion</button>
+  <div>
+    <h1>AJUSP PINDIKRO</h1>
+    <p>Administration – Ensemble pour un avenir meilleur</p>
+  </div>
+  <button class="logout" id="logoutBtn">Déconnexion</button>
 </header>
 
-<main class="container">
+<main>
 
-<section class="welcome">
-  <h1>Tableau de bord</h1>
-  <p>Bienvenue dans l'espace d'administration de l'AJUSP Pindikro.</p>
-  <p id="adminName" class="loading">Vérification de votre compte...</p>
-</section>
+  <div class="welcome">
+    <h2>Tableau de bord</h2>
+    <p>Bienvenue, <strong id="adminName">Administrateur</strong>.</p>
+  </div>
 
-<div id="message"></div>
+  <div id="globalMessage" class="message"></div>
 
-<section class="cards">
-  <div class="card">
-    <p>Membres actifs</p>
-    <h2 id="membersCount">...</h2>
-  </div>
-  <div class="card">
-    <p>Demandes en attente</p>
-    <h2 id="requestsCount">...</h2>
-  </div>
-  <div class="card">
-    <p>Projets</p>
-    <h2 id="projectsCount">À configurer</h2>
-  </div>
-  <div class="card">
-    <p>Actualités publiées</p>
-    <h2 id="newsCount">À configurer</h2>
-  </div>
-</section>
+  <section class="cards">
+    <div class="card">
+      <p>Membres actifs</p>
+      <span class="number" id="membersCount">...</span>
+    </div>
 
-<section class="panel">
-  <h2>Gestion des adhésions</h2>
-  <p>Consulte les demandes et décide de leur approbation.</p>
-  <button class="small-button" id="refreshButton">Actualiser les demandes</button>
+    <div class="card">
+      <p>Demandes en attente</p>
+      <span class="number" id="requestsCount">...</span>
+    </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Candidat</th>
-          <th>Contact</th>
-          <th>Résidence</th>
-          <th>Date</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="requestsTable">
-        <tr><td colspan="6" class="empty">Chargement des demandes...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+    <div class="card">
+      <p>Projets</p>
+      <span class="number" id="projectsCount">...</span>
+    </div>
 
-<section class="panel">
-  <h2>Gestion des actualités</h2>
-  <div class="notice">
-    Cette rubrique permettra de publier, modifier et supprimer
-    les annonces et les informations de l'association.
-  </div>
-</section>
+    <div class="card">
+      <p>Actualités</p>
+      <span class="number" id="newsCount">...</span>
+    </div>
+  </section>
 
-<section class="panel">
-  <h2>Gestion des projets</h2>
-  <div class="notice">
-    Cette rubrique permettra de présenter et de suivre
-    les projets de l'AJUSP Pindikro.
-  </div>
-</section>
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Demandes d'adhésion</h2>
+      <button class="refresh" id="refreshBtn">Actualiser</button>
+    </div>
+
+    <p>Consulte les demandes reçues et traite les nouvelles adhésions.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nom et prénoms</th>
+            <th>Téléphone</th>
+            <th>E-mail</th>
+            <th>Résidence</th>
+            <th>Date</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="requestsTable">
+          <tr>
+            <td colspan="7" class="empty">Chargement des demandes...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Accès rapides</h2>
+    <div class="quick-links">
+      <a href="index.html">Voir le site public</a>
+      <a href="membres.html">Gestion des membres</a>
+      <a href="actualites.html">Gestion des actualités</a>
+      <a href="projets.html">Gestion des projets</a>
+      <a href="cotisations.html">Cotisations et dons</a>
+      <a href="depenses.html">Recettes et dépenses</a>
+    </div>
+  </section>
 
 </main>
 
-<footer>AJUSP Pindikro – Ensemble pour un avenir meilleur</footer>
+<footer>
+  Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)
+  <br>Ensemble pour un avenir meilleur
+</footer>
 
 <script>
-(async function(){
+(async function () {
+  "use strict";
 
-  const AJUSP_SUPABASE_URL =
-    "https://pcgshqscsdyyszbjkvjq.supabase.co";
-
-  const AJUSP_SUPABASE_KEY =
-    "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+  const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
 
   const client = window.supabase.createClient(
-    AJUSP_SUPABASE_URL,
-    AJUSP_SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
 
-  const message = document.getElementById("message");
-  const requestsTable = document.getElementById("requestsTable");
+  const $ = (id) => document.getElementById(id);
 
-  function showMessage(text,type){
-    message.textContent = text;
-    message.className = type;
+  function showMessage(message, type = "error") {
+    const box = $("globalMessage");
+    box.textContent = message;
+    box.className = "message " + type;
   }
 
-  function goToLogin(){
-    window.location.href="/espace-membre/connexion.html";
+  function hideMessage() {
+    const box = $("globalMessage");
+    box.textContent = "";
+    box.className = "message";
   }
 
-  function safeText(value){
-    return value || "Non renseigné";
-  }
-
-  function formatDate(value){
-    if(!value) return "—";
-    return new Date(value).toLocaleDateString("fr-FR");
-  }
-
-  function statusLabel(status){
-    const labels = {
-      pending:"En attente",
-      approved:"Approuvée",
-      rejected:"Rejetée"
-    };
-    return labels[status] || status;
-  }
-
-  async function checkAdmin(){
-
-    const {data,error} = await client.auth.getUser();
-
-    if(error || !data.user){
-      showMessage("Votre session n'est plus active. Veuillez vous reconnecter.","error");
-      setTimeout(goToLogin,2000);
-      return false;
-    }
-
-    const user=data.user;
-
-    const {data:profile,error:profileError}=await client
-      .from("profiles")
-      .select("id,full_name,role,status")
-      .eq("id",user.id)
-      .single();
-
-    if(profileError || !profile){
-      showMessage("Impossible de vérifier votre profil.","error");
-      return false;
-    }
-
-    if(profile.role!=="admin" || profile.status!=="active"){
-      showMessage("Accès refusé : espace réservé aux administrateurs actifs.","error");
-      await client.auth.signOut();
-      setTimeout(goToLogin,2000);
-      return false;
-    }
-
-    document.getElementById("adminName").textContent =
-      "Administrateur : "+(profile.full_name || user.email);
-
-    document.getElementById("adminName").className="";
-
-    showMessage("Connexion administrateur vérifiée avec succès.","info");
-    return true;
-  }
-
-  async function loadMembersCount(){
-
-    const {count,error}=await client
-      .from("profiles")
-      .select("id",{count:"exact",head:true})
-      .eq("status","active")
-      .eq("role","member");
-
-    if(error){
-      console.error(error);
-      document.getElementById("membersCount").textContent="—";
-      return;
-    }
-
-    document.getElementById("membersCount").textContent=count ?? 0;
-  }
-
-  async function loadRequests(){
-
-    requestsTable.innerHTML =
-      '<tr><td colspan="6" class="empty">Chargement...</td></tr>';
-
-    const {data,error}=await client
-      .from("membership_requests")
-      .select("id,full_name,phone,email,residence,message,status,created_at,user_id")
-      .order("created_at",{ascending:false});
-
-    if(error){
-      console.error("Erreur demandes :",error);
-      requestsTable.innerHTML =
-        '<tr><td colspan="6" class="empty">Impossible de charger les demandes. Vérifiez les autorisations Supabase.</td></tr>';
-      showMessage("Erreur lors du chargement des demandes d'adhésion.","error");
-      return;
-    }
-
-    const pendingCount=data.filter(item=>item.status==="pending").length;
-    document.getElementById("requestsCount").textContent=pendingCount;
-
-    requestsTable.replaceChildren();
-
-    if(data.length===0){
-      requestsTable.innerHTML =
-        '<tr><td colspan="6" class="empty">Aucune demande d'adhésion pour le moment.</td></tr>';
-      return;
-    }
-
-    data.forEach(request=>{
-
-      const row=document.createElement("tr");
-
-      const nameCell=document.createElement("td");
-      const name=document.createElement("strong");
-      name.textContent=safeText(request.full_name);
-      nameCell.appendChild(name);
-
-      if(request.message){
-        const details=document.createElement("p");
-        details.textContent=request.message;
-        details.style.color="#65717D";
-        details.style.fontSize="12px";
-        nameCell.appendChild(details);
-      }
-
-      const contactCell=document.createElement("td");
-      contactCell.textContent=
-        "Tél. : "+safeText(request.phone)+" | E-mail : "+safeText(request.email);
-
-      const residenceCell=document.createElement("td");
-      residenceCell.textContent=safeText(request.residence);
-
-      const dateCell=document.createElement("td");
-      dateCell.textContent=formatDate(request.created_at);
-
-      const statusCell=document.createElement("td");
-      const badge=document.createElement("span");
-      badge.className="status "+request.status;
-      badge.textContent=statusLabel(request.status);
-      statusCell.appendChild(badge);
-
-      const actionsCell=document.createElement("td");
-      const actions=document.createElement("div");
-      actions.className="actions";
-
-      if(request.status==="pending" && !request.user_id){
-
-        const approveButton=document.createElement("button");
-        approveButton.className="approve";
-        approveButton.textContent="Approuver";
-        approveButton.addEventListener("click",()=>approveRequest(request,approveButton));
-
-        const rejectButton=document.createElement("button");
-        rejectButton.className="reject";
-        rejectButton.textContent="Rejeter";
-        rejectButton.addEventListener("click",()=>rejectRequest(request,rejectButton));
-
-        actions.append(approveButton,rejectButton);
-
-      }else{
-        const noAction=document.createElement("span");
-        noAction.textContent="Aucune action";
-        noAction.style.color="#777";
-        actions.appendChild(noAction);
-      }
-
-      actionsCell.appendChild(actions);
-      row.append(nameCell,contactCell,residenceCell,dateCell,statusCell,actionsCell);
-      requestsTable.appendChild(row);
+  function safeText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
     });
   }
 
-  async function approveRequest(request,button){
+  function formatDate(value) {
+    if (!value) return "—";
 
-    const confirmation=confirm(
-      "Confirmer l'approbation de la demande de "+request.full_name+" ?\n\nUne invitation sera envoyée à : "+request.email
-    );
+    const date = new Date(value);
 
-    if(!confirmation) return;
+    if (Number.isNaN(date.getTime())) return "—";
 
-    button.disabled=true;
-    button.textContent="Traitement...";
-
-    const {data,error}=await client.functions.invoke(
-      "approve-membership",
-      {body:{request_id:request.id}}
-    );
-
-    if(error){
-      console.error("Erreur approbation :",error);
-      showMessage("L'approbation a échoué : "+error.message,"error");
-      button.disabled=false;
-      button.textContent="Approuver";
-      return;
-    }
-
-    if(!data || !data.success){
-      showMessage(data?.error || "L'approbation n'a pas abouti.","error");
-      button.disabled=false;
-      button.textContent="Approuver";
-      return;
-    }
-
-    showMessage(data.message || "Demande approuvée avec succès.","info");
-    await loadRequests();
-    await loadMembersCount();
+    return date.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
   }
 
-  async function rejectRequest(request,button){
+  function statusLabel(status) {
+    if (status === "pending") {
+      return '<span class="status pending">En attente</span>';
+    }
 
-    const confirmation=confirm(
-      "Voulez-vous vraiment rejeter la demande de "+request.full_name+" ?"
+    if (status === "approved") {
+      return '<span class="status approved">Approuvée</span>';
+    }
+
+    if (status === "rejected") {
+      return '<span class="status rejected">Rejetée</span>';
+    }
+
+    return safeText(status || "Inconnu");
+  }
+
+  async function checkAdmin() {
+    const { data: sessionData, error: sessionError } =
+      await client.auth.getSession();
+
+    if (sessionError || !sessionData.session) {
+      window.location.href = "connexion.html";
+      return false;
+    }
+
+    const user = sessionData.session.user;
+
+    const { data: profile, error: profileError } = await client
+      .from("profiles")
+      .select("full_name, role, status")
+      .eq("id", user.id)
+      .single();
+
+    if (
+      profileError ||
+      !profile ||
+      profile.role !== "admin" ||
+      profile.status !== "active"
+    ) {
+      showMessage("Accès refusé : cette page est réservée aux administrateurs actifs.");
+      await client.auth.signOut();
+      setTimeout(() => {
+        window.location.href = "connexion.html";
+      }, 2500);
+      return false;
+    }
+
+    $("adminName").textContent =
+      profile.full_name || user.email || "Administrateur";
+
+    return true;
+  }
+
+  async function loadMembersCount() {
+    const { count, error } = await client
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active")
+      .eq("role", "member");
+
+    if (error) {
+      console.error("Erreur compteur membres :", error);
+      $("membersCount").textContent = "—";
+      return;
+    }
+
+    $("membersCount").textContent = count ?? 0;
+  }
+
+  async function loadRequests() {
+    const table = $("requestsTable");
+    table.innerHTML =
+      '<tr><td colspan="7" class="empty">Chargement des demandes...</td></tr>';
+
+    const { data, error } = await client
+      .from("membership_requests")
+      .select("id, full_name, phone, email, residence, message, status, created_at, user_id")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Erreur demandes :", error);
+      $("requestsCount").textContent = "—";
+      table.innerHTML =
+        '<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';
+      showMessage("Erreur de lecture des demandes : " + error.message);
+      return;
+    }
+
+    const requests = data || [];
+    const pendingCount = requests.filter(
+      request => request.status === "pending"
+    ).length;
+
+    $("requestsCount").textContent = pendingCount;
+
+    if (requests.length === 0) {
+      table.innerHTML =
+        "<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";
+      return;
+    }
+
+    table.innerHTML = requests.map(request => {
+      const canProcess =
+        request.status === "pending" && !request.user_id;
+
+      const actions = canProcess
+        ? `
+          <button class="approve" data-action="approve"
+            data-id="${safeText(request.id)}">Approuver</button>
+          <button class="reject" data-action="reject"
+            data-id="${safeText(request.id)}">Rejeter</button>
+        `
+        : "—";
+
+      return `
+        <tr>
+          <td>
+            <strong>${safeText(request.full_name)}</strong>
+            ${request.message
+              ? `<br><small>${safeText(request.message)}</small>`
+              : ""}
+          </td>
+          <td>${safeText(request.phone || "—")}</td>
+          <td>${safeText(request.email || "—")}</td>
+          <td>${safeText(request.residence || "—")}</td>
+          <td>${formatDate(request.created_at)}</td>
+          <td>${statusLabel(request.status)}</td>
+          <td>${actions}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  async function loadOptionalCount(tableName, elementId) {
+    const { count, error } = await client
+      .from(tableName)
+      .select("*", { count: "exact", head: true });
+
+    if (error) {
+      console.warn("Compteur " + tableName + " :", error.message);
+      $(elementId).textContent = "—";
+      return;
+    }
+
+    $(elementId).textContent = count ?? 0;
+  }
+
+  async function loadDashboard() {
+    hideMessage();
+
+    await Promise.all([
+      loadMembersCount(),
+      loadRequests(),
+      loadOptionalCount("projects", "projectsCount"),
+      loadOptionalCount("news", "newsCount")
+    ]);
+  }
+
+  async function approveRequest(requestId) {
+    if (!confirm("Confirmer l'approbation de cette demande ?")) return;
+
+    hideMessage();
+
+    const { data, error } = await client.functions.invoke(
+      "approve-membership",
+      {
+        body: { request_id: requestId }
+      }
     );
 
-    if(!confirmation) return;
+    if (error) {
+      console.error("Erreur approbation :", error);
+      showMessage("Échec de l'approbation : " + error.message);
+      return;
+    }
 
-    button.disabled=true;
-    button.textContent="Traitement...";
+    if (!data || !data.success) {
+      showMessage(
+        data?.error || "L'approbation n'a pas pu être effectuée."
+      );
+      return;
+    }
 
-    const {data,error}=await client
+    showMessage(
+      data.message || "Demande approuvée avec succès.",
+      "success"
+    );
+
+    await loadDashboard();
+  }
+
+  async function rejectRequest(requestId) {
+    if (!confirm("Confirmer le rejet de cette demande ?")) return;
+
+    hideMessage();
+
+    const { data, error } = await client
       .from("membership_requests")
-      .update({status:"rejected"})
-      .eq("id",request.id)
-      .eq("status","pending")
-      .is("user_id",null)
+      .update({ status: "rejected" })
+      .eq("id", requestId)
+      .eq("status", "pending")
+      .is("user_id", null)
       .select("id");
 
-    if(error || !data || data.length===0){
-      console.error("Erreur rejet :",error);
-      showMessage("Impossible de rejeter cette demande. Vérifiez son statut et les autorisations.","error");
-      button.disabled=false;
-      button.textContent="Rejeter";
+    if (error) {
+      console.error("Erreur rejet :", error);
+      showMessage("Impossible de rejeter la demande : " + error.message);
       return;
     }
 
-    showMessage("La demande de "+request.full_name+" a été rejetée.","info");
-    await loadRequests();
+    if (!data || data.length === 0) {
+      showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");
+      return;
+    }
+
+    showMessage("La demande a été rejetée.", "success");
+    await loadDashboard();
   }
 
-  document.getElementById("refreshButton").addEventListener("click",async()=>{
-    await loadRequests();
-    await loadMembersCount();
+  $("requestsTable").addEventListener("click", async function (event) {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+
+    const requestId = button.dataset.id;
+    const action = button.dataset.action;
+
+    button.disabled = true;
+
+    try {
+      if (action === "approve") {
+        await approveRequest(requestId);
+      } else if (action === "reject") {
+        await rejectRequest(requestId);
+      }
+    } finally {
+      button.disabled = false;
+    }
   });
 
-  document.getElementById("logoutButton").addEventListener("click",async()=>{
-    const {error}=await client.auth.signOut();
+  $("refreshBtn").addEventListener("click", loadDashboard);
 
-    if(error){
-      showMessage("La déconnexion a échoué. Réessayez.","error");
+  $("logoutBtn").addEventListener("click", async function () {
+    const { error } = await client.auth.signOut();
+
+    if (error) {
+      showMessage("Erreur lors de la déconnexion : " + error.message);
       return;
     }
 
-    goToLogin();
+    window.location.href = "connexion.html";
   });
 
-  try{
+  const authorized = await checkAdmin();
 
-    if(!window.supabase){
-      throw new Error("La bibliothèque Supabase n'a pas pu être chargée.");
-    }
-
-    const authorized=await checkAdmin();
-
-    if(authorized){
-      await loadMembersCount();
-      await loadRequests();
-    }
-
-  }catch(error){
-    console.error(error);
-    showMessage("Erreur lors du chargement : "+error.message,"error");
+  if (authorized) {
+    await loadDashboard();
   }
 
 })();
