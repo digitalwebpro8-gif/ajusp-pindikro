@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace membre - AJUSP Pindikro</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --green: #17643D;
+      --dark: #10452D;
+      --yellow: #F2C94C;
+      --navy: #14263F;
+      --bg: #F7F9F6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: #263238;
+    }
+    header {
+      background: var(--green);
+      color: white;
+      padding: 18px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    header img { width: 55px; height: 55px; object-fit: contain; border-radius: 50%; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand h1 { margin: 0; font-size: 20px; }
+    .brand p { margin: 4px 0 0; font-size: 12px; }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .logout { background: var(--yellow); color: var(--navy); }
+    main { max-width: 1100px; margin: 35px auto; padding: 0 18px; }
+    .welcome {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      border-left: 5px solid var(--yellow);
+      box-shadow: 0 3px 15px #0000000d;
+    }
+    .welcome h2 { color: var(--green); margin-top: 0; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px #0000000d;
+    }
+    .card h3 { color: var(--green); margin-top: 0; }
+    .info { line-height: 1.9; overflow-wrap: anywhere; }
+    .notice {
+      margin-top: 22px;
+      padding: 15px;
+      background: #fff8df;
+      border-radius: 8px;
+      color: #594a15;
+    }
+    #message { text-align: center; padding: 35px; }
+    footer { text-align: center; padding: 25px; color: #68756d; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+      <div>
+        <h1>AJUSP Pindikro</h1>
+        <p>Ensemble pour un avenir meilleur</p>
+      </div>
+    </div>
+    <button class="logout" id="logoutBtn">Déconnexion</button>
+  </header>
+
+  <main>
+    <div id="message">Vérification de votre connexion...</div>
+
+    <section id="memberContent" hidden>
+      <div class="welcome">
+        <h2>Bienvenue dans votre espace membre !</h2>
+        <p>Bonjour <strong id="memberName">Membre</strong>, heureux de vous retrouver dans votre espace personnel AJUSP.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Mon profil</h3>
+          <div class="info">
+            <strong>Nom :</strong> <span id="profileName"></span><br>
+            <strong>E-mail :</strong> <span id="profileEmail"></span><br>
+            <strong>Rôle :</strong> <span id="profileRole"></span><br>
+            <strong>Statut :</strong> <span id="profileStatus"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Mes cotisations</h3>
+          <p>Cette rubrique permettra de consulter vos cotisations et leur historique.</p>
+          <p><strong>Fonctionnalité en préparation.</strong></p>
+        </div>
+
+        <div class="card">
+          <h3>Mes dons</h3>
+          <p>Cette rubrique permettra de retrouver vos contributions et vos dons à l'association.</p>
+          <p><strong>Fonctionnalité en préparation.</strong></p>
+        </div>
+
+        <div class="card">
+          <h3>Informations AJUSP</h3>
+          <p>Retrouvez prochainement les actualités, les projets et les informations destinées aux membres.</p>
+        </div>
+      </div>
+
+      <div class="notice">
+        Votre espace membre est actif. Les fonctionnalités seront progressivement mises à votre disposition.
+      </div>
+    </section>
+  </main>
+
+  <footer>© AJUSP Pindikro - Ensemble pour un avenir meilleur</footer>
+
+  <script>
+    (async function () {
+      const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      const message = document.getElementById("message");
+      const content = document.getElementById("memberContent");
+
+      document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await client.auth.signOut();
+        window.location.href = "connexion.html";
+      });
+
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        window.location.href = "connexion.html";
+        return;
+      }
+
+      const user = sessionData.session.user;
+
+      const { data: profile, error: profileError } = await client
+        .from("profiles")
+        .select("full_name, role, status")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError || !profile) {
+        message.textContent = "Impossible de récupérer votre profil. Veuillez contacter l'administration.";
+        return;
+      }
+
+      if (profile.status !== "active") {
+        await client.auth.signOut();
+        message.textContent = "Votre compte n'est pas actif. Veuillez contacter l'administration.";
+        return;
+      }
+
+      if (profile.role === "admin" || profile.role === "secretary") {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      document.getElementById("memberName").textContent = profile.full_name || "Membre";
+      document.getElementById("profileName").textContent = profile.full_name || "Non renseigné";
+      document.getElementById("profileEmail").textContent = user.email || "Non renseigné";
+      document.getElementById("profileRole").textContent = profile.role;
+      document.getElementById("profileStatus").textContent = "Actif";
+
+      message.hidden = true;
+      content.hidden = false;
+    })();
+  </script>
+</body>
+</html>
