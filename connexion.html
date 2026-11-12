@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="fr">
 <head>
@@ -6,360 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Espace membre – AJUSP Pindikro">
 <title>Espace membre | AJUSP</title>
-
 <style>
 :root{--green:#17643D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
-a{text-decoration:none;color:inherit}
-.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
-.brand{display:flex;align-items:center;gap:10px}
-.brand img{width:56px;height:56px;object-fit:contain}
-.brand b{display:block;color:var(--green);font-size:20px}
-.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
-nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
-nav a{font-size:12px;font-weight:bold;color:var(--navy)}
-nav a:hover{color:var(--green)}
-.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
-.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
-.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("../banniere-ajusp.jpeg") center/cover;color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}
-.hero p{max-width:760px;color:#f0f4f0}
-.wrap{max-width:1100px;margin:auto;padding:55px 6%}
-.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
-.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
-form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:620px;margin-bottom:18px}
-label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}
-input{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}
-button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}
-button.submit:disabled{opacity:.6;cursor:wait}
-.text-button{border:0;background:none;color:var(--green);font:inherit;font-weight:bold;text-decoration:underline;cursor:pointer;margin-top:15px}
-.notice{font-size:13px;color:var(--muted);margin-top:12px}
-.form-status{display:none;margin-top:16px;padding:12px;border-radius:6px;font-size:14px;overflow-wrap:anywhere}
-.form-status.success{display:block;background:#e8f5ec;color:#17643D}
-.form-status.error{display:block;background:#fff0ee;color:#9b2820}
-.hidden{display:none!important}
-footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
-@media(max-width:900px){
-.toggle{display:block}
-nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}
-nav.open{display:flex}
-nav a{padding:8px;border-bottom:1px solid #eee}
-}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}a{text-decoration:none;color:inherit}
+.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
+.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("../banniere-ajusp.jpeg") center/cover;color:white}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
+form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:620px;margin-bottom:18px}label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}button.submit:disabled{opacity:.6;cursor:wait}.text-button{border:0;background:none;color:var(--green);font:inherit;font-weight:bold;text-decoration:underline;cursor:pointer;margin-top:15px}.notice{font-size:13px;color:var(--muted);margin-top:12px}.form-status{display:none;margin-top:16px;padding:12px;border-radius:6px;font-size:14px;overflow-wrap:anywhere}.form-status.success{display:block;background:#e8f5ec;color:#17643D}.form-status.error{display:block;background:#fff0ee;color:#9b2820}.hidden{display:none!important}footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
+@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}}
 </style>
 </head>
-
 <body>
-
 <header class="site-header">
-<a class="brand" href="../index.html">
-<img src="../logo-ajusp.jpeg" alt="Logo AJUSP">
-<span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span>
-</a>
-
+<a class="brand" href="../index.html"><img src="../logo-ajusp.jpeg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
 <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false" type="button">☰</button>
-
-<nav>
-<a href="../index.html">Accueil</a>
-<a href="../decouvrir-pindikro.html">Découvrir Pindikro</a>
-<a href="../association.html">Notre association</a>
-<a href="../projets.html">Nos projets</a>
-<a href="../actualites.html">Actualités</a>
-<a href="../galerie.html">Galerie</a>
-<a href="../soutien.html">Nous soutenir</a>
-<a href="../contact-adhesion.html">Adhésion</a>
-<a class="nav-cta" href="connexion.html">Espace membre</a>
-</nav>
+<nav><a href="../index.html">Accueil</a><a href="../decouvrir-pindikro.html">Découvrir Pindikro</a><a href="../association.html">Notre association</a><a href="../projets.html">Nos projets</a><a href="../actualites.html">Actualités</a><a href="../galerie.html">Galerie</a><a href="../soutien.html">Nous soutenir</a><a href="../contact-adhesion.html">Adhésion</a><a class="nav-cta" href="connexion.html">Espace membre</a></nav>
 </header>
-
-<section class="hero">
-<span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span>
-<h1>Espace membre</h1>
-<p>Un espace réservé aux membres de l'AJUSP.</p>
-</section>
-
-<main class="wrap">
-
-<p class="lead">Connectez-vous avec l'adresse e-mail et le mot de passe de votre compte AJUSP.</p>
-
-<form id="loginForm">
-<h2>Connexion</h2>
-
-<label for="email">Adresse e-mail</label>
-<input id="email" name="email" type="email" required autocomplete="username">
-
-<label for="password">Mot de passe</label>
-<input id="password" name="password" type="password" required autocomplete="current-password">
-
-<button class="btn submit" id="loginButton" type="submit">Se connecter</button>
-
-<button class="text-button" id="forgotButton" type="button">Mot de passe oublié ?</button>
-
-<div id="loginStatus" class="form-status" role="status" aria-live="polite"></div>
-
-<p class="notice">L'accès est réservé aux comptes enregistrés et activés par les responsables de l'AJUSP.</p>
-</form>
-
-<form id="newPasswordForm" class="hidden">
-<h2>Choisir un nouveau mot de passe</h2>
-
-<p class="notice">Après avoir ouvert le lien reçu par e-mail, choisissez votre nouveau mot de passe.</p>
-
-<label for="newPassword">Nouveau mot de passe</label>
-<input id="newPassword" type="password" minlength="8" required autocomplete="new-password">
-
-<label for="confirmPassword">Confirmer le nouveau mot de passe</label>
-<input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password">
-
-<button class="btn submit" id="savePasswordButton" type="submit">Enregistrer le nouveau mot de passe</button>
-
-<div id="passwordStatus" class="form-status" role="status" aria-live="polite"></div>
-</form>
-
+<section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Espace membre</h1><p>Un espace réservé aux membres de l'AJUSP.</p></section>
+<main class="wrap"><p class="lead">Connectez-vous avec l'adresse e-mail et le mot de passe de votre compte AJUSP.</p>
+<form id="loginForm"><h2>Connexion</h2><label for="email">Adresse e-mail</label><input id="email" name="email" type="email" required autocomplete="username"><label for="password">Mot de passe</label><input id="password" name="password" type="password" required autocomplete="current-password"><button class="btn submit" id="loginButton" type="submit">Se connecter</button><br><button class="text-button" id="forgotButton" type="button">Mot de passe oublié ?</button><div id="loginStatus" class="form-status" role="status" aria-live="polite"></div><p class="notice">L'accès est réservé aux comptes enregistrés et activés par les responsables de l'AJUSP.</p></form>
 </main>
-
-<footer>
-© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »
-</footer>
-
-<script>
-document.getElementById("year").textContent=new Date().getFullYear();
-
-const toggle=document.querySelector(".toggle");
-const nav=document.querySelector("nav");
-
-toggle?.addEventListener("click",()=>{
-  const opened=nav.classList.toggle("open");
-  toggle.setAttribute("aria-expanded",String(opened));
-  toggle.textContent=opened?"✕":"☰";
-});
-</script>
-
+<footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer>
+<script>document.getElementById("year").textContent=new Date().getFullYear();const toggle=document.querySelector(".toggle"),nav=document.querySelector("nav");toggle?.addEventListener("click",()=>{const opened=nav.classList.toggle("open");toggle.setAttribute("aria-expanded",String(opened));toggle.textContent=opened?"✕":"☰";});</script>
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
 const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
-
 const supabase=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-
-const loginForm=document.getElementById("loginForm");
-const loginButton=document.getElementById("loginButton");
-const forgotButton=document.getElementById("forgotButton");
-const loginStatus=document.getElementById("loginStatus");
-const newPasswordForm=document.getElementById("newPasswordForm");
-const savePasswordButton=document.getElementById("savePasswordButton");
-const passwordStatus=document.getElementById("passwordStatus");
-
-function showStatus(element,message,type){
-  element.textContent=message;
-  element.className="form-status "+type;
-}
-
-function getRedirectPath(role){
-  if(role==="admin" || role==="secretary"){
-    return "../dashboard.html";
-  }
-
-  if(role==="member"){
-    return "espace-membre.html";
-  }
-
-  return null;
-}
-
-// CONNEXION
-loginForm.addEventListener("submit",async(event)=>{
-  event.preventDefault();
-
-  loginStatus.className="form-status";
-  loginStatus.textContent="";
-
-  if(!loginForm.reportValidity())return;
-
-  loginButton.disabled=true;
-  loginButton.textContent="Connexion en cours…";
-
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-
-  try{
-    const {data,error}=await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if(error)throw error;
-
-    if(!data.user){
-      throw new Error("Aucun compte utilisateur n'a été retourné.");
-    }
-
-    const {data:profile,error:profileError}=await supabase
-      .from("profiles")
-      .select("full_name,role,status")
-      .eq("id",data.user.id)
-      .single();
-
-    if(profileError || !profile){
-      await supabase.auth.signOut();
-      throw new Error("Aucun profil AJUSP correspondant n'a été trouvé. Contactez les responsables.");
-    }
-
-    if(profile.status!=="active"){
-      await supabase.auth.signOut();
-      throw new Error("Votre compte AJUSP n'est pas encore activé.");
-    }
-
-    const destination=getRedirectPath(profile.role);
-
-    if(!destination){
-      await supabase.auth.signOut();
-      throw new Error("Votre rôle n'est pas reconnu. Contactez les responsables de l'AJUSP.");
-    }
-
-    showStatus(
-      loginStatus,
-      "Connexion réussie. Redirection vers votre espace...",
-      "success"
-    );
-
-    loginButton.textContent="Redirection…";
-
-    setTimeout(()=>{
-      window.location.replace(destination);
-    },700);
-
-  }catch(error){
-    console.error("Erreur de connexion :",error);
-
-    let message=error.message||"Une erreur est survenue.";
-
-    if(message.toLowerCase().includes("invalid login credentials")){
-      message="Adresse e-mail ou mot de passe incorrect. Vérifiez vos identifiants puis réessayez.";
-    }
-
-    showStatus(loginStatus,message,"error");
-
-    loginButton.disabled=false;
-    loginButton.textContent="Se connecter";
-  }
-});
-
-// MOT DE PASSE OUBLIÉ
-forgotButton.addEventListener("click",async()=>{
-  loginStatus.className="form-status";
-  loginStatus.textContent="";
-
-  const email=document.getElementById("email").value.trim();
-
-  if(!email){
-    showStatus(loginStatus,"Saisissez d'abord votre adresse e-mail dans le champ ci-dessus.","error");
-    document.getElementById("email").focus();
-    return;
-  }
-
-  forgotButton.disabled=true;
-  forgotButton.textContent="Envoi du lien…";
-
-  try{
-    const redirectTo=window.location.origin+window.location.pathname;
-
-    const {error}=await supabase.auth.resetPasswordForEmail(email,{
-      redirectTo
-    });
-
-    if(error)throw error;
-
-    showStatus(
-      loginStatus,
-      "Si cette adresse correspond à un compte, un lien de réinitialisation vient d'être envoyé. Consultez votre boîte de réception et vos courriers indésirables.",
-      "success"
-    );
-
-  }catch(error){
-    console.error("Erreur de réinitialisation :",error);
-
-    showStatus(
-      loginStatus,
-      "Supabase indique : "+(error.message||"Erreur inconnue"),
-      "error"
-    );
-
-  }finally{
-    forgotButton.disabled=false;
-    forgotButton.textContent="Mot de passe oublié ?";
-  }
-});
-
-// RÉCUPÉRATION DU MOT DE PASSE
-supabase.auth.onAuthStateChange((event)=>{
-  if(event==="PASSWORD_RECOVERY"){
-    loginForm.classList.add("hidden");
-    newPasswordForm.classList.remove("hidden");
-
-    showStatus(
-      passwordStatus,
-      "Lien de réinitialisation reconnu. Vous pouvez choisir votre nouveau mot de passe.",
-      "success"
-    );
-  }
-});
-
-// ENREGISTREMENT DU NOUVEAU MOT DE PASSE
-newPasswordForm.addEventListener("submit",async(event)=>{
-  event.preventDefault();
-
-  passwordStatus.className="form-status";
-  passwordStatus.textContent="";
-
-  if(!newPasswordForm.reportValidity())return;
-
-  const password=document.getElementById("newPassword").value;
-  const confirmation=document.getElementById("confirmPassword").value;
-
-  if(password!==confirmation){
-    showStatus(passwordStatus,"Les deux mots de passe ne correspondent pas.","error");
-    return;
-  }
-
-  savePasswordButton.disabled=true;
-  savePasswordButton.textContent="Enregistrement…";
-
-  try{
-    const {error}=await supabase.auth.updateUser({password});
-
-    if(error)throw error;
-
-    showStatus(
-      passwordStatus,
-      "Votre mot de passe a été modifié. Vous pouvez maintenant revenir à la connexion.",
-      "success"
-    );
-
-    await supabase.auth.signOut();
-    newPasswordForm.reset();
-
-    setTimeout(()=>{
-      newPasswordForm.classList.add("hidden");
-      loginForm.classList.remove("hidden");
-    },1800);
-
-  }catch(error){
-    console.error(error);
-
-    showStatus(
-      passwordStatus,
-      error.message||"La modification du mot de passe a échoué.",
-      "error"
-    );
-
-  }finally{
-    savePasswordButton.disabled=false;
-    savePasswordButton.textContent="Enregistrer le nouveau mot de passe";
-  }
-});
-
+const loginForm=document.getElementById("loginForm"),loginButton=document.getElementById("loginButton"),forgotButton=document.getElementById("forgotButton"),loginStatus=document.getElementById("loginStatus");
+function showStatus(el,msg,type){el.textContent=msg;el.className="form-status "+type;}
+function getRedirectPath(role,fonction){if(role==="admin"||role==="secretary")return "../dashboard.html";if(role==="member")return "espace-membre.html";return null;}
+loginForm.addEventListener("submit",async event=>{event.preventDefault();if(!loginForm.reportValidity())return;loginButton.disabled=true;loginButton.textContent="Connexion en cours…";try{const {data,error}=await supabase.auth.signInWithPassword({email:document.getElementById("email").value.trim(),password:document.getElementById("password").value});if(error)throw error;if(!data.user)throw new Error("Aucun compte utilisateur n'a été retourné.");const {data:profile,error:profileError}=await supabase.from("profiles").select("full_name,role,status,fonction").eq("id",data.user.id).single();if(profileError||!profile){await supabase.auth.signOut();throw new Error("Aucun profil AJUSP correspondant n'a été trouvé. Contactez les responsables.");}if(profile.status!=="active"){await supabase.auth.signOut();throw new Error("Votre compte AJUSP n'est pas encore activé.");}const destination=getRedirectPath(profile.role,profile.fonction);if(!destination){await supabase.auth.signOut();throw new Error("Votre rôle n'est pas reconnu. Contactez les responsables de l'AJUSP.");}showStatus(loginStatus,"Connexion réussie. Redirection vers votre espace…","success");setTimeout(()=>window.location.replace(destination),600);}catch(error){let msg=error.message||"Une erreur est survenue.";if(msg.toLowerCase().includes("invalid login credentials"))msg="Adresse e-mail ou mot de passe incorrect. Vérifiez vos identifiants puis réessayez.";showStatus(loginStatus,msg,"error");loginButton.disabled=false;loginButton.textContent="Se connecter";}});
+forgotButton.addEventListener("click",async()=>{loginStatus.className="form-status";const email=document.getElementById("email").value.trim();if(!email){showStatus(loginStatus,"Saisissez d'abord votre adresse e-mail dans le champ ci-dessus.","error");document.getElementById("email").focus();return;}forgotButton.disabled=true;forgotButton.textContent="Envoi du lien…";try{const redirectTo=new URL("reinitialiser-mot-de-passe.html",window.location.href).href;const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo});if(error)throw error;showStatus(loginStatus,"Si cette adresse correspond à un compte, un lien de réinitialisation vient d'être envoyé. Consultez votre boîte de réception et vos courriers indésirables.","success");}catch(error){showStatus(loginStatus,"Supabase indique : "+(error.message||"Erreur inconnue"),"error");}finally{forgotButton.disabled=false;forgotButton.textContent="Mot de passe oublié ?";}});
 </script>
-</body>
-</html>
+</body></html>
