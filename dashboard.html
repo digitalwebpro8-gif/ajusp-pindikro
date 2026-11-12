@@ -57,6 +57,19 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .save-function{background:var(--green);color:white;margin-top:6px}
 .locked{color:var(--gray);font-size:12px}
 .notice{background:#fff8df;border-left:4px solid var(--yellow);padding:12px 15px;border-radius:5px;font-size:13px;line-height:1.5;margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:bold;font-size:13px;margin-bottom:6px;color:var(--dark)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:6px;font:inherit;background:white}
+.form-group textarea{min-height:75px;resize:vertical}
+.primary{background:var(--green);color:white}
+.secondary{background:#e8eee9;color:var(--dark)}
+.danger{background:var(--red);color:white}
+.cotisation-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:15px 0}
+.cotisation-stat{background:#f0f5f1;padding:14px;border-radius:7px}
+.cotisation-stat strong{display:block;color:var(--dark);font-size:22px;margin-top:6px}
+.action-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.action-buttons button{padding:7px 9px;font-size:12px}
 footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
 @media(max-width:600px){
  header{padding:18px}header h1{font-size:19px}
@@ -82,14 +95,14 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
 
   <div id="globalMessage" class="message"></div>
 
-  <section class="cards">
+  <section class="cards admin-only">
     <div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
     <div class="card"><p>Demandes en attente</p><span class="number" id="requestsCount">...</span></div>
     <div class="card"><p>Projets</p><span class="number" id="projectsCount">...</span></div>
     <div class="card"><p>Actualités</p><span class="number" id="newsCount">...</span></div>
   </section>
 
-  <section class="panel">
+  <section class="panel admin-only" id="requestsPanel">
     <div class="panel-header">
       <h2>Demandes d'adhésion</h2>
       <button class="refresh" id="refreshBtn">Actualiser</button>
@@ -108,7 +121,7 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
     </div>
   </section>
 
-  <section class="panel" id="responsablesPanel">
+  <section class="panel admin-only" id="responsablesPanel">
     <div class="panel-header">
       <h2>Gestion des responsables</h2>
       <button class="refresh" id="refreshProfilesBtn">Actualiser</button>
@@ -138,7 +151,80 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
     </div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="cotisationsPanel">
+    <div class="panel-header">
+      <h2>Gestion des cotisations</h2>
+      <button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button>
+    </div>
+    <p id="cotisationsAccessInfo">Suivi des cotisations enregistrées pour les membres de l'AJUSP.</p>
+    <div class="cotisation-summary">
+      <div class="cotisation-stat">Montant confirmé<strong id="cotTotalConfirme">0 FCFA</strong></div>
+      <div class="cotisation-stat">Montant en attente<strong id="cotTotalAttente">0 FCFA</strong></div>
+      <div class="cotisation-stat">Paiements enregistrés<strong id="cotNombre">0</strong></div>
+    </div>
+    <div id="cotisationFormPanel" hidden>
+      <h3 id="cotisationFormTitle">Enregistrer une cotisation</h3>
+      <form id="cotisationForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="cotMember">Membre concerné *</label>
+            <select id="cotMember" required><option value="">Chargement des membres...</option></select>
+          </div>
+          <div class="form-group">
+            <label for="cotAmount">Montant (FCFA) *</label>
+            <input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000">
+          </div>
+          <div class="form-group">
+            <label for="cotPeriod">Période concernée *</label>
+            <input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026">
+          </div>
+          <div class="form-group">
+            <label for="cotDate">Date de paiement *</label>
+            <input id="cotDate" type="date" required>
+          </div>
+          <div class="form-group">
+            <label for="cotMode">Mode de paiement</label>
+            <select id="cotMode">
+              <option value="Espèces">Espèces</option>
+              <option value="Mobile Money">Mobile Money</option>
+              <option value="Virement bancaire">Virement bancaire</option>
+              <option value="Chèque">Chèque</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cotStatus">Statut *</label>
+            <select id="cotStatus" required>
+              <option value="confirmee">Paiement confirmé</option>
+              <option value="en_attente">En attente</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cotDescription">Observation (facultatif)</label>
+          <textarea id="cotDescription" maxlength="1000" placeholder="Précision sur le paiement..."></textarea>
+        </div>
+        <div class="action-buttons">
+          <button type="submit" class="primary" id="saveCotisationBtn">Enregistrer la cotisation</button>
+          <button type="button" class="secondary" id="cancelCotisationEditBtn" hidden>Annuler</button>
+        </div>
+        <p id="cotisationFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+      </form>
+    </div>
+    <h3>Historique des cotisations</h3>
+    <div id="cotisationsMessage" class="empty">Chargement des cotisations...</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Membre</th><th>Période</th><th>Montant</th><th>Date</th>
+          <th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th>
+        </tr></thead>
+        <tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel admin-only">
     <h2>Accès rapides</h2>
     <div class="quick-links">
       <a href="index.html">Voir le site public</a>
@@ -167,6 +253,10 @@ const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 let currentUser=null;
 let isTechnicalAdmin=false;
+let isAdmin=false;
+let canManageCotisations=false;
+let editingCotisationId=null;
+let cotisationRows=[];
 
 const functions=[
  {value:"president",label:"Président"},
@@ -214,26 +304,42 @@ function statusLabel(status){
  return safeText(status||"Inconnu");
 }
 
-async function checkAdmin(){
+async function checkAccess(){
  const {data:sessionData,error:sessionError}=await client.auth.getSession();
  if(sessionError||!sessionData.session){
   window.location.href="connexion.html";
   return false;
  }
  currentUser=sessionData.session.user;
-
  const {data:profile,error}=await client.from("profiles")
   .select("full_name,role,status,fonction")
   .eq("id",currentUser.id).single();
-
- if(error||!profile||profile.role!=="admin"||profile.status!=="active"){
-  showMessage("Accès refusé : cette page est réservée aux administrateurs actifs.");
+ if(error||!profile||profile.status!=="active"){
+  showMessage("Accès refusé : votre compte n'est pas actif ou votre profil est introuvable.");
   await client.auth.signOut();
   setTimeout(()=>window.location.href="connexion.html",2500);
   return false;
  }
- $("adminName").textContent=profile.full_name||currentUser.email||"Administrateur";
+ isAdmin=profile.role==="admin";
+ canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
  isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
+ if(!isAdmin&&!canManageCotisations){
+  showMessage("Accès refusé : cette page est réservée aux administrateurs et aux responsables de la trésorerie.");
+  await client.auth.signOut();
+  setTimeout(()=>window.location.href="connexion.html",2500);
+  return false;
+ }
+ $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
+ if(!isAdmin){
+  document.querySelectorAll(".admin-only").forEach(section=>section.hidden=true);
+  $("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
+ }
+ if(canManageCotisations){
+  $("cotisationFormPanel").hidden=false;
+  $("cotActionsHeader").hidden=false;
+ }else{
+  $("cotisationsAccessInfo").textContent="Consultation des cotisations. Seuls le trésorier et son adjoint peuvent enregistrer ou modifier les paiements.";
+ }
  return true;
 }
 
@@ -431,6 +537,146 @@ async function rejectRequest(requestId){
  await loadDashboard();
 }
 
+function formatFCFA(value){
+ return Number(value||0).toLocaleString("fr-FR")+" FCFA";
+}
+function cotStatusLabel(status){
+ if(status==="confirmee")return '<span class="status approved">Confirmée</span>';
+ if(status==="en_attente")return '<span class="status pending">En attente</span>';
+ if(status==="annulee")return '<span class="status rejected">Annulée</span>';
+ return safeText(status||"Inconnu");
+}
+async function loadCotisationMembers(){
+ if(!canManageCotisations)return;
+ const select=$("cotMember");
+ select.innerHTML='<option value="">Chargement des membres...</option>';
+ const {data,error}=await client.from("profiles").select("id,full_name")
+  .eq("status","active").order("full_name",{ascending:true});
+ if(error){
+  select.innerHTML='<option value="">Impossible de charger les membres</option>';
+  showMessage("Chargement des membres impossible : "+error.message);
+  return;
+ }
+ if(!data||!data.length){
+  select.innerHTML='<option value="">Aucun membre actif trouvé</option>';
+  return;
+ }
+ select.innerHTML='<option value="">Sélectionner un membre</option>'+
+  data.map(member=>`<option value="${safeText(member.id)}">${safeText(member.full_name||"Membre sans nom")}</option>`).join("");
+}
+async function loadCotisations(){
+ const table=$("cotisationsTable");
+ $("cotisationsMessage").textContent="Chargement des cotisations...";
+ table.innerHTML="";
+ const {data,error}=await client.from("cotisations")
+  .select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)")
+  .order("date_paiement",{ascending:false});
+ if(error){
+  $("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;
+  table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';
+  console.error(error);
+  return;
+ }
+ cotisationRows=data||[];
+ const confirmed=cotisationRows.filter(row=>row.statut==="confirmee");
+ const waiting=cotisationRows.filter(row=>row.statut==="en_attente");
+ $("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((sum,row)=>sum+Number(row.montant||0),0));
+ $("cotTotalAttente").textContent=formatFCFA(waiting.reduce((sum,row)=>sum+Number(row.montant||0),0));
+ $("cotNombre").textContent=String(cotisationRows.length);
+ if(!cotisationRows.length){
+  $("cotisationsMessage").textContent="Aucune cotisation enregistrée pour le moment.";
+  table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';
+  return;
+ }
+ $("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregistrée(s).";
+ table.innerHTML=cotisationRows.map(row=>{
+  const memberName=row.profiles?.full_name||"Membre";
+  const actions=canManageCotisations
+   ?`<td><div class="action-buttons">
+       <button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(row.id)}">Modifier</button>
+       <button type="button" class="danger" data-cot-action="delete" data-id="${safeText(row.id)}">Supprimer</button>
+     </div></td>`:"";
+  return `<tr><td>${safeText(memberName)}</td><td>${safeText(row.periode)}</td>
+   <td>${formatFCFA(row.montant)}</td><td>${formatDate(row.date_paiement)}</td>
+   <td>${safeText(row.mode_paiement||"—")}</td><td>${cotStatusLabel(row.statut)}</td>${actions}</tr>`;
+ }).join("");
+}
+function resetCotisationForm(){
+ $("cotisationForm").reset();
+ editingCotisationId=null;
+ $("cotisationFormTitle").textContent="Enregistrer une cotisation";
+ $("saveCotisationBtn").textContent="Enregistrer la cotisation";
+ $("cancelCotisationEditBtn").hidden=true;
+ $("cotDate").value=new Date().toISOString().slice(0,10);
+ $("cotisationFormMessage").textContent="";
+}
+function editCotisation(id){
+ if(!canManageCotisations)return;
+ const row=cotisationRows.find(item=>String(item.id)===String(id));
+ if(!row)return;
+ editingCotisationId=row.id;
+ $("cotMember").value=row.member_id;
+ $("cotAmount").value=row.montant;
+ $("cotPeriod").value=row.periode||"";
+ $("cotDate").value=row.date_paiement||"";
+ $("cotMode").value=row.mode_paiement||"Espèces";
+ $("cotStatus").value=row.statut||"confirmee";
+ $("cotDescription").value=row.description||"";
+ $("cotisationFormTitle").textContent="Modifier une cotisation";
+ $("saveCotisationBtn").textContent="Enregistrer les modifications";
+ $("cancelCotisationEditBtn").hidden=false;
+ $("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+async function saveCotisation(event){
+ event.preventDefault();
+ if(!canManageCotisations){
+  $("cotisationFormMessage").textContent="Vous n'êtes pas autorisé à enregistrer des cotisations.";
+  return;
+ }
+ const payload={
+  member_id:$("cotMember").value,
+  montant:Number($("cotAmount").value),
+  periode:$("cotPeriod").value.trim(),
+  date_paiement:$("cotDate").value,
+  mode_paiement:$("cotMode").value,
+  statut:$("cotStatus").value,
+  description:$("cotDescription").value.trim()||null
+ };
+ if(!payload.member_id||!payload.montant||payload.montant<=0||!payload.periode||!payload.date_paiement){
+  $("cotisationFormMessage").textContent="Veuillez renseigner le membre, un montant positif, la période et la date.";
+  return;
+ }
+ const button=$("saveCotisationBtn");
+ button.disabled=true;
+ button.textContent="Enregistrement...";
+ $("cotisationFormMessage").textContent="";
+ const wasEditing=Boolean(editingCotisationId);
+ try{
+  const result=wasEditing
+   ?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id")
+   :await client.from("cotisations").insert(payload).select("id");
+  if(result.error)throw result.error;
+  if(!result.data||!result.data.length)throw new Error("Aucune cotisation n'a été enregistrée. Vérifiez les autorisations Supabase.");
+  $("cotisationFormMessage").textContent=wasEditing?"Cotisation modifiée avec succès.":"Cotisation enregistrée avec succès.";
+  resetCotisationForm();
+  await loadCotisations();
+ }catch(error){
+  $("cotisationFormMessage").textContent="Erreur : "+error.message;
+ }finally{
+  button.disabled=false;
+  button.textContent="Enregistrer la cotisation";
+ }
+}
+async function deleteCotisation(id){
+ if(!canManageCotisations)return;
+ if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;
+ const {data,error}=await client.from("cotisations").delete().eq("id",id).select("id");
+ if(error){showMessage("Suppression impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("Aucune cotisation supprimée. Vérifiez les autorisations Supabase.");return;}
+ showMessage("Cotisation supprimée avec succès.","success");
+ await loadCotisations();
+}
+
 async function loadDashboard(){
  hideMessage();
  await Promise.all([
@@ -460,6 +706,15 @@ $("profilesTable").addEventListener("click",async event=>{
 
 $("refreshBtn").addEventListener("click",loadDashboard);
 $("refreshProfilesBtn").addEventListener("click",loadProfiles);
+$("refreshCotisationsBtn").addEventListener("click",loadCotisations);
+$("cotisationForm").addEventListener("submit",saveCotisation);
+$("cancelCotisationEditBtn").addEventListener("click",resetCotisationForm);
+$("cotisationsTable").addEventListener("click",async event=>{
+ const button=event.target.closest("button[data-cot-action]");
+ if(!button)return;
+ if(button.dataset.cotAction==="edit")editCotisation(button.dataset.id);
+ if(button.dataset.cotAction==="delete")await deleteCotisation(button.dataset.id);
+});
 
 $("logoutBtn").addEventListener("click",async()=>{
  const {error}=await client.auth.signOut();
@@ -470,7 +725,12 @@ $("logoutBtn").addEventListener("click",async()=>{
  window.location.href="connexion.html";
 });
 
-if(await checkAdmin())await loadDashboard();
+if(await checkAccess()){
+ if(isAdmin)await loadDashboard();
+ if(canManageCotisations)await loadCotisationMembers();
+ await loadCotisations();
+ resetCotisationForm();
+}
 
 })();
 </script>
