@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,35 +7,143 @@
 <title>Espace membre - AJUSP Pindikro</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#263238}header{background:var(--green);color:#fff;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}header img{width:55px;height:55px;object-fit:contain;border-radius:50%}.brand{display:flex;align-items:center;gap:12px}.brand h1{margin:0;font-size:20px}.brand p{margin:4px 0 0;font-size:12px}button{border:0;border-radius:7px;padding:11px 16px;cursor:pointer;font-weight:bold}button:disabled{opacity:.6;cursor:not-allowed}.logout{background:var(--yellow);color:var(--navy)}.dashboard-link{background:white;color:var(--green)}main{max-width:1100px;margin:35px auto;padding:0 18px}.welcome,.card,.news-card{background:#fff;padding:23px;border-radius:12px;box-shadow:0 3px 15px #0000000d}.welcome{border-left:5px solid var(--yellow)}.welcome h2,.card h3,.section-title{color:var(--green)}.welcome h2{margin-top:0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:22px}.card h3{margin-top:0}.info{line-height:1.9;overflow-wrap:anywhere}.notice{margin-top:22px;padding:15px;background:#fff8df;border-radius:8px;color:#594a15}.section{margin-top:35px}.section-title{margin-bottom:17px}.form-group{margin-bottom:16px}label{display:block;font-weight:bold;margin-bottom:7px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:7px;font:inherit;background:white}textarea{min-height:140px;resize:vertical}.primary-btn{background:var(--green);color:#fff}.secondary-btn{background:#e8eee9;color:var(--dark)}.danger-btn{background:#b42318;color:#fff}.form-actions,.news-actions{display:flex;gap:8px;flex-wrap:wrap}#editorMessage,#newsMessage,#treasuryMessage{margin-top:12px;font-weight:bold;line-height:1.5}.news-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}.news-card{overflow:hidden;padding:0}.news-card img{width:100%;height:190px;object-fit:cover;display:block}.news-body{padding:18px}.news-body h3{color:var(--green);margin-top:0}.news-meta{font-size:12px;color:#68756d;margin-bottom:10px}.news-content{line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}.news-actions{margin-top:15px}.status-draft,.status-published,.payment-status{display:inline-block;padding:5px 8px;border-radius:5px;font-size:12px;font-weight:bold}.status-draft{background:#fff0c2;color:#725500}.status-published,.payment-confirmed{background:#e0f3e7;color:#17643D}.table-wrap{width:100%;overflow-x:auto}.cotisations-table{width:100%;min-width:680px;border-collapse:collapse;margin-top:10px}.cotisations-table th,.cotisations-table td{padding:12px 10px;border-bottom:1px solid #e5ebe6;text-align:left;vertical-align:top}.cotisations-table th{background:#f0f5f1;color:var(--dark)}.payment-pending{background:#fff0c2;color:#725500}.payment-cancelled{background:#fde8e7;color:#a1261d}.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}.stat-box{background:#f0f5f1;padding:15px;border-radius:8px}.stat-box strong{display:block;color:var(--dark);font-size:20px;margin-top:5px}.treasury-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}.small-note{font-size:13px;color:#68756d}#message{text-align:center;padding:35px}footer{text-align:center;padding:25px;color:#68756d;font-size:13px}[hidden]{display:none!important}@media(max-width:600px){header{padding:15px}main{margin:22px auto}.welcome,.card{padding:18px}}
+:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#263238}
+header{background:var(--green);color:#fff;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+header img{width:55px;height:55px;object-fit:contain;border-radius:50%}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{margin:0;font-size:20px}
+.brand p{margin:4px 0 0;font-size:12px}
+button{border:0;border-radius:7px;padding:11px 16px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.6;cursor:not-allowed}
+.logout{background:var(--yellow);color:var(--navy)}
+.dashboard-link{background:white;color:var(--green)}
+main{max-width:1100px;margin:35px auto;padding:0 18px}
+.welcome,.card,.news-card{background:#fff;padding:23px;border-radius:12px;box-shadow:0 3px 15px #0000000d}
+.welcome{border-left:5px solid var(--yellow)}
+.welcome h2,.card h3,.section-title{color:var(--green)}
+.welcome h2{margin-top:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:22px}
+.card h3{margin-top:0}
+.info{line-height:1.9;overflow-wrap:anywhere}
+.notice{margin-top:22px;padding:15px;background:#fff8df;border-radius:8px;color:#594a15}
+.section{margin-top:35px}
+.section-title{margin-bottom:17px}
+.form-group{margin-bottom:16px}
+label{display:block;font-weight:bold;margin-bottom:7px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:7px;font:inherit;background:white}
+textarea{min-height:140px;resize:vertical}
+.primary-btn{background:var(--green);color:#fff}
+.secondary-btn{background:#e8eee9;color:var(--dark)}
+.danger-btn{background:#b42318;color:#fff}
+.form-actions,.news-actions{display:flex;gap:8px;flex-wrap:wrap}
+#editorMessage,#newsMessage,#treasuryMessage,#galleryMessage{margin-top:12px;font-weight:bold;line-height:1.5}
+.news-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.news-card{overflow:hidden;padding:0}
+.news-card img{width:100%;height:190px;object-fit:cover;display:block}
+.news-body{padding:18px}
+.news-body h3{color:var(--green);margin-top:0}
+.news-meta{font-size:12px;color:#68756d;margin-bottom:10px}
+.news-content{line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.news-actions{margin-top:15px}
+.status-draft,.status-published,.payment-status{display:inline-block;padding:5px 8px;border-radius:5px;font-size:12px;font-weight:bold}
+.status-draft{background:#fff0c2;color:#725500}
+.status-published,.payment-confirmed{background:#e0f3e7;color:#17643D}
+.table-wrap{width:100%;overflow-x:auto}
+.cotisations-table{width:100%;min-width:680px;border-collapse:collapse;margin-top:10px}
+.cotisations-table th,.cotisations-table td{padding:12px 10px;border-bottom:1px solid #e5ebe6;text-align:left;vertical-align:top}
+.cotisations-table th{background:#f0f5f1;color:var(--dark)}
+.payment-pending{background:#fff0c2;color:#725500}
+.payment-cancelled{background:#fde8e7;color:#a1261d}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+.stat-box{background:#f0f5f1;padding:15px;border-radius:8px}
+.stat-box strong{display:block;color:var(--dark);font-size:20px;margin-top:5px}
+.treasury-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.small-note{font-size:13px;color:#68756d}
+#message{text-align:center;padding:35px}
+footer{text-align:center;padding:25px;color:#68756d;font-size:13px}
+.gallery-admin-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:20px}
+.gallery-admin-card{background:#fff;border:1px solid #e5ebe6;border-radius:10px;overflow:hidden}
+.gallery-admin-card img,.gallery-admin-card video{width:100%;height:180px;object-fit:cover;display:block;background:#e9eee9}
+.gallery-admin-card iframe{width:100%;height:180px;border:0;display:block}
+.gallery-admin-body{padding:15px}
+.gallery-admin-body h4{color:var(--green);margin:0 0 8px}
+.gallery-admin-body p{white-space:pre-wrap;overflow-wrap:anywhere;color:#68756d}
+.gallery-admin-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.gallery-admin-actions button{font-size:12px;padding:9px 11px}
+.media-kind{display:inline-block;padding:4px 8px;border-radius:5px;background:#edf2ee;color:var(--dark);font-size:12px;font-weight:bold;margin-bottom:8px}
+.gallery-help{padding:13px;background:#edf5ef;border-radius:8px;color:var(--dark);font-size:13px;line-height:1.6;margin:12px 0}
+.preview-media{max-width:260px;max-height:180px;border-radius:8px;display:block;margin-top:10px}
+[hidden]{display:none!important}
+@media(max-width:600px){header{padding:15px}main{margin:22px auto}.welcome,.card{padding:18px}}
 </style>
 </head>
 <body>
+
 <header>
- <div class="brand"><img src="logo-ajusp.jpeg" alt="Logo AJUSP"><div><h1>AJUSP Pindikro</h1><p>Ensemble pour un avenir meilleur</p></div></div>
- <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="dashboard-link" id="dashboardBtn" hidden>Tableau de bord</button><button class="logout" id="logoutBtn">Déconnexion</button></div>
+ <div class="brand">
+  <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+  <div><h1>AJUSP Pindikro</h1><p>Ensemble pour un avenir meilleur</p></div>
+ </div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap">
+  <button class="dashboard-link" id="dashboardBtn" hidden>Tableau de bord</button>
+  <button class="logout" id="logoutBtn">Déconnexion</button>
+ </div>
 </header>
+
 <main>
  <div id="message">Vérification de votre connexion...</div>
+
  <section id="memberContent" hidden>
-  <div class="welcome"><h2>Bienvenue dans votre espace membre !</h2><p>Bonjour <strong id="memberName">Membre</strong>, heureux de vous retrouver dans votre espace personnel AJUSP.</p></div>
-  <div class="cards">
-   <div class="card"><h3>Mon profil</h3><div class="info"><strong>Nom :</strong> <span id="profileName"></span><br><strong>E-mail :</strong> <span id="profileEmail"></span><br><strong>Rôle :</strong> <span id="profileRole"></span><br><strong>Fonction :</strong> <span id="profileFunction"></span><br><strong>Statut :</strong> <span id="profileStatus"></span></div></div>
-   <div class="card"><h3>Mes cotisations</h3><p><strong>Total confirmé :</strong> <span id="totalCotisations">0 FCFA</span></p><p><strong>En attente :</strong> <span id="cotisationsEnAttente">0 FCFA</span></p><p><strong>Paiements confirmés :</strong> <span id="nombreCotisations">0</span></p></div>
-   <div class="card"><h3>Mes dons</h3><p>Cette rubrique permettra de retrouver vos contributions et vos dons à l'association.</p><p><strong>Fonctionnalité en préparation.</strong></p></div>
-   <div class="card"><h3>Informations AJUSP</h3><p>Retrouvez les actualités, les projets et les informations destinées aux membres.</p></div>
+  <div class="welcome">
+   <h2>Bienvenue dans votre espace membre !</h2>
+   <p>Bonjour <strong id="memberName">Membre</strong>, heureux de vous retrouver dans votre espace personnel AJUSP.</p>
   </div>
 
-  <!-- GESTION DES COTISATIONS : visible uniquement au trésorier et à son adjoint -->
+  <div class="cards">
+   <div class="card">
+    <h3>Mon profil</h3>
+    <div class="info">
+     <strong>Nom :</strong> <span id="profileName"></span><br>
+     <strong>E-mail :</strong> <span id="profileEmail"></span><br>
+     <strong>Rôle :</strong> <span id="profileRole"></span><br>
+     <strong>Fonction :</strong> <span id="profileFunction"></span><br>
+     <strong>Statut :</strong> <span id="profileStatus"></span>
+    </div>
+   </div>
+
+   <div class="card">
+    <h3>Mes cotisations</h3>
+    <p><strong>Total confirmé :</strong> <span id="totalCotisations">0 FCFA</span></p>
+    <p><strong>En attente :</strong> <span id="cotisationsEnAttente">0 FCFA</span></p>
+    <p><strong>Paiements confirmés :</strong> <span id="nombreCotisations">0</span></p>
+   </div>
+
+   <div class="card">
+    <h3>Mes dons</h3>
+    <p>Cette rubrique permettra de retrouver vos contributions et vos dons à l'association.</p>
+    <p><strong>Fonctionnalité en préparation.</strong></p>
+   </div>
+
+   <div class="card">
+    <h3>Informations AJUSP</h3>
+    <p>Retrouvez les actualités, les projets et les informations destinées aux membres.</p>
+   </div>
+  </div>
+
+  <!-- GESTION DES COTISATIONS -->
   <section class="section" id="treasurySection" hidden>
    <h2 class="section-title">Gestion des cotisations</h2>
    <div class="card">
     <p>Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.</p>
+
     <div class="stat-grid">
      <div class="stat-box">Montant confirmé<strong id="treasuryConfirmed">0 FCFA</strong></div>
      <div class="stat-box">Montant en attente<strong id="treasuryPending">0 FCFA</strong></div>
      <div class="stat-box">Paiements enregistrés<strong id="treasuryCount">0</strong></div>
     </div>
+
     <h3 id="cotFormTitle">Enregistrer une cotisation</h3>
     <form id="cotisationForm">
      <div class="treasury-form-grid">
@@ -45,128 +154,1261 @@
       <div class="form-group"><label for="cotMode">Mode de paiement</label><select id="cotMode"><option>Espèces</option><option>Mobile Money</option><option>Virement bancaire</option><option>Chèque</option><option>Autre</option></select></div>
       <div class="form-group"><label for="cotStatus">Statut *</label><select id="cotStatus" required><option value="confirmee">Paiement confirmé</option><option value="en_attente">En attente</option><option value="annulee">Annulé</option></select></div>
      </div>
-     <div class="form-group"><label for="cotDescription">Observation (facultatif)</label><textarea id="cotDescription" placeholder="Précision sur le paiement..." style="min-height:75px"></textarea></div>
-     <div class="form-actions"><button type="submit" class="primary-btn" id="saveCotBtn">Enregistrer la cotisation</button><button type="button" class="secondary-btn" id="cancelCotEdit" hidden>Annuler la modification</button></div>
+
+     <div class="form-group">
+      <label for="cotDescription">Observation (facultatif)</label>
+      <textarea id="cotDescription" placeholder="Précision sur le paiement..." style="min-height:75px"></textarea>
+     </div>
+
+     <div class="form-actions">
+      <button type="submit" class="primary-btn" id="saveCotBtn">Enregistrer la cotisation</button>
+      <button type="button" class="secondary-btn" id="cancelCotEdit" hidden>Annuler la modification</button>
+     </div>
      <p id="treasuryMessage" role="status"></p>
     </form>
+
     <h3>Historique général des cotisations</h3>
-    <div class="table-wrap"><table class="cotisations-table"><thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="treasuryList"></tbody></table></div>
+    <div class="table-wrap">
+     <table class="cotisations-table">
+      <thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="treasuryList"></tbody>
+     </table>
+    </div>
    </div>
   </section>
 
   <!-- HISTORIQUE PERSONNEL -->
-  <section class="section" id="cotisationsSection"><h2 class="section-title">Historique de mes cotisations</h2><div class="card"><p id="cotisationsMessage">Chargement de vos cotisations...</p><div class="table-wrap"><table class="cotisations-table"><thead><tr><th>Période</th><th>Montant</th><th>Date de paiement</th><th>Mode de paiement</th><th>Statut</th></tr></thead><tbody id="cotisationsList"></tbody></table></div></div></section>
+  <section class="section" id="cotisationsSection">
+   <h2 class="section-title">Historique de mes cotisations</h2>
+   <div class="card">
+    <p id="cotisationsMessage">Chargement de vos cotisations...</p>
+    <div class="table-wrap">
+     <table class="cotisations-table">
+      <thead><tr><th>Période</th><th>Montant</th><th>Date de paiement</th><th>Mode de paiement</th><th>Statut</th></tr></thead>
+      <tbody id="cotisationsList"></tbody>
+     </table>
+    </div>
+   </div>
+  </section>
 
-  <!-- PUBLICATION DES ACTUALITÉS : équipe autorisée -->
-  <section class="section" id="publicationSection" hidden><h2 class="section-title">Gestion des actualités AJUSP</h2><div class="card"><h3 id="formTitle">Publier une actualité</h3>
-   <form id="newsForm">
-    <div class="form-group"><label for="newsTitle">Titre de l'actualité *</label><input type="text" id="newsTitle" maxlength="200" required placeholder="Ex. : Réunion de l'association"></div>
-    <div class="form-group"><label for="newsCategory">Catégorie</label><select id="newsCategory"><option value="Actualité">Actualité</option><option value="Événement">Événement</option><option value="Projet">Projet</option><option value="Communiqué">Communiqué</option><option value="Information">Information</option></select></div>
-    <div class="form-group"><label for="newsContent">Contenu de l'actualité *</label><textarea id="newsContent" required placeholder="Rédigez ici les informations à partager..."></textarea></div>
-    <div class="form-group"><label for="newsImage">Image de l'actualité</label><input type="file" id="newsImage" accept="image/jpeg,image/png,image/webp"><small>Formats acceptés : JPG, PNG et WEBP. Maximum : 5 Mo.</small><div id="imagePreview" style="margin-top:12px"></div></div>
-    <div class="form-group"><label for="newsStatus">État de l'actualité</label><select id="newsStatus"><option value="draft">Enregistrer comme brouillon</option><option value="published">Publier immédiatement</option></select></div>
-    <div class="form-actions"><button type="submit" class="primary-btn" id="saveNewsBtn">Enregistrer l'actualité</button><button type="button" class="secondary-btn" id="cancelEditBtn" hidden>Annuler la modification</button></div><p id="editorMessage" role="status"></p>
-   </form>
-  </div></section>
-  <section class="section"><h2 class="section-title">Actualités de l'AJUSP</h2><div id="newsMessage">Chargement des actualités...</div><div class="news-list" id="newsList"></div></section>
+  <!-- GESTION DES ACTUALITÉS -->
+  <section class="section" id="publicationSection" hidden>
+   <h2 class="section-title">Gestion des actualités AJUSP</h2>
+   <div class="card">
+    <h3 id="formTitle">Publier une actualité</h3>
+    <form id="newsForm">
+     <div class="form-group"><label for="newsTitle">Titre de l'actualité *</label><input type="text" id="newsTitle" maxlength="200" required placeholder="Ex. : Réunion de l'association"></div>
+     <div class="form-group"><label for="newsCategory">Catégorie</label><select id="newsCategory"><option value="Actualité">Actualité</option><option value="Événement">Événement</option><option value="Projet">Projet</option><option value="Communiqué">Communiqué</option><option value="Information">Information</option></select></div>
+     <div class="form-group"><label for="newsContent">Contenu de l'actualité *</label><textarea id="newsContent" required placeholder="Rédigez ici les informations à partager..."></textarea></div>
+     <div class="form-group">
+      <label for="newsImage">Image de l'actualité</label>
+      <input type="file" id="newsImage" accept="image/jpeg,image/png,image/webp">
+      <small>Formats acceptés : JPG, PNG et WEBP. Maximum : 5 Mo.</small>
+      <div id="imagePreview" style="margin-top:12px"></div>
+     </div>
+     <div class="form-group"><label for="newsStatus">État de l'actualité</label><select id="newsStatus"><option value="draft">Enregistrer comme brouillon</option><option value="published">Publier immédiatement</option></select></div>
+     <div class="form-actions">
+      <button type="submit" class="primary-btn" id="saveNewsBtn">Enregistrer l'actualité</button>
+      <button type="button" class="secondary-btn" id="cancelEditBtn" hidden>Annuler la modification</button>
+     </div>
+     <p id="editorMessage" role="status"></p>
+    </form>
+   </div>
+  </section>
+
+  <!-- NOUVELLE RUBRIQUE : GESTION DE LA GALERIE -->
+  <section class="section" id="galleryManagementSection" hidden>
+   <h2 class="section-title">Gestion de la galerie AJUSP</h2>
+   <div class="card">
+    <h3 id="galleryFormTitle">Ajouter une photo ou une vidéo</h3>
+
+    <div class="gallery-help">
+     Cette rubrique est réservée au secrétaire général, au secrétaire général adjoint, au responsable communication et au membre communication.
+     <br>Les médias enregistrés comme brouillons ne sont visibles que par les responsables autorisés.
+    </div>
+
+    <form id="galleryForm">
+     <div class="form-group">
+      <label for="galleryTitle">Titre du média *</label>
+      <input type="text" id="galleryTitle" maxlength="200" required placeholder="Ex. : Journée de mobilisation communautaire">
+     </div>
+
+     <div class="form-group">
+      <label for="galleryDescription">Description</label>
+      <textarea id="galleryDescription" placeholder="Ajoutez une description ou un commentaire sur ce média..." style="min-height:100px"></textarea>
+     </div>
+
+     <div class="form-group">
+      <label for="galleryType">Type de média *</label>
+      <select id="galleryType" required>
+       <option value="image">Photo / Image</option>
+       <option value="video">Vidéo à télécharger</option>
+       <option value="youtube">Vidéo YouTube</option>
+      </select>
+     </div>
+
+     <div class="form-group" id="galleryFileGroup">
+      <label for="galleryFile">Choisir le fichier *</label>
+      <input type="file" id="galleryFile" accept="image/jpeg,image/png,image/webp">
+      <small id="galleryFileHelp">Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.</small>
+     </div>
+
+     <div class="form-group" id="galleryYoutubeGroup" hidden>
+      <label for="galleryYoutubeUrl">Lien de la vidéo YouTube *</label>
+      <input type="url" id="galleryYoutubeUrl" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+      <small>Collez le lien de partage de votre vidéo YouTube.</small>
+     </div>
+
+     <div id="galleryPreview" style="margin:12px 0"></div>
+
+     <div class="form-group">
+      <label for="galleryStatus">État du média</label>
+      <select id="galleryStatus">
+       <option value="draft">Enregistrer comme brouillon</option>
+       <option value="published">Publier immédiatement</option>
+      </select>
+     </div>
+
+     <div class="form-actions">
+      <button type="submit" class="primary-btn" id="saveGalleryBtn">Enregistrer le média</button>
+      <button type="button" class="secondary-btn" id="cancelGalleryEdit" hidden>Annuler la modification</button>
+     </div>
+     <p id="galleryMessage" role="status"></p>
+    </form>
+
+    <h3 style="margin-top:30px">Médias enregistrés</h3>
+    <p class="small-note">Vous pouvez modifier, publier, dépublier ou supprimer chaque média.</p>
+    <div id="galleryAdminList" class="gallery-admin-list"></div>
+   </div>
+  </section>
+
+  <!-- LISTE DES ACTUALITÉS -->
+  <section class="section">
+   <h2 class="section-title">Actualités de l'AJUSP</h2>
+   <div id="newsMessage">Chargement des actualités...</div>
+   <div class="news-list" id="newsList"></div>
+  </section>
+
   <div class="notice">Votre espace membre est actif. Les fonctionnalités seront progressivement mises à votre disposition.</div>
  </section>
 </main>
+
 <footer>© AJUSP Pindikro - Ensemble pour un avenir meilleur</footer>
+
 <script>
 (async function(){
+
  const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
  const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
  const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
  const $=id=>document.getElementById(id);
- const message=$("message"),content=$("memberContent"),publicationSection=$("publicationSection");
- const newsList=$("newsList"),newsMessage=$("newsMessage"),editorMessage=$("editorMessage");
- const cotisationsMessage=$("cotisationsMessage"),cotisationsList=$("cotisationsList");
- const treasurySection=$("treasurySection"),treasuryMessage=$("treasuryMessage"),treasuryList=$("treasuryList");
- const communicationFunctions=["secretaire_general","secretaire_general_adjoint","responsable_communication","membre_communication"];
+ const message=$("message");
+ const content=$("memberContent");
+ const publicationSection=$("publicationSection");
+ const galleryManagementSection=$("galleryManagementSection");
+ const newsList=$("newsList");
+ const newsMessage=$("newsMessage");
+ const editorMessage=$("editorMessage");
+ const cotisationsMessage=$("cotisationsMessage");
+ const cotisationsList=$("cotisationsList");
+ const treasurySection=$("treasurySection");
+ const treasuryMessage=$("treasuryMessage");
+ const treasuryList=$("treasuryList");
+ const galleryAdminList=$("galleryAdminList");
+ const galleryMessage=$("galleryMessage");
+
+ const communicationFunctions=[
+  "secretaire_general",
+  "secretaire_general_adjoint",
+  "responsable_communication",
+  "membre_communication"
+ ];
  const treasuryFunctions=["tresorier","adjoint_tresorier"];
- let currentUser=null,canPublish=false,canManageTreasury=false,editingNewsId=null,existingImageUrl=null,editingCotisationId=null,memberProfiles=[];
- const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
+
+ let currentUser=null;
+ let canPublish=false;
+ let canManageTreasury=false;
+ let editingNewsId=null;
+ let existingImageUrl=null;
+ let editingCotisationId=null;
+ let memberProfiles=[];
+ let editingGalleryId=null;
+ let existingGalleryUrl=null;
+ let existingGalleryType=null;
+
+ const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,char=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ }[char]));
+
  const formatDate=date=>date?new Date(date+(/^\d{4}-\d{2}-\d{2}$/.test(date)?"T00:00:00":"")).toLocaleDateString("fr-FR"):"";
  const formatFCFA=amount=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(Number(amount)||0)+" FCFA";
- const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
- $("logoutBtn").addEventListener("click",async()=>{await client.auth.signOut();location.href="connexion.html"});
+ const today=()=>{
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+ };
+
+ $("logoutBtn").addEventListener("click",async()=>{
+  await client.auth.signOut();
+  location.href="connexion.html";
+ });
  $("dashboardBtn").addEventListener("click",()=>location.href="dashboard.html");
+
  const {data:sessionData,error:sessionError}=await client.auth.getSession();
- if(sessionError||!sessionData.session){location.href="connexion.html";return}
+ if(sessionError||!sessionData.session){
+  location.href="connexion.html";
+  return;
+ }
+
  currentUser=sessionData.session.user;
- const {data:profile,error:profileError}=await client.from("profiles").select("full_name,role,status,fonction").eq("id",currentUser.id).single();
- if(profileError||!profile){message.textContent="Impossible de récupérer votre profil. Veuillez contacter l'administration.";return}
- if(profile.status!=="active"){await client.auth.signOut();message.textContent="Votre compte n'est pas actif. Veuillez contacter l'administration.";return}
- $("memberName").textContent=profile.full_name||"Membre";$("profileName").textContent=profile.full_name||"Non renseigné";$("profileEmail").textContent=currentUser.email||"Non renseigné";$("profileRole").textContent=profile.role||"member";$("profileFunction").textContent=profile.fonction||"Non renseignée";$("profileStatus").textContent="Actif";
- if(profile.role==="admin"||profile.role==="secretary")$("dashboardBtn").hidden=false;
+
+ const {data:profile,error:profileError}=await client
+  .from("profiles")
+  .select("full_name,role,status,fonction")
+  .eq("id",currentUser.id)
+  .single();
+
+ if(profileError||!profile){
+  message.textContent="Impossible de récupérer votre profil. Veuillez contacter l'administration.";
+  return;
+ }
+
+ if(profile.status!=="active"){
+  await client.auth.signOut();
+  message.textContent="Votre compte n'est pas actif. Veuillez contacter l'administration.";
+  return;
+ }
+
+ $("memberName").textContent=profile.full_name||"Membre";
+ $("profileName").textContent=profile.full_name||"Non renseigné";
+ $("profileEmail").textContent=currentUser.email||"Non renseigné";
+ $("profileRole").textContent=profile.role||"member";
+ $("profileFunction").textContent=profile.fonction||"Non renseignée";
+ $("profileStatus").textContent="Actif";
+
+ if(profile.role==="admin"||profile.role==="secretary"){
+  $("dashboardBtn").hidden=false;
+ }
+
  canPublish=communicationFunctions.includes(profile.fonction);
  canManageTreasury=treasuryFunctions.includes(profile.fonction);
- if(canPublish)publicationSection.hidden=false;
- if(canManageTreasury){treasurySection.hidden=false;$("cotDate").value=today()}
- message.hidden=true;content.hidden=false;
 
- // Cotisations personnelles du membre connecté
+ if(canPublish){
+  publicationSection.hidden=false;
+  galleryManagementSection.hidden=false;
+ }
+
+ if(canManageTreasury){
+  treasurySection.hidden=false;
+  $("cotDate").value=today();
+ }
+
+ message.hidden=true;
+ content.hidden=false;
+
+ // --------------------------------------------------
+ // COTISATIONS PERSONNELLES
+ // --------------------------------------------------
+
  async function loadCotisations(){
-  cotisationsMessage.textContent="Chargement de vos cotisations...";cotisationsList.innerHTML="";
-  const {data,error}=await client.from("cotisations").select("id,montant,periode,date_paiement,mode_paiement,statut").eq("member_id",currentUser.id).order("date_paiement",{ascending:false});
-  if(error){cotisationsMessage.textContent="Impossible de charger vos cotisations : "+error.message;return}
-  const rows=data||[],confirmed=rows.filter(x=>x.statut==="confirmee"),pending=rows.filter(x=>x.statut==="en_attente");
-  $("totalCotisations").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));$("cotisationsEnAttente").textContent=formatFCFA(pending.reduce((s,x)=>s+Number(x.montant||0),0));$("nombreCotisations").textContent=String(confirmed.length);
-  if(!rows.length){cotisationsMessage.textContent="Aucune cotisation n'a encore été enregistrée à votre nom.";return}
-  cotisationsMessage.textContent="Retrouvez ci-dessous l'historique de vos paiements.";
-  rows.forEach(item=>{const tr=document.createElement("tr");const st=statusInfo(item.statut);tr.innerHTML=`<td>${escapeHTML(item.periode||"—")}</td><td>${escapeHTML(formatFCFA(item.montant))}</td><td>${escapeHTML(formatDate(item.date_paiement)||"—")}</td><td>${escapeHTML(item.mode_paiement||"—")}</td><td><span class="payment-status ${st.cls}">${st.label}</span></td>`;cotisationsList.appendChild(tr)});
- }
- function statusInfo(status){if(status==="confirmee")return{label:"Confirmée",cls:"payment-confirmed"};if(status==="en_attente")return{label:"En attente",cls:"payment-pending"};return{label:"Annulée",cls:"payment-cancelled"}}
+  cotisationsMessage.textContent="Chargement de vos cotisations...";
+  cotisationsList.innerHTML="";
 
- // Outils du trésorier dans l'espace membre
- async function loadTreasuryMembers(){
-  const select=$("cotMember");select.innerHTML='<option value="">Chargement des membres...</option>';
-  const {data,error}=await client.from("profiles").select("id,full_name").eq("status","active").order("full_name",{ascending:true});
-  if(error){select.innerHTML='<option value="">Liste indisponible</option>';treasuryMessage.textContent="Impossible de charger les membres : "+error.message;return}
-  memberProfiles=data||[];select.innerHTML='<option value="">Sélectionner un membre</option>';
-  memberProfiles.forEach(p=>{const opt=document.createElement("option");opt.value=p.id;opt.textContent=p.full_name||"Membre sans nom";select.appendChild(opt)});
+  const {data,error}=await client
+   .from("cotisations")
+   .select("id,montant,periode,date_paiement,mode_paiement,statut")
+   .eq("member_id",currentUser.id)
+   .order("date_paiement",{ascending:false});
+
+  if(error){
+   cotisationsMessage.textContent="Impossible de charger vos cotisations : "+error.message;
+   return;
+  }
+
+  const rows=data||[];
+  const confirmed=rows.filter(x=>x.statut==="confirmee");
+  const pending=rows.filter(x=>x.statut==="en_attente");
+
+  $("totalCotisations").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));
+  $("cotisationsEnAttente").textContent=formatFCFA(pending.reduce((s,x)=>s+Number(x.montant||0),0));
+  $("nombreCotisations").textContent=String(confirmed.length);
+
+  if(!rows.length){
+   cotisationsMessage.textContent="Aucune cotisation n'a encore été enregistrée à votre nom.";
+   return;
+  }
+
+  cotisationsMessage.textContent="Retrouvez ci-dessous l'historique de vos paiements.";
+
+  rows.forEach(item=>{
+   const tr=document.createElement("tr");
+   const st=statusInfo(item.statut);
+   tr.innerHTML=`
+    <td>${escapeHTML(item.periode||"—")}</td>
+    <td>${escapeHTML(formatFCFA(item.montant))}</td>
+    <td>${escapeHTML(formatDate(item.date_paiement)||"—")}</td>
+    <td>${escapeHTML(item.mode_paiement||"—")}</td>
+    <td><span class="payment-status ${st.cls}">${st.label}</span></td>`;
+   cotisationsList.appendChild(tr);
+  });
  }
+
+ function statusInfo(status){
+  if(status==="confirmee")return{label:"Confirmée",cls:"payment-confirmed"};
+  if(status==="en_attente")return{label:"En attente",cls:"payment-pending"};
+  return{label:"Annulée",cls:"payment-cancelled"};
+ }
+
+ // --------------------------------------------------
+ // GESTION DES COTISATIONS PAR LE TRÉSORIER
+ // --------------------------------------------------
+
+ async function loadTreasuryMembers(){
+  const select=$("cotMember");
+  select.innerHTML='<option value="">Chargement des membres...</option>';
+
+  const {data,error}=await client
+   .from("profiles")
+   .select("id,full_name")
+   .eq("status","active")
+   .order("full_name",{ascending:true});
+
+  if(error){
+   select.innerHTML='<option value="">Liste indisponible</option>';
+   treasuryMessage.textContent="Impossible de charger les membres : "+error.message;
+   return;
+  }
+
+  memberProfiles=data||[];
+  select.innerHTML='<option value="">Sélectionner un membre</option>';
+
+  memberProfiles.forEach(p=>{
+   const opt=document.createElement("option");
+   opt.value=p.id;
+   opt.textContent=p.full_name||"Membre sans nom";
+   select.appendChild(opt);
+  });
+ }
+
  async function loadTreasury(){
   if(!canManageTreasury)return;
-  treasuryMessage.textContent="Actualisation des cotisations...";treasuryList.innerHTML="";
-  const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,profiles(full_name)").order("date_paiement",{ascending:false});
-  if(error){treasuryMessage.textContent="Erreur de chargement : "+error.message;return}
-  const rows=data||[],confirmed=rows.filter(x=>x.statut==="confirmee"),pending=rows.filter(x=>x.statut==="en_attente");
-  $("treasuryConfirmed").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));$("treasuryPending").textContent=formatFCFA(pending.reduce((s,x)=>s+Number(x.montant||0),0));$("treasuryCount").textContent=String(rows.length);
-  if(!rows.length){treasuryList.innerHTML='<tr><td colspan="7">Aucune cotisation enregistrée pour le moment.</td></tr>';treasuryMessage.textContent="Aucune cotisation enregistrée.";return}
+
+  treasuryMessage.textContent="Actualisation des cotisations...";
+  treasuryList.innerHTML="";
+
+  const {data,error}=await client
+   .from("cotisations")
+   .select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,profiles(full_name)")
+   .order("date_paiement",{ascending:false});
+
+  if(error){
+   treasuryMessage.textContent="Erreur de chargement : "+error.message;
+   return;
+  }
+
+  const rows=data||[];
+  const confirmed=rows.filter(x=>x.statut==="confirmee");
+  const pending=rows.filter(x=>x.statut==="en_attente");
+
+  $("treasuryConfirmed").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));
+  $("treasuryPending").textContent=formatFCFA(pending.reduce((s,x)=>s+Number(x.montant||0),0));
+  $("treasuryCount").textContent=String(rows.length);
+
+  if(!rows.length){
+   treasuryList.innerHTML='<tr><td colspan="7">Aucune cotisation enregistrée pour le moment.</td></tr>';
+   treasuryMessage.textContent="Aucune cotisation enregistrée.";
+   return;
+  }
+
   treasuryMessage.textContent=rows.length+" cotisation(s) enregistrée(s).";
-  rows.forEach(item=>{const tr=document.createElement("tr"),st=statusInfo(item.statut);tr.innerHTML=`<td>${escapeHTML(item.profiles?.full_name||"Membre")}</td><td>${escapeHTML(item.periode||"—")}</td><td>${escapeHTML(formatFCFA(item.montant))}</td><td>${escapeHTML(formatDate(item.date_paiement)||"—")}</td><td>${escapeHTML(item.mode_paiement||"—")}</td><td><span class="payment-status ${st.cls}">${st.label}</span></td><td><button type="button" class="secondary-btn edit-cot" data-id="${escapeHTML(item.id)}">Modifier</button> <button type="button" class="danger-btn delete-cot" data-id="${escapeHTML(item.id)}">Supprimer</button></td>`;treasuryList.appendChild(tr)});
-  treasuryList.querySelectorAll(".edit-cot").forEach(btn=>btn.addEventListener("click",()=>editCotisation(btn.dataset.id,rows)));
-  treasuryList.querySelectorAll(".delete-cot").forEach(btn=>btn.addEventListener("click",()=>deleteCotisation(btn.dataset.id)));
+
+  rows.forEach(item=>{
+   const tr=document.createElement("tr");
+   const st=statusInfo(item.statut);
+
+   tr.innerHTML=`
+    <td>${escapeHTML(item.profiles?.full_name||"Membre")}</td>
+    <td>${escapeHTML(item.periode||"—")}</td>
+    <td>${escapeHTML(formatFCFA(item.montant))}</td>
+    <td>${escapeHTML(formatDate(item.date_paiement)||"—")}</td>
+    <td>${escapeHTML(item.mode_paiement||"—")}</td>
+    <td><span class="payment-status ${st.cls}">${st.label}</span></td>
+    <td>
+     <button type="button" class="secondary-btn edit-cot" data-id="${escapeHTML(item.id)}">Modifier</button>
+     <button type="button" class="danger-btn delete-cot" data-id="${escapeHTML(item.id)}">Supprimer</button>
+    </td>`;
+
+   treasuryList.appendChild(tr);
+  });
+
+  treasuryList.querySelectorAll(".edit-cot").forEach(btn=>{
+   btn.addEventListener("click",()=>editCotisation(btn.dataset.id,rows));
+  });
+
+  treasuryList.querySelectorAll(".delete-cot").forEach(btn=>{
+   btn.addEventListener("click",()=>deleteCotisation(btn.dataset.id));
+  });
  }
- function resetCotisationForm(){editingCotisationId=null;$("cotisationForm").reset();$("cotDate").value=today();$("cotFormTitle").textContent="Enregistrer une cotisation";$("saveCotBtn").textContent="Enregistrer la cotisation";$("cancelCotEdit").hidden=true}
- function editCotisation(id,rows){const item=rows.find(x=>String(x.id)===String(id));if(!item)return;editingCotisationId=item.id;$("cotMember").value=item.member_id;$("cotAmount").value=item.montant;$("cotPeriod").value=item.periode||"";$("cotDate").value=item.date_paiement||today();$("cotMode").value=item.mode_paiement||"Espèces";$("cotStatus").value=item.statut;$("cotDescription").value=item.description||"";$("cotFormTitle").textContent="Modifier une cotisation";$("saveCotBtn").textContent="Enregistrer les modifications";$("cancelCotEdit").hidden=false;treasurySection.scrollIntoView({behavior:"smooth"});treasuryMessage.textContent="Modification de la cotisation sélectionnée."}
- $("cancelCotEdit").addEventListener("click",()=>{resetCotisationForm();treasuryMessage.textContent="Modification annulée."});
- $("cotisationForm").addEventListener("submit",async event=>{
-  event.preventDefault();if(!canManageTreasury){treasuryMessage.textContent="Vous n'êtes pas autorisé à gérer les cotisations.";return}
-  const memberId=$("cotMember").value,amount=Number($("cotAmount").value),period=$("cotPeriod").value.trim();
-  if(!memberId||!Number.isFinite(amount)||amount<=0||!period){treasuryMessage.textContent="Veuillez renseigner le membre, un montant valide et la période.";return}
-  const button=$("saveCotBtn");button.disabled=true;button.textContent="Enregistrement...";treasuryMessage.textContent="";
-  const payload={member_id:memberId,montant:amount,periode:period,date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
-  try{let result;if(editingCotisationId)result=await client.from("cotisations").update(payload).eq("id",editingCotisationId);else result=await client.from("cotisations").insert(payload);if(result.error)throw result.error;treasuryMessage.textContent=editingCotisationId?"La cotisation a été modifiée avec succès.":"La cotisation a été enregistrée avec succès.";resetCotisationForm();await Promise.all([loadTreasury(),loadCotisations()])}catch(error){treasuryMessage.textContent="Erreur lors de l'enregistrement : "+error.message}finally{button.disabled=false;button.textContent=editingCotisationId?"Enregistrer les modifications":"Enregistrer la cotisation"}
+
+ function resetCotisationForm(){
+  editingCotisationId=null;
+  $("cotisationForm").reset();
+  $("cotDate").value=today();
+  $("cotFormTitle").textContent="Enregistrer une cotisation";
+  $("saveCotBtn").textContent="Enregistrer la cotisation";
+  $("cancelCotEdit").hidden=true;
+ }
+
+ function editCotisation(id,rows){
+  const item=rows.find(x=>String(x.id)===String(id));
+  if(!item)return;
+
+  editingCotisationId=item.id;
+  $("cotMember").value=item.member_id;
+  $("cotAmount").value=item.montant;
+  $("cotPeriod").value=item.periode||"";
+  $("cotDate").value=item.date_paiement||today();
+  $("cotMode").value=item.mode_paiement||"Espèces";
+  $("cotStatus").value=item.statut;
+  $("cotDescription").value=item.description||"";
+  $("cotFormTitle").textContent="Modifier une cotisation";
+  $("saveCotBtn").textContent="Enregistrer les modifications";
+  $("cancelCotEdit").hidden=false;
+  treasurySection.scrollIntoView({behavior:"smooth"});
+  treasuryMessage.textContent="Modification de la cotisation sélectionnée.";
+ }
+
+ $("cancelCotEdit").addEventListener("click",()=>{
+  resetCotisationForm();
+  treasuryMessage.textContent="Modification annulée.";
  });
- async function deleteCotisation(id){if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;const {error}=await client.from("cotisations").delete().eq("id",id);if(error){treasuryMessage.textContent="Erreur lors de la suppression : "+error.message;return}treasuryMessage.textContent="Cotisation supprimée.";await Promise.all([loadTreasury(),loadCotisations()])}
 
- // Actualités
- async function loadNews(){newsMessage.textContent="Chargement des actualités...";newsList.innerHTML="";const {data,error}=await client.from("news").select("*").order("created_at",{ascending:false});if(error){newsMessage.textContent="Impossible de charger les actualités : "+error.message;return}if(!data||!data.length){newsMessage.textContent="Aucune actualité disponible pour le moment.";return}newsMessage.textContent="";
-  data.forEach(news=>{const card=document.createElement("article");card.className="news-card";const image=news.image_url?`<img src="${escapeHTML(news.image_url)}" alt="Image de l'actualité">`:"";const status=news.is_published?'<span class="status-published">Publié</span>':'<span class="status-draft">Brouillon</span>';const actions=canPublish?`<div class="news-actions"><button type="button" class="secondary-btn edit-news" data-id="${escapeHTML(news.id)}">Modifier</button><button type="button" class="danger-btn delete-news" data-id="${escapeHTML(news.id)}">Supprimer</button></div>`:"";card.innerHTML=`${image}<div class="news-body"><div class="news-meta">${escapeHTML(news.category||"Actualité")} · ${escapeHTML(formatDate(news.created_at))}</div><h3>${escapeHTML(news.title)}</h3><div>${status}</div><p class="news-content">${escapeHTML(news.content)}</p>${actions}</div>`;newsList.appendChild(card)});
-  if(canPublish){newsList.querySelectorAll(".edit-news").forEach(btn=>btn.addEventListener("click",()=>editNews(btn.dataset.id,data)));newsList.querySelectorAll(".delete-news").forEach(btn=>btn.addEventListener("click",()=>deleteNews(btn.dataset.id)))}
+ $("cotisationForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  if(!canManageTreasury){
+   treasuryMessage.textContent="Vous n'êtes pas autorisé à gérer les cotisations.";
+   return;
+  }
+
+  const memberId=$("cotMember").value;
+  const amount=Number($("cotAmount").value);
+  const period=$("cotPeriod").value.trim();
+
+  if(!memberId||!Number.isFinite(amount)||amount<=0||!period){
+   treasuryMessage.textContent="Veuillez renseigner le membre, un montant valide et la période.";
+   return;
+  }
+
+  const button=$("saveCotBtn");
+  button.disabled=true;
+  button.textContent="Enregistrement...";
+  treasuryMessage.textContent="";
+
+  const payload={
+   member_id:memberId,
+   montant:amount,
+   periode:period,
+   date_paiement:$("cotDate").value,
+   mode_paiement:$("cotMode").value,
+   statut:$("cotStatus").value,
+   description:$("cotDescription").value.trim()||null
+  };
+
+  try{
+   let result;
+
+   if(editingCotisationId){
+    result=await client.from("cotisations").update(payload).eq("id",editingCotisationId);
+   }else{
+    result=await client.from("cotisations").insert(payload);
+   }
+
+   if(result.error)throw result.error;
+
+   treasuryMessage.textContent=editingCotisationId
+    ?"La cotisation a été modifiée avec succès."
+    :"La cotisation a été enregistrée avec succès.";
+
+   resetCotisationForm();
+   await Promise.all([loadTreasury(),loadCotisations()]);
+
+  }catch(error){
+   treasuryMessage.textContent="Erreur lors de l'enregistrement : "+error.message;
+  }finally{
+   button.disabled=false;
+   button.textContent=editingCotisationId?"Enregistrer les modifications":"Enregistrer la cotisation";
+  }
+ });
+
+ async function deleteCotisation(id){
+  if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;
+
+  const {error}=await client.from("cotisations").delete().eq("id",id);
+
+  if(error){
+   treasuryMessage.textContent="Erreur lors de la suppression : "+error.message;
+   return;
+  }
+
+  treasuryMessage.textContent="Cotisation supprimée.";
+  await Promise.all([loadTreasury(),loadCotisations()]);
  }
- $("newsImage").addEventListener("change",function(){const file=this.files[0],preview=$("imagePreview");preview.innerHTML="";if(!file)return;if(!["image/jpeg","image/png","image/webp"].includes(file.type)){editorMessage.textContent="Format d'image non accepté.";this.value="";return}if(file.size>5*1024*1024){editorMessage.textContent="L'image ne doit pas dépasser 5 Mo.";this.value="";return}const img=document.createElement("img");img.src=URL.createObjectURL(file);img.alt="Aperçu";img.style.maxWidth="220px";img.style.maxHeight="160px";img.style.borderRadius="8px";preview.appendChild(img)});
- $("newsForm").addEventListener("submit",async event=>{event.preventDefault();if(!canPublish){editorMessage.textContent="Vous n'êtes pas autorisé à publier.";return}const button=$("saveNewsBtn"),file=$("newsImage").files[0],title=$("newsTitle").value.trim(),category=$("newsCategory").value,text=$("newsContent").value.trim(),published=$("newsStatus").value==="published";if(!title||!text){editorMessage.textContent="Veuillez renseigner le titre et le contenu.";return}if(file&&(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024)){editorMessage.textContent="Image invalide : formats JPG, PNG ou WEBP, 5 Mo maximum.";return}button.disabled=true;button.textContent="Enregistrement en cours...";let imageUrl=existingImageUrl;try{if(file){const ext=file.name.split(".").pop().toLowerCase(),safeExt=["jpg","jpeg","png","webp"].includes(ext)?ext:"jpg",path=currentUser.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+safeExt;const {error:uploadError}=await client.storage.from("news-images").upload(path,file,{contentType:file.type,upsert:false});if(uploadError)throw uploadError;imageUrl=client.storage.from("news-images").getPublicUrl(path).data.publicUrl}const payload={title,category,content:text,image_url:imageUrl,is_published:published,published_at:published?new Date().toISOString():null};let result=editingNewsId?await client.from("news").update(payload).eq("id",editingNewsId):await client.from("news").insert(payload);if(result.error)throw result.error;editorMessage.textContent=editingNewsId?"L'actualité a été modifiée avec succès.":"L'actualité a été enregistrée avec succès.";resetNewsForm();await loadNews()}catch(error){editorMessage.textContent="Erreur lors de l'enregistrement : "+error.message}finally{button.disabled=false;button.textContent="Enregistrer l'actualité"}});
- function editNews(id,items){const news=items.find(x=>String(x.id)===String(id));if(!news)return;editingNewsId=news.id;existingImageUrl=news.image_url||null;$("newsTitle").value=news.title||"";$("newsCategory").value=news.category||"Actualité";$("newsContent").value=news.content||"";$("newsStatus").value=news.is_published?"published":"draft";$("newsImage").value="";$("imagePreview").innerHTML=existingImageUrl?`<p>Image actuelle conservée si vous ne choisissez pas une nouvelle image.</p><img src="${escapeHTML(existingImageUrl)}" alt="Image actuelle" style="max-width:220px;max-height:160px;border-radius:8px">`:"";$("formTitle").textContent="Modifier une actualité";$("saveNewsBtn").textContent="Enregistrer les modifications";$("cancelEditBtn").hidden=false;publicationSection.scrollIntoView({behavior:"smooth"});editorMessage.textContent="Modification de l'actualité sélectionnée."}
- function resetNewsForm(){$("newsForm").reset();editingNewsId=null;existingImageUrl=null;$("formTitle").textContent="Publier une actualité";$("saveNewsBtn").textContent="Enregistrer l'actualité";$("cancelEditBtn").hidden=true;$("imagePreview").innerHTML=""}
- $("cancelEditBtn").addEventListener("click",()=>{resetNewsForm();editorMessage.textContent=""});
- async function deleteNews(id){if(!confirm("Voulez-vous vraiment supprimer cette actualité ?"))return;const {error}=await client.from("news").delete().eq("id",id);if(error){alert("Erreur lors de la suppression : "+error.message);return}alert("L'actualité a été supprimée.");await loadNews()}
 
- await Promise.all([loadCotisations(),loadNews()]);
- if(canManageTreasury){await loadTreasuryMembers();await loadTreasury()}
+ // --------------------------------------------------
+ // GESTION DES ACTUALITÉS
+ // --------------------------------------------------
+
+ async function loadNews(){
+  newsMessage.textContent="Chargement des actualités...";
+  newsList.innerHTML="";
+
+  const {data,error}=await client
+   .from("news")
+   .select("*")
+   .order("created_at",{ascending:false});
+
+  if(error){
+   newsMessage.textContent="Impossible de charger les actualités : "+error.message;
+   return;
+  }
+
+  if(!data||!data.length){
+   newsMessage.textContent="Aucune actualité disponible pour le moment.";
+   return;
+  }
+
+  newsMessage.textContent="";
+
+  data.forEach(news=>{
+   const card=document.createElement("article");
+   card.className="news-card";
+
+   const image=news.image_url
+    ?`<img src="${escapeHTML(news.image_url)}" alt="Image de l'actualité">`
+    :"";
+
+   const status=news.is_published
+    ?'<span class="status-published">Publié</span>'
+    :'<span class="status-draft">Brouillon</span>';
+
+   const actions=canPublish
+    ?`<div class="news-actions">
+       <button type="button" class="secondary-btn edit-news" data-id="${escapeHTML(news.id)}">Modifier</button>
+       <button type="button" class="danger-btn delete-news" data-id="${escapeHTML(news.id)}">Supprimer</button>
+      </div>`
+    :"";
+
+   card.innerHTML=`
+    ${image}
+    <div class="news-body">
+     <div class="news-meta">${escapeHTML(news.category||"Actualité")} · ${escapeHTML(formatDate(news.created_at))}</div>
+     <h3>${escapeHTML(news.title)}</h3>
+     <div>${status}</div>
+     <p class="news-content">${escapeHTML(news.content)}</p>
+     ${actions}
+    </div>`;
+
+   newsList.appendChild(card);
+  });
+
+  if(canPublish){
+   newsList.querySelectorAll(".edit-news").forEach(btn=>{
+    btn.addEventListener("click",()=>editNews(btn.dataset.id,data));
+   });
+
+   newsList.querySelectorAll(".delete-news").forEach(btn=>{
+    btn.addEventListener("click",()=>deleteNews(btn.dataset.id));
+   });
+  }
+ }
+
+ $("newsImage").addEventListener("change",function(){
+  const file=this.files[0];
+  const preview=$("imagePreview");
+  preview.innerHTML="";
+
+  if(!file)return;
+
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+   editorMessage.textContent="Format d'image non accepté.";
+   this.value="";
+   return;
+  }
+
+  if(file.size>5*1024*1024){
+   editorMessage.textContent="L'image ne doit pas dépasser 5 Mo.";
+   this.value="";
+   return;
+  }
+
+  const img=document.createElement("img");
+  img.src=URL.createObjectURL(file);
+  img.alt="Aperçu";
+  img.style.maxWidth="220px";
+  img.style.maxHeight="160px";
+  img.style.borderRadius="8px";
+  preview.appendChild(img);
+ });
+
+ $("newsForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  if(!canPublish){
+   editorMessage.textContent="Vous n'êtes pas autorisé à publier.";
+   return;
+  }
+
+  const button=$("saveNewsBtn");
+  const file=$("newsImage").files[0];
+  const title=$("newsTitle").value.trim();
+  const category=$("newsCategory").value;
+  const text=$("newsContent").value.trim();
+  const published=$("newsStatus").value==="published";
+
+  if(!title||!text){
+   editorMessage.textContent="Veuillez renseigner le titre et le contenu.";
+   return;
+  }
+
+  if(file&&(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024)){
+   editorMessage.textContent="Image invalide : formats JPG, PNG ou WEBP, 5 Mo maximum.";
+   return;
+  }
+
+  button.disabled=true;
+  button.textContent="Enregistrement en cours...";
+  let imageUrl=existingImageUrl;
+
+  try{
+   if(file){
+    const ext=file.name.split(".").pop().toLowerCase();
+    const safeExt=["jpg","jpeg","png","webp"].includes(ext)?ext:"jpg";
+    const path=currentUser.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+safeExt;
+
+    const {error:uploadError}=await client.storage
+     .from("news-images")
+     .upload(path,file,{contentType:file.type,upsert:false});
+
+    if(uploadError)throw uploadError;
+
+    imageUrl=client.storage.from("news-images").getPublicUrl(path).data.publicUrl;
+   }
+
+   const payload={
+    title,
+    category,
+    content:text,
+    image_url:imageUrl,
+    is_published:published,
+    published_at:published?new Date().toISOString():null
+   };
+
+   let result;
+
+   if(editingNewsId){
+    result=await client.from("news").update(payload).eq("id",editingNewsId);
+   }else{
+    result=await client.from("news").insert(payload);
+   }
+
+   if(result.error)throw result.error;
+
+   editorMessage.textContent=editingNewsId
+    ?"L'actualité a été modifiée avec succès."
+    :"L'actualité a été enregistrée avec succès.";
+
+   resetNewsForm();
+   await loadNews();
+
+  }catch(error){
+   editorMessage.textContent="Erreur lors de l'enregistrement : "+error.message;
+  }finally{
+   button.disabled=false;
+   button.textContent="Enregistrer l'actualité";
+  }
+ });
+
+ function editNews(id,items){
+  const news=items.find(x=>String(x.id)===String(id));
+  if(!news)return;
+
+  editingNewsId=news.id;
+  existingImageUrl=news.image_url||null;
+
+  $("newsTitle").value=news.title||"";
+  $("newsCategory").value=news.category||"Actualité";
+  $("newsContent").value=news.content||"";
+  $("newsStatus").value=news.is_published?"published":"draft";
+  $("newsImage").value="";
+
+  $("imagePreview").innerHTML=existingImageUrl
+   ?`<p>Image actuelle conservée si vous ne choisissez pas une nouvelle image.</p><img src="${escapeHTML(existingImageUrl)}" alt="Image actuelle" style="max-width:220px;max-height:160px;border-radius:8px">`
+   :"";
+
+  $("formTitle").textContent="Modifier une actualité";
+  $("saveNewsBtn").textContent="Enregistrer les modifications";
+  $("cancelEditBtn").hidden=false;
+  publicationSection.scrollIntoView({behavior:"smooth"});
+  editorMessage.textContent="Modification de l'actualité sélectionnée.";
+ }
+
+ function resetNewsForm(){
+  $("newsForm").reset();
+  editingNewsId=null;
+  existingImageUrl=null;
+  $("formTitle").textContent="Publier une actualité";
+  $("saveNewsBtn").textContent="Enregistrer l'actualité";
+  $("cancelEditBtn").hidden=true;
+  $("imagePreview").innerHTML="";
+ }
+
+ $("cancelEditBtn").addEventListener("click",()=>{
+  resetNewsForm();
+  editorMessage.textContent="";
+ });
+
+ async function deleteNews(id){
+  if(!confirm("Voulez-vous vraiment supprimer cette actualité ?"))return;
+
+  const {error}=await client.from("news").delete().eq("id",id);
+
+  if(error){
+   alert("Erreur lors de la suppression : "+error.message);
+   return;
+  }
+
+  alert("L'actualité a été supprimée.");
+  await loadNews();
+ }
+
+ // --------------------------------------------------
+ // GESTION DE LA GALERIE PHOTOS ET VIDÉOS
+ // --------------------------------------------------
+
+ function youtubeEmbed(url){
+  try{
+   const parsed=new URL(url);
+   let videoId="";
+
+   if(parsed.hostname==="youtu.be"){
+    videoId=parsed.pathname.slice(1).split("/")[0];
+   }else if(parsed.hostname.includes("youtube.com")){
+    if(parsed.pathname==="/watch"){
+     videoId=parsed.searchParams.get("v")||"";
+    }else if(parsed.pathname.startsWith("/embed/")){
+     videoId=parsed.pathname.split("/")[2]||"";
+    }else if(parsed.pathname.startsWith("/shorts/")){
+     videoId=parsed.pathname.split("/")[2]||"";
+    }
+   }
+
+   if(!/^[a-zA-Z0-9_-]{11}$/.test(videoId))return null;
+   return "https://www.youtube-nocookie.com/embed/"+videoId;
+
+  }catch(error){
+   return null;
+  }
+ }
+
+ function updateGalleryType(){
+  const type=$("galleryType").value;
+  const fileGroup=$("galleryFileGroup");
+  const youtubeGroup=$("galleryYoutubeGroup");
+  const fileInput=$("galleryFile");
+  const youtubeInput=$("galleryYoutubeUrl");
+  const help=$("galleryFileHelp");
+
+  $("galleryPreview").innerHTML="";
+
+  if(type==="youtube"){
+   fileGroup.hidden=true;
+   youtubeGroup.hidden=false;
+   fileInput.required=false;
+   youtubeInput.required=true;
+   fileInput.value="";
+  }else{
+   fileGroup.hidden=false;
+   youtubeGroup.hidden=true;
+   fileInput.required=!editingGalleryId;
+   youtubeInput.required=false;
+   youtubeInput.value="";
+
+   if(type==="image"){
+    fileInput.accept="image/jpeg,image/png,image/webp";
+    help.textContent="Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.";
+   }else{
+    fileInput.accept="video/mp4,video/webm";
+    help.textContent="Formats acceptés : MP4 et WEBM. Taille maximale actuelle : 5 Mo. Pour les vidéos plus longues, utilisez YouTube.";
+   }
+  }
+ }
+
+ $("galleryType").addEventListener("change",updateGalleryType);
+
+ $("galleryFile").addEventListener("change",function(){
+  const file=this.files[0];
+  const preview=$("galleryPreview");
+  preview.innerHTML="";
+
+  if(!file)return;
+
+  const type=$("galleryType").value;
+  const allowed=type==="image"
+   ?["image/jpeg","image/png","image/webp"]
+   :["video/mp4","video/webm"];
+
+  if(!allowed.includes(file.type)){
+   galleryMessage.textContent=type==="image"
+    ?"Format non accepté. Choisissez une image JPG, PNG ou WEBP."
+    :"Format vidéo non accepté. Choisissez une vidéo MP4 ou WEBM.";
+   this.value="";
+   return;
+  }
+
+  if(file.size>5*1024*1024){
+   galleryMessage.textContent="Le fichier dépasse la limite actuelle de 5 Mo du bucket ajusp-public. Pour une vidéo plus longue, utilisez un lien YouTube.";
+   this.value="";
+   return;
+  }
+
+  galleryMessage.textContent="";
+
+  const url=URL.createObjectURL(file);
+  let element;
+
+  if(type==="image"){
+   element=document.createElement("img");
+   element.src=url;
+   element.alt="Aperçu de la photo";
+  }else{
+   element=document.createElement("video");
+   element.src=url;
+   element.controls=true;
+  }
+
+  element.className="preview-media";
+  preview.appendChild(element);
+ });
+
+ $("galleryYoutubeUrl").addEventListener("input",function(){
+  const preview=$("galleryPreview");
+  preview.innerHTML="";
+  if(!this.value.trim())return;
+
+  const embed=youtubeEmbed(this.value.trim());
+
+  if(!embed){
+   galleryMessage.textContent="Le lien YouTube ne semble pas valide. Vérifiez le lien.";
+   return;
+  }
+
+  galleryMessage.textContent="";
+  const frame=document.createElement("iframe");
+  frame.src=embed;
+  frame.title="Aperçu de la vidéo YouTube";
+  frame.allowFullscreen=true;
+  frame.style.width="260px";
+  frame.style.height="150px";
+  frame.style.border="0";
+  frame.style.borderRadius="8px";
+  preview.appendChild(frame);
+ });
+
+ function mediaStoragePath(publicUrl){
+  if(!publicUrl)return null;
+
+  const marker="/storage/v1/object/public/ajusp-public/";
+  const position=publicUrl.indexOf(marker);
+
+  if(position===-1)return null;
+
+  return decodeURIComponent(publicUrl.substring(position+marker.length));
+ }
+
+ async function removeGalleryFile(publicUrl){
+  const path=mediaStoragePath(publicUrl);
+  if(!path||!path.startsWith("gallery/"))return;
+
+  const {error}=await client.storage.from("ajusp-public").remove([path]);
+
+  if(error){
+   console.warn("Le média a été retiré de la galerie, mais le fichier n'a pas pu être supprimé du stockage :",error.message);
+  }
+ }
+
+ function resetGalleryForm(){
+  editingGalleryId=null;
+  existingGalleryUrl=null;
+  existingGalleryType=null;
+
+  $("galleryForm").reset();
+  $("galleryType").value="image";
+  $("galleryStatus").value="draft";
+  $("galleryFormTitle").textContent="Ajouter une photo ou une vidéo";
+  $("saveGalleryBtn").textContent="Enregistrer le média";
+  $("cancelGalleryEdit").hidden=true;
+  $("galleryPreview").innerHTML="";
+  $("galleryYoutubeGroup").hidden=true;
+  $("galleryFileGroup").hidden=false;
+  $("galleryFile").required=true;
+  $("galleryYoutubeUrl").required=false;
+  $("galleryFile").accept="image/jpeg,image/png,image/webp";
+  $("galleryFileHelp").textContent="Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.";
+ }
+
+ function createAdminMediaPreview(item){
+  if(item.media_type==="image"){
+   return `<img src="${escapeHTML(item.media_url)}" alt="${escapeHTML(item.title)}" loading="lazy">`;
+  }
+
+  if(item.media_type==="video"){
+   return `<video controls preload="metadata"><source src="${escapeHTML(item.media_url)}"></video>`;
+  }
+
+  if(item.media_type==="youtube"){
+   const embed=youtubeEmbed(item.media_url);
+   return embed
+    ?`<iframe src="${escapeHTML(embed)}" title="${escapeHTML(item.title)}" loading="lazy" allowfullscreen></iframe>`
+    :`<div style="padding:20px">Lien YouTube invalide</div>`;
+  }
+
+  return "";
+ }
+
+ async function loadGalleryAdmin(){
+  if(!canPublish)return;
+
+  galleryAdminList.innerHTML="";
+  galleryMessage.textContent="Chargement des médias...";
+
+  const {data,error}=await client
+   .from("gallery")
+   .select("*")
+   .order("created_at",{ascending:false});
+
+  if(error){
+   galleryMessage.textContent="Impossible de charger les médias : "+error.message;
+   return;
+  }
+
+  if(!data||!data.length){
+   galleryMessage.textContent="Aucun média enregistré pour le moment.";
+   galleryAdminList.innerHTML="";
+   return;
+  }
+
+  galleryMessage.textContent=data.length+" média(s) enregistré(s).";
+
+  data.forEach(item=>{
+   const card=document.createElement("article");
+   card.className="gallery-admin-card";
+
+   const status=item.is_published
+    ?'<span class="status-published">Publié</span>'
+    :'<span class="status-draft">Brouillon</span>';
+
+   const typeLabel=item.media_type==="image"
+    ?"Photo"
+    :item.media_type==="video"?"Vidéo téléchargée":"Vidéo YouTube";
+
+   const toggleLabel=item.is_published?"Dépublier":"Publier";
+
+   card.innerHTML=`
+    ${createAdminMediaPreview(item)}
+    <div class="gallery-admin-body">
+     <span class="media-kind">${typeLabel}</span>
+     <h4>${escapeHTML(item.title)}</h4>
+     <p>${escapeHTML(item.description||"Aucune description")}</p>
+     <p class="small-note">${escapeHTML(formatDate(item.created_at))}</p>
+     <div>${status}</div>
+     <div class="gallery-admin-actions">
+      <button type="button" class="secondary-btn edit-gallery" data-id="${escapeHTML(item.id)}">Modifier</button>
+      <button type="button" class="primary-btn toggle-gallery" data-id="${escapeHTML(item.id)}" data-published="${item.is_published}">${toggleLabel}</button>
+      <button type="button" class="danger-btn delete-gallery" data-id="${escapeHTML(item.id)}">Supprimer</button>
+     </div>
+    </div>`;
+
+   galleryAdminList.appendChild(card);
+  });
+
+  galleryAdminList.querySelectorAll(".edit-gallery").forEach(btn=>{
+   btn.addEventListener("click",()=>editGallery(btn.dataset.id,data));
+  });
+
+  galleryAdminList.querySelectorAll(".toggle-gallery").forEach(btn=>{
+   btn.addEventListener("click",()=>toggleGalleryPublication(btn.dataset.id,btn.dataset.published==="true"));
+  });
+
+  galleryAdminList.querySelectorAll(".delete-gallery").forEach(btn=>{
+   btn.addEventListener("click",()=>deleteGallery(btn.dataset.id,data));
+  });
+ }
+
+ function editGallery(id,items){
+  const item=items.find(x=>String(x.id)===String(id));
+  if(!item)return;
+
+  editingGalleryId=item.id;
+  existingGalleryUrl=item.media_url;
+  existingGalleryType=item.media_type;
+
+  $("galleryTitle").value=item.title||"";
+  $("galleryDescription").value=item.description||"";
+  $("galleryType").value=item.media_type;
+  $("galleryStatus").value=item.is_published?"published":"draft";
+  $("galleryFile").value="";
+  $("galleryYoutubeUrl").value="";
+
+  updateGalleryType();
+
+  if(item.media_type==="youtube"){
+   $("galleryYoutubeUrl").value=item.media_url||"";
+   const embed=youtubeEmbed(item.media_url);
+
+   if(embed){
+    const frame=document.createElement("iframe");
+    frame.src=embed;
+    frame.title="Vidéo YouTube actuelle";
+    frame.allowFullscreen=true;
+    frame.style.width="260px";
+    frame.style.height="150px";
+    frame.style.border="0";
+    frame.style.borderRadius="8px";
+    $("galleryPreview").appendChild(frame);
+   }
+  }else{
+   $("galleryFile").required=false;
+
+   const note=document.createElement("p");
+   note.className="small-note";
+   note.textContent="Le fichier actuel sera conservé si vous ne choisissez pas un nouveau fichier.";
+   $("galleryPreview").appendChild(note);
+
+   if(item.media_type==="image"){
+    const img=document.createElement("img");
+    img.src=item.media_url;
+    img.alt="Photo actuelle";
+    img.className="preview-media";
+    $("galleryPreview").appendChild(img);
+   }else{
+    const video=document.createElement("video");
+    video.src=item.media_url;
+    video.controls=true;
+    video.className="preview-media";
+    $("galleryPreview").appendChild(video);
+   }
+  }
+
+  $("galleryFormTitle").textContent="Modifier un média";
+  $("saveGalleryBtn").textContent="Enregistrer les modifications";
+  $("cancelGalleryEdit").hidden=false;
+  galleryManagementSection.scrollIntoView({behavior:"smooth"});
+  galleryMessage.textContent="Modification du média sélectionné.";
+ }
+
+ $("cancelGalleryEdit").addEventListener("click",()=>{
+  resetGalleryForm();
+  galleryMessage.textContent="Modification annulée.";
+ });
+
+ $("galleryForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  if(!canPublish){
+   galleryMessage.textContent="Vous n'êtes pas autorisé à gérer la galerie.";
+   return;
+  }
+
+  const button=$("saveGalleryBtn");
+  const title=$("galleryTitle").value.trim();
+  const description=$("galleryDescription").value.trim();
+  const type=$("galleryType").value;
+  const published=$("galleryStatus").value==="published";
+  const file=$("galleryFile").files[0];
+  const youtubeUrl=$("galleryYoutubeUrl").value.trim();
+
+  if(!title){
+   galleryMessage.textContent="Veuillez renseigner le titre du média.";
+   return;
+  }
+
+  if(type==="youtube"&&!youtubeEmbed(youtubeUrl)){
+   galleryMessage.textContent="Veuillez fournir un lien YouTube valide.";
+   return;
+  }
+
+  if(type!=="youtube"&&!file&&!editingGalleryId){
+   galleryMessage.textContent="Veuillez sélectionner un fichier.";
+   return;
+  }
+
+  if(file){
+   const allowed=type==="image"
+    ?["image/jpeg","image/png","image/webp"]
+    :["video/mp4","video/webm"];
+
+   if(!allowed.includes(file.type)){
+    galleryMessage.textContent=type==="image"
+     ?"Format image non accepté. Utilisez JPG, PNG ou WEBP."
+     :"Format vidéo non accepté. Utilisez MP4 ou WEBM.";
+    return;
+   }
+
+   if(file.size>5*1024*1024){
+    galleryMessage.textContent="Le fichier dépasse la limite actuelle de 5 Mo. Pour une vidéo plus longue, utilisez un lien YouTube.";
+    return;
+   }
+  }
+
+  button.disabled=true;
+  button.textContent="Enregistrement...";
+  galleryMessage.textContent="";
+
+  let mediaUrl=existingGalleryUrl;
+
+  try{
+   if(type==="youtube"){
+    mediaUrl=youtubeUrl;
+   }else if(file){
+    const originalExt=file.name.split(".").pop().toLowerCase();
+    const allowedExt=type==="image"
+     ?["jpg","jpeg","png","webp"]
+     :["mp4","webm"];
+
+    const ext=allowedExt.includes(originalExt)
+     ?originalExt
+     :(type==="image"?"jpg":"mp4");
+
+    const path="gallery/"+currentUser.id+"/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+
+    const {error:uploadError}=await client.storage
+     .from("ajusp-public")
+     .upload(path,file,{
+      contentType:file.type,
+      upsert:false
+     });
+
+    if(uploadError)throw uploadError;
+
+    mediaUrl=client.storage.from("ajusp-public").getPublicUrl(path).data.publicUrl;
+   }
+
+   if(!mediaUrl){
+    throw new Error("Aucun fichier ou lien média disponible.");
+   }
+
+   const payload={
+    title,
+    description:description||null,
+    media_type:type,
+    media_url:mediaUrl,
+    is_published:published,
+    updated_at:new Date().toISOString()
+   };
+
+   let result;
+
+   if(editingGalleryId){
+    result=await client
+     .from("gallery")
+     .update(payload)
+     .eq("id",editingGalleryId);
+   }else{
+    payload.created_by=currentUser.id;
+    result=await client.from("gallery").insert(payload);
+   }
+
+   if(result.error)throw result.error;
+
+   if(editingGalleryId&&existingGalleryUrl&&existingGalleryUrl!==mediaUrl){
+    await removeGalleryFile(existingGalleryUrl);
+   }
+
+   galleryMessage.textContent=editingGalleryId
+    ?"Le média a été modifié avec succès."
+    :"Le média a été enregistré avec succès.";
+
+   resetGalleryForm();
+   await loadGalleryAdmin();
+
+  }catch(error){
+   galleryMessage.textContent="Erreur lors de l'enregistrement : "+error.message;
+  }finally{
+   button.disabled=false;
+   button.textContent=editingGalleryId?"Enregistrer les modifications":"Enregistrer le média";
+  }
+ });
+
+ async function toggleGalleryPublication(id,currentStatus){
+  if(!canPublish)return;
+
+  const action=currentStatus?"dépublier":"publier";
+
+  if(!confirm("Voulez-vous vraiment "+action+" ce média ?"))return;
+
+  const {error}=await client
+   .from("gallery")
+   .update({
+    is_published:!currentStatus,
+    updated_at:new Date().toISOString()
+   })
+   .eq("id",id);
+
+  if(error){
+   galleryMessage.textContent="Erreur lors du changement de statut : "+error.message;
+   return;
+  }
+
+  galleryMessage.textContent=currentStatus
+   ?"Le média a été dépublié."
+   :"Le média a été publié.";
+
+  await loadGalleryAdmin();
+ }
+
+ async function deleteGallery(id,items){
+  if(!canPublish)return;
+
+  const item=items.find(x=>String(x.id)===String(id));
+  if(!item)return;
+
+  if(!confirm("Voulez-vous vraiment supprimer définitivement ce média ?"))return;
+
+  const {error}=await client.from("gallery").delete().eq("id",id);
+
+  if(error){
+   galleryMessage.textContent="Erreur lors de la suppression : "+error.message;
+   return;
+  }
+
+  if(item.media_type==="image"||item.media_type==="video"){
+   await removeGalleryFile(item.media_url);
+  }
+
+  galleryMessage.textContent="Le média a été supprimé.";
+  await loadGalleryAdmin();
+ }
+
+ // --------------------------------------------------
+ // CHARGEMENT INITIAL
+ // --------------------------------------------------
+
+ await Promise.all([
+  loadCotisations(),
+  loadNews()
+ ]);
+
+ if(canManageTreasury){
+  await loadTreasuryMembers();
+  await loadTreasury();
+ }
+
+ if(canPublish){
+  updateGalleryType();
+  await loadGalleryAdmin();
+ }
+
 })();
 </script>
 </body>
