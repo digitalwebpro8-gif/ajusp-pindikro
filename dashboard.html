@@ -2,268 +2,68 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administration | AJUSP Pindikro</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --green: #17643D;
-      --dark: #10452D;
-      --yellow: #F2C94C;
-      --navy: #14263F;
-      --bg: #F7F9F6;
-      --white: #fff;
-      --red: #c0392b;
-      --gray: #64748b;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: #243044;
-    }
-
-    header {
-      background: var(--dark);
-      color: white;
-      padding: 20px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      font-size: 13px;
-      color: #e4eee7;
-    }
-
-    button {
-      border: 0;
-      border-radius: 6px;
-      padding: 10px 15px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .logout {
-      background: var(--yellow);
-      color: var(--navy);
-    }
-
-    main {
-      max-width: 1250px;
-      margin: 30px auto;
-      padding: 0 18px;
-    }
-
-    .welcome {
-      margin-bottom: 25px;
-    }
-
-    .welcome h2 {
-      color: var(--dark);
-      margin-bottom: 5px;
-    }
-
-    .welcome p {
-      color: var(--gray);
-      margin-top: 5px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-      margin-bottom: 30px;
-    }
-
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
-      border-left: 5px solid var(--green);
-    }
-
-    .card:nth-child(2) { border-left-color: var(--yellow); }
-    .card:nth-child(3) { border-left-color: var(--navy); }
-    .card:nth-child(4) { border-left-color: #4b9b78; }
-
-    .card p {
-      margin: 0;
-      color: var(--gray);
-      font-size: 14px;
-    }
-
-    .number {
-      display: block;
-      font-size: 30px;
-      font-weight: bold;
-      margin-top: 12px;
-      color: var(--dark);
-    }
-
-    .panel {
-      background: white;
-      padding: 22px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
-      margin-bottom: 25px;
-    }
-
-    .panel h2 {
-      color: var(--dark);
-      margin-top: 0;
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .refresh {
-      background: var(--green);
-      color: white;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 850px;
-    }
-
-    th, td {
-      padding: 13px 11px;
-      border-bottom: 1px solid #e7ece8;
-      text-align: left;
-      font-size: 13px;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f0f5f1;
-      color: var(--dark);
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .approved {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .rejected {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .approve {
-      background: var(--green);
-      color: white;
-      margin: 2px;
-    }
-
-    .reject {
-      background: var(--red);
-      color: white;
-      margin: 2px;
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--gray);
-      padding: 25px;
-    }
-
-    .message {
-      padding: 12px 15px;
-      border-radius: 6px;
-      margin-bottom: 18px;
-      display: none;
-      white-space: pre-wrap;
-    }
-
-    .message.error {
-      display: block;
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .message.success {
-      display: block;
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .quick-links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 12px;
-    }
-
-    .quick-links a {
-      display: block;
-      padding: 16px;
-      background: #f0f5f1;
-      color: var(--dark);
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 7px;
-    }
-
-    .quick-links a:hover {
-      background: #e0eee4;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: var(--gray);
-      font-size: 13px;
-    }
-
-    @media(max-width:600px) {
-      header { padding: 18px; }
-      header h1 { font-size: 19px; }
-      main { margin-top: 20px; }
-      .panel { padding: 15px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration | AJUSP Pindikro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green:#17643D;--dark:#10452D;--yellow:#F2C94C;
+  --navy:#14263F;--bg:#F7F9F6;--white:#fff;
+  --red:#c0392b;--gray:#64748b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#243044}
+header{background:var(--dark);color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;color:#e4eee7}
+button{border:0;border-radius:6px;padding:10px 15px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.5;cursor:not-allowed}
+.logout{background:var(--yellow);color:var(--navy)}
+main{max-width:1250px;margin:30px auto;padding:0 18px}
+.welcome{margin-bottom:25px}
+.welcome h2{color:var(--dark);margin-bottom:5px}
+.welcome p{color:var(--gray);margin-top:5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-bottom:30px}
+.card,.panel{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.card{border-left:5px solid var(--green)}
+.card:nth-child(2){border-left-color:var(--yellow)}
+.card:nth-child(3){border-left-color:var(--navy)}
+.card:nth-child(4){border-left-color:#4b9b78}
+.card p{margin:0;color:var(--gray);font-size:14px}
+.number{display:block;font-size:30px;font-weight:bold;margin-top:12px;color:var(--dark)}
+.panel{margin-bottom:25px}
+.panel h2{color:var(--dark);margin-top:0}
+.panel-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:15px}
+.refresh{background:var(--green);color:white}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:850px}
+th,td{padding:13px 11px;border-bottom:1px solid #e7ece8;text-align:left;font-size:13px;vertical-align:top}
+th{background:#f0f5f1;color:var(--dark)}
+.status{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold}
+.pending{background:#fff3cd;color:#856404}
+.approved{background:#d4edda;color:#155724}
+.rejected{background:#f8d7da;color:#721c24}
+.approve{background:var(--green);color:white;margin:2px}
+.reject{background:var(--red);color:white;margin:2px}
+.empty{text-align:center;color:var(--gray);padding:25px}
+.message{padding:12px 15px;border-radius:6px;margin-bottom:18px;display:none;white-space:pre-wrap}
+.message.error{display:block;background:#f8d7da;color:#721c24}
+.message.success{display:block;background:#d4edda;color:#155724}
+.quick-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.quick-links a{display:block;padding:16px;background:#f0f5f1;color:var(--dark);text-decoration:none;font-weight:bold;border-radius:7px}
+.quick-links a:hover{background:#e0eee4}
+select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;width:100%;background:white}
+.save-function{background:var(--green);color:white;margin-top:6px}
+.locked{color:var(--gray);font-size:12px}
+.notice{background:#fff8df;border-left:4px solid var(--yellow);padding:12px 15px;border-radius:5px;font-size:13px;line-height:1.5;margin-bottom:16px}
+footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
+@media(max-width:600px){
+ header{padding:18px}header h1{font-size:19px}
+ main{margin-top:20px}.panel{padding:15px}
+}
+</style>
 </head>
-
 <body>
 
 <header>
@@ -275,7 +75,6 @@
 </header>
 
 <main>
-
   <div class="welcome">
     <h2>Tableau de bord</h2>
     <p>Bienvenue, <strong id="adminName">Administrateur</strong>.</p>
@@ -284,25 +83,10 @@
   <div id="globalMessage" class="message"></div>
 
   <section class="cards">
-    <div class="card">
-      <p>Membres actifs</p>
-      <span class="number" id="membersCount">...</span>
-    </div>
-
-    <div class="card">
-      <p>Demandes en attente</p>
-      <span class="number" id="requestsCount">...</span>
-    </div>
-
-    <div class="card">
-      <p>Projets</p>
-      <span class="number" id="projectsCount">...</span>
-    </div>
-
-    <div class="card">
-      <p>Actualités</p>
-      <span class="number" id="newsCount">...</span>
-    </div>
+    <div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
+    <div class="card"><p>Demandes en attente</p><span class="number" id="requestsCount">...</span></div>
+    <div class="card"><p>Projets</p><span class="number" id="projectsCount">...</span></div>
+    <div class="card"><p>Actualités</p><span class="number" id="newsCount">...</span></div>
   </section>
 
   <section class="panel">
@@ -310,27 +94,45 @@
       <h2>Demandes d'adhésion</h2>
       <button class="refresh" id="refreshBtn">Actualiser</button>
     </div>
-
     <p>Consulte les demandes reçues et traite les nouvelles adhésions.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Nom et prénoms</th><th>Téléphone</th><th>E-mail</th>
+          <th>Résidence</th><th>Date</th><th>Statut</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="requestsTable">
+          <tr><td colspan="7" class="empty">Chargement des demandes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" id="responsablesPanel">
+    <div class="panel-header">
+      <h2>Gestion des responsables</h2>
+      <button class="refresh" id="refreshProfilesBtn">Actualiser</button>
+    </div>
+
+    <div class="notice">
+      Cette rubrique permet d'attribuer les fonctions associatives.
+      Seul l'administrateur technique peut modifier les responsabilités
+      et les droits associés. L'adresse e-mail des membres n'est pas modifiée ici.
+    </div>
+
+    <p id="responsablesInfo">Chargement des membres...</p>
 
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Nom et prénoms</th>
-            <th>Téléphone</th>
-            <th>E-mail</th>
-            <th>Résidence</th>
-            <th>Date</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody id="requestsTable">
-          <tr>
-            <td colspan="7" class="empty">Chargement des demandes...</td>
-          </tr>
+        <thead><tr>
+          <th>Nom et prénoms</th>
+          <th>Rôle technique</th>
+          <th>Fonction associative</th>
+          <th>Statut</th>
+          <th>Gestion</th>
+        </tr></thead>
+        <tbody id="profilesTable">
+          <tr><td colspan="5" class="empty">Chargement...</td></tr>
         </tbody>
       </table>
     </div>
@@ -347,7 +149,6 @@
       <a href="depenses.html">Recettes et dépenses</a>
     </div>
   </section>
-
 </main>
 
 <footer>
@@ -356,317 +157,322 @@
 </footer>
 
 <script>
-(async function () {
-  "use strict";
+(async function(){
+"use strict";
 
-  const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const TECHNICAL_ADMIN_ID="b44858ef-0e0e-4efb-a6c6-9b9bc7167fa2";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let currentUser=null;
+let isTechnicalAdmin=false;
 
-  const client = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const functions=[
+ {value:"president",label:"Président"},
+ {value:"vice_president_1",label:"Premier vice-président"},
+ {value:"vice_president_2",label:"Deuxième vice-président"},
+ {value:"secretaire_general",label:"Secrétaire général"},
+ {value:"secretaire_general_adjoint",label:"Secrétaire général adjoint"},
+ {value:"tresorier",label:"Trésorier"},
+ {value:"adjoint_tresorier",label:"Trésorier adjoint"},
+ {value:"responsable_communication",label:"Responsable communication"},
+ {value:"membre_communication",label:"Membre communication"}
+];
 
-  const $ = (id) => document.getElementById(id);
+const executiveFunctions=[
+ "president","vice_president_1","vice_president_2","secretaire_general"
+];
 
-  function showMessage(message, type = "error") {
-    const box = $("globalMessage");
-    box.textContent = message;
-    box.className = "message " + type;
-  }
+function showMessage(message,type="error"){
+ const box=$("globalMessage");
+ box.textContent=message;
+ box.className="message "+type;
+}
+function hideMessage(){
+ $("globalMessage").textContent="";
+ $("globalMessage").className="message";
+}
+function safeText(value){
+ return String(value??"").replace(/[&<>"']/g,char=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ }[char]));
+}
+function formatDate(value){
+ if(!value)return "—";
+ const date=new Date(value);
+ return Number.isNaN(date.getTime())?"—":date.toLocaleDateString("fr-FR");
+}
+function functionLabel(value){
+ const found=functions.find(item=>item.value===value);
+ return found?found.label:(value||"Aucune fonction");
+}
+function statusLabel(status){
+ if(status==="pending")return '<span class="status pending">En attente</span>';
+ if(status==="approved")return '<span class="status approved">Approuvée</span>';
+ if(status==="rejected")return '<span class="status rejected">Rejetée</span>';
+ return safeText(status||"Inconnu");
+}
 
-  function hideMessage() {
-    const box = $("globalMessage");
-    box.textContent = "";
-    box.className = "message";
-  }
+async function checkAdmin(){
+ const {data:sessionData,error:sessionError}=await client.auth.getSession();
+ if(sessionError||!sessionData.session){
+  window.location.href="connexion.html";
+  return false;
+ }
+ currentUser=sessionData.session.user;
 
-  function safeText(value) {
-    return String(value ?? "").replace(/[&<>"']/g, function (char) {
-      return {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char];
-    });
-  }
+ const {data:profile,error}=await client.from("profiles")
+  .select("full_name,role,status,fonction")
+  .eq("id",currentUser.id).single();
 
-  function formatDate(value) {
-    if (!value) return "—";
+ if(error||!profile||profile.role!=="admin"||profile.status!=="active"){
+  showMessage("Accès refusé : cette page est réservée aux administrateurs actifs.");
+  await client.auth.signOut();
+  setTimeout(()=>window.location.href="connexion.html",2500);
+  return false;
+ }
+ $("adminName").textContent=profile.full_name||currentUser.email||"Administrateur";
+ isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
+ return true;
+}
 
-    const date = new Date(value);
+async function loadMembersCount(){
+ const {count,error}=await client.from("profiles")
+  .select("id",{count:"exact",head:true})
+  .eq("status","active").eq("role","member");
+ $("membersCount").textContent=error?"—":(count??0);
+ if(error)console.error(error);
+}
 
-    if (Number.isNaN(date.getTime())) return "—";
+async function loadRequests(){
+ const table=$("requestsTable");
+ table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
 
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    });
-  }
+ const {data,error}=await client.from("membership_requests")
+  .select("id,full_name,phone,email,residence,message,status,created_at,user_id")
+  .order("created_at",{ascending:false});
 
-  function statusLabel(status) {
-    if (status === "pending") {
-      return '<span class="status pending">En attente</span>';
-    }
+ if(error){
+  console.error(error);
+  $("requestsCount").textContent="—";
+  table.innerHTML='<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';
+  showMessage("Erreur de lecture des demandes : "+error.message);
+  return;
+ }
 
-    if (status === "approved") {
-      return '<span class="status approved">Approuvée</span>';
-    }
+ const requests=data||[];
+ $("requestsCount").textContent=requests.filter(r=>r.status==="pending").length;
 
-    if (status === "rejected") {
-      return '<span class="status rejected">Rejetée</span>';
-    }
+ if(!requests.length){
+  table.innerHTML="<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";
+  return;
+ }
 
-    return safeText(status || "Inconnu");
-  }
+ table.innerHTML=requests.map(request=>{
+  const canProcess=request.status==="pending"&&!request.user_id;
+  const actions=canProcess?`
+   <button class="approve" data-action="approve" data-id="${safeText(request.id)}">Approuver</button>
+   <button class="reject" data-action="reject" data-id="${safeText(request.id)}">Rejeter</button>
+  `:"—";
+  return `<tr>
+   <td><strong>${safeText(request.full_name)}</strong>
+   ${request.message?`<br><small>${safeText(request.message)}</small>`:""}</td>
+   <td>${safeText(request.phone||"—")}</td>
+   <td>${safeText(request.email||"—")}</td>
+   <td>${safeText(request.residence||"—")}</td>
+   <td>${formatDate(request.created_at)}</td>
+   <td>${statusLabel(request.status)}</td>
+   <td>${actions}</td>
+  </tr>`;
+ }).join("");
+}
 
-  async function checkAdmin() {
-    const { data: sessionData, error: sessionError } =
-      await client.auth.getSession();
+async function loadOptionalCount(tableName,elementId){
+ const {count,error}=await client.from(tableName)
+  .select("*",{count:"exact",head:true});
+ $(elementId).textContent=error?"—":(count??0);
+ if(error)console.warn(error);
+}
 
-    if (sessionError || !sessionData.session) {
-      window.location.href = "connexion.html";
-      return false;
-    }
+async function loadProfiles(){
+ const table=$("profilesTable");
+ table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
 
-    const user = sessionData.session.user;
+ const {data,error}=await client.from("profiles")
+  .select("id,full_name,role,fonction,status,created_at")
+  .order("created_at",{ascending:true});
 
-    const { data: profile, error: profileError } = await client
-      .from("profiles")
-      .select("full_name, role, status")
-      .eq("id", user.id)
-      .single();
+ if(error){
+  console.error(error);
+  table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';
+  $("responsablesInfo").textContent="Erreur : "+error.message;
+  return;
+ }
 
-    if (
-      profileError ||
-      !profile ||
-      profile.role !== "admin" ||
-      profile.status !== "active"
-    ) {
-      showMessage("Accès refusé : cette page est réservée aux administrateurs actifs.");
-      await client.auth.signOut();
-      setTimeout(() => {
-        window.location.href = "connexion.html";
-      }, 2500);
-      return false;
-    }
+ const profiles=data||[];
+ $("responsablesInfo").textContent=profiles.length+" profil(s) enregistré(s).";
 
-    $("adminName").textContent =
-      profile.full_name || user.email || "Administrateur";
+ if(!profiles.length){
+  table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';
+  return;
+ }
 
-    return true;
-  }
+ table.innerHTML=profiles.map(profile=>{
+  const isProtected=profile.id===TECHNICAL_ADMIN_ID;
+  const options=functions.map(item=>
+   `<option value="${item.value}" ${profile.fonction===item.value?"selected":""}>${item.label}</option>`
+  ).join("");
 
-  async function loadMembersCount() {
-    const { count, error } = await client
-      .from("profiles")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active")
-      .eq("role", "member");
+  const management=isTechnicalAdmin&&!isProtected
+   ?`<select id="fonction-${safeText(profile.id)}">${options}
+      <option value="" ${!profile.fonction?"selected":""}>Aucune fonction</option>
+     </select>
+     <br><button class="save-function" data-action="save-function" data-id="${safeText(profile.id)}">Enregistrer</button>`
+   :isProtected
+    ?'<span class="locked">Compte technique protégé</span>'
+    :'<span class="locked">Consultation uniquement</span>';
 
-    if (error) {
-      console.error("Erreur compteur membres :", error);
-      $("membersCount").textContent = "—";
-      return;
-    }
+  return `<tr>
+   <td><strong>${safeText(profile.full_name||"Sans nom")}</strong></td>
+   <td>${safeText(profile.role)}</td>
+   <td>${safeText(functionLabel(profile.fonction))}</td>
+   <td>${safeText(profile.status)}</td>
+   <td>${management}</td>
+  </tr>`;
+ }).join("");
+}
 
-    $("membersCount").textContent = count ?? 0;
-  }
+async function saveFunction(memberId){
+ if(!isTechnicalAdmin){
+  showMessage("Seul l'administrateur technique peut modifier les fonctions.");
+  return;
+ }
+ if(memberId===TECHNICAL_ADMIN_ID){
+  showMessage("Le compte technique est protégé et ne peut pas être modifié ici.");
+  return;
+ }
 
-  async function loadRequests() {
-    const table = $("requestsTable");
-    table.innerHTML =
-      '<tr><td colspan="7" class="empty">Chargement des demandes...</td></tr>';
+ const select=$("fonction-"+memberId);
+ if(!select)return;
+ const newFunction=select.value||null;
+ const newRole=executiveFunctions.includes(newFunction)?"admin":"member";
 
-    const { data, error } = await client
-      .from("membership_requests")
-      .select("id, full_name, phone, email, residence, message, status, created_at, user_id")
-      .order("created_at", { ascending: false });
+ const message=newFunction
+  ?`Confirmer l'attribution de la fonction « ${functionLabel(newFunction)} » ?\nRôle technique attribué : ${newRole}.`
+  :"Confirmer le retrait de la fonction associative ?\nLe rôle technique deviendra member.";
 
-    if (error) {
-      console.error("Erreur demandes :", error);
-      $("requestsCount").textContent = "—";
-      table.innerHTML =
-        '<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';
-      showMessage("Erreur de lecture des demandes : " + error.message);
-      return;
-    }
+ if(!confirm(message))return;
 
-    const requests = data || [];
-    const pendingCount = requests.filter(
-      request => request.status === "pending"
-    ).length;
+ hideMessage();
+ const button=document.querySelector(`button[data-action="save-function"][data-id="${memberId}"]`);
+ if(button)button.disabled=true;
 
-    $("requestsCount").textContent = pendingCount;
+ const {data,error}=await client.from("profiles")
+  .update({fonction:newFunction,role:newRole})
+  .eq("id",memberId)
+  .select("id,full_name,role,fonction");
 
-    if (requests.length === 0) {
-      table.innerHTML =
-        "<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";
-      return;
-    }
+ if(button)button.disabled=false;
 
-    table.innerHTML = requests.map(request => {
-      const canProcess =
-        request.status === "pending" && !request.user_id;
+ if(error){
+  console.error(error);
+  showMessage("Modification impossible : "+error.message);
+  return;
+ }
+ if(!data||data.length===0){
+  showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");
+  return;
+ }
 
-      const actions = canProcess
-        ? `
-          <button class="approve" data-action="approve"
-            data-id="${safeText(request.id)}">Approuver</button>
-          <button class="reject" data-action="reject"
-            data-id="${safeText(request.id)}">Rejeter</button>
-        `
-        : "—";
+ showMessage("La fonction de "+(data[0].full_name||"ce membre")+" a été mise à jour.","success");
+ await loadProfiles();
+ await loadMembersCount();
+}
 
-      return `
-        <tr>
-          <td>
-            <strong>${safeText(request.full_name)}</strong>
-            ${request.message
-              ? `<br><small>${safeText(request.message)}</small>`
-              : ""}
-          </td>
-          <td>${safeText(request.phone || "—")}</td>
-          <td>${safeText(request.email || "—")}</td>
-          <td>${safeText(request.residence || "—")}</td>
-          <td>${formatDate(request.created_at)}</td>
-          <td>${statusLabel(request.status)}</td>
-          <td>${actions}</td>
-        </tr>
-      `;
-    }).join("");
-  }
+async function approveRequest(requestId){
+ if(!confirm("Confirmer l'approbation de cette demande ?"))return;
+ hideMessage();
 
-  async function loadOptionalCount(tableName, elementId) {
-    const { count, error } = await client
-      .from(tableName)
-      .select("*", { count: "exact", head: true });
+ const {data,error}=await client.functions.invoke("approve-membership",{
+  body:{request_id:requestId}
+ });
+ if(error){
+  console.error(error);
+  showMessage("Échec de l'approbation : "+error.message);
+  return;
+ }
+ if(!data||!data.success){
+  showMessage(data?.error||"L'approbation n'a pas pu être effectuée.");
+  return;
+ }
+ showMessage(data.message||"Demande approuvée avec succès.","success");
+ await loadDashboard();
+}
 
-    if (error) {
-      console.warn("Compteur " + tableName + " :", error.message);
-      $(elementId).textContent = "—";
-      return;
-    }
+async function rejectRequest(requestId){
+ if(!confirm("Confirmer le rejet de cette demande ?"))return;
+ hideMessage();
 
-    $(elementId).textContent = count ?? 0;
-  }
+ const {data,error}=await client.from("membership_requests")
+  .update({status:"rejected"})
+  .eq("id",requestId).eq("status","pending")
+  .is("user_id",null).select("id");
 
-  async function loadDashboard() {
-    hideMessage();
+ if(error){
+  showMessage("Impossible de rejeter la demande : "+error.message);
+  return;
+ }
+ if(!data||!data.length){
+  showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");
+  return;
+ }
+ showMessage("La demande a été rejetée.","success");
+ await loadDashboard();
+}
 
-    await Promise.all([
-      loadMembersCount(),
-      loadRequests(),
-      loadOptionalCount("projects", "projectsCount"),
-      loadOptionalCount("news", "newsCount")
-    ]);
-  }
+async function loadDashboard(){
+ hideMessage();
+ await Promise.all([
+  loadMembersCount(),
+  loadRequests(),
+  loadOptionalCount("projects","projectsCount"),
+  loadOptionalCount("news","newsCount"),
+  loadProfiles()
+ ]);
+}
 
-  async function approveRequest(requestId) {
-    if (!confirm("Confirmer l'approbation de cette demande ?")) return;
+$("requestsTable").addEventListener("click",async event=>{
+ const button=event.target.closest("button[data-action]");
+ if(!button)return;
+ button.disabled=true;
+ try{
+  if(button.dataset.action==="approve")await approveRequest(button.dataset.id);
+  if(button.dataset.action==="reject")await rejectRequest(button.dataset.id);
+ }finally{button.disabled=false;}
+});
 
-    hideMessage();
+$("profilesTable").addEventListener("click",async event=>{
+ const button=event.target.closest("button[data-action='save-function']");
+ if(!button)return;
+ await saveFunction(button.dataset.id);
+});
 
-    const { data, error } = await client.functions.invoke(
-      "approve-membership",
-      {
-        body: { request_id: requestId }
-      }
-    );
+$("refreshBtn").addEventListener("click",loadDashboard);
+$("refreshProfilesBtn").addEventListener("click",loadProfiles);
 
-    if (error) {
-      console.error("Erreur approbation :", error);
-      showMessage("Échec de l'approbation : " + error.message);
-      return;
-    }
+$("logoutBtn").addEventListener("click",async()=>{
+ const {error}=await client.auth.signOut();
+ if(error){
+  showMessage("Erreur lors de la déconnexion : "+error.message);
+  return;
+ }
+ window.location.href="connexion.html";
+});
 
-    if (!data || !data.success) {
-      showMessage(
-        data?.error || "L'approbation n'a pas pu être effectuée."
-      );
-      return;
-    }
-
-    showMessage(
-      data.message || "Demande approuvée avec succès.",
-      "success"
-    );
-
-    await loadDashboard();
-  }
-
-  async function rejectRequest(requestId) {
-    if (!confirm("Confirmer le rejet de cette demande ?")) return;
-
-    hideMessage();
-
-    const { data, error } = await client
-      .from("membership_requests")
-      .update({ status: "rejected" })
-      .eq("id", requestId)
-      .eq("status", "pending")
-      .is("user_id", null)
-      .select("id");
-
-    if (error) {
-      console.error("Erreur rejet :", error);
-      showMessage("Impossible de rejeter la demande : " + error.message);
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");
-      return;
-    }
-
-    showMessage("La demande a été rejetée.", "success");
-    await loadDashboard();
-  }
-
-  $("requestsTable").addEventListener("click", async function (event) {
-    const button = event.target.closest("button[data-action]");
-    if (!button) return;
-
-    const requestId = button.dataset.id;
-    const action = button.dataset.action;
-
-    button.disabled = true;
-
-    try {
-      if (action === "approve") {
-        await approveRequest(requestId);
-      } else if (action === "reject") {
-        await rejectRequest(requestId);
-      }
-    } finally {
-      button.disabled = false;
-    }
-  });
-
-  $("refreshBtn").addEventListener("click", loadDashboard);
-
-  $("logoutBtn").addEventListener("click", async function () {
-    const { error } = await client.auth.signOut();
-
-    if (error) {
-      showMessage("Erreur lors de la déconnexion : " + error.message);
-      return;
-    }
-
-    window.location.href = "connexion.html";
-  });
-
-  const authorized = await checkAdmin();
-
-  if (authorized) {
-    await loadDashboard();
-  }
+if(await checkAdmin())await loadDashboard();
 
 })();
 </script>
-
 </body>
 </html>
