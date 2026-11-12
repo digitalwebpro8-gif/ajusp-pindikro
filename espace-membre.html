@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Espace membre - AJUSP Pindikro</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --green: #17643D;
@@ -14,13 +15,16 @@
       --navy: #14263F;
       --bg: #F7F9F6;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: var(--bg);
       color: #263238;
     }
+
     header {
       background: var(--green);
       color: white;
@@ -31,10 +35,18 @@
       gap: 15px;
       flex-wrap: wrap;
     }
-    header img { width: 55px; height: 55px; object-fit: contain; border-radius: 50%; }
+
+    header img {
+      width: 55px;
+      height: 55px;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand h1 { margin: 0; font-size: 20px; }
     .brand p { margin: 4px 0 0; font-size: 12px; }
+
     button {
       border: 0;
       border-radius: 7px;
@@ -42,30 +54,40 @@
       cursor: pointer;
       font-weight: bold;
     }
+
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
     .logout { background: var(--yellow); color: var(--navy); }
-    main { max-width: 1100px; margin: 35px auto; padding: 0 18px; }
-    .welcome {
+    .dashboard-link { background: white; color: var(--green); }
+
+    main {
+      max-width: 1100px;
+      margin: 35px auto;
+      padding: 0 18px;
+    }
+
+    .welcome, .card, .news-card {
       background: white;
-      padding: 25px;
+      padding: 23px;
       border-radius: 12px;
-      border-left: 5px solid var(--yellow);
       box-shadow: 0 3px 15px #0000000d;
     }
-    .welcome h2 { color: var(--green); margin-top: 0; }
+
+    .welcome { border-left: 5px solid var(--yellow); }
+    .welcome h2, .card h3, .section-title { color: var(--green); }
+
+    .welcome h2 { margin-top: 0; }
+
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
       margin-top: 22px;
     }
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px #0000000d;
-    }
-    .card h3 { color: var(--green); margin-top: 0; }
+
+    .card h3 { margin-top: 0; }
     .info { line-height: 1.9; overflow-wrap: anywhere; }
+
     .notice {
       margin-top: 22px;
       padding: 15px;
@@ -73,122 +95,668 @@
       border-radius: 8px;
       color: #594a15;
     }
-    #message { text-align: center; padding: 35px; }
-    footer { text-align: center; padding: 25px; color: #68756d; font-size: 13px; }
+
+    .section { margin-top: 35px; }
+    .section-title { margin-bottom: 17px; }
+
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccd5ce;
+      border-radius: 7px;
+      font: inherit;
+      background: white;
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    .primary-btn {
+      background: var(--green);
+      color: white;
+    }
+
+    .secondary-btn {
+      background: #e8eee9;
+      color: var(--dark);
+    }
+
+    .danger-btn {
+      background: #b42318;
+      color: white;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #editorMessage, #newsMessage {
+      margin-top: 12px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .news-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .news-card { overflow: hidden; padding: 0; }
+
+    .news-card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .news-body { padding: 18px; }
+    .news-body h3 { color: var(--green); margin-top: 0; }
+
+    .news-meta {
+      font-size: 12px;
+      color: #68756d;
+      margin-bottom: 10px;
+    }
+
+    .news-content {
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .news-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .status-draft {
+      display: inline-block;
+      background: #fff0c2;
+      color: #725500;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-published {
+      display: inline-block;
+      background: #e0f3e7;
+      color: #17643D;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    #message {
+      text-align: center;
+      padding: 35px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #68756d;
+      font-size: 13px;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 600px) {
+      header { padding: 15px; }
+      main { margin: 22px auto; }
+      .welcome, .card { padding: 18px; }
+    }
   </style>
 </head>
+
 <body>
-  <header>
-    <div class="brand">
-      <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
-      <div>
-        <h1>AJUSP Pindikro</h1>
-        <p>Ensemble pour un avenir meilleur</p>
+<header>
+  <div class="brand">
+    <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+    <div>
+      <h1>AJUSP Pindikro</h1>
+      <p>Ensemble pour un avenir meilleur</p>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="dashboard-link" id="dashboardBtn" hidden>
+      Tableau de bord
+    </button>
+    <button class="logout" id="logoutBtn">Déconnexion</button>
+  </div>
+</header>
+
+<main>
+  <div id="message">Vérification de votre connexion...</div>
+
+  <section id="memberContent" hidden>
+    <div class="welcome">
+      <h2>Bienvenue dans votre espace membre !</h2>
+      <p>
+        Bonjour <strong id="memberName">Membre</strong>,
+        heureux de vous retrouver dans votre espace personnel AJUSP.
+      </p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Mon profil</h3>
+        <div class="info">
+          <strong>Nom :</strong> <span id="profileName"></span><br>
+          <strong>E-mail :</strong> <span id="profileEmail"></span><br>
+          <strong>Rôle :</strong> <span id="profileRole"></span><br>
+          <strong>Fonction :</strong> <span id="profileFunction"></span><br>
+          <strong>Statut :</strong> <span id="profileStatus"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mes cotisations</h3>
+        <p>Cette rubrique permettra de consulter vos cotisations et leur historique.</p>
+        <p><strong>Fonctionnalité en préparation.</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Mes dons</h3>
+        <p>Cette rubrique permettra de retrouver vos contributions et vos dons à l'association.</p>
+        <p><strong>Fonctionnalité en préparation.</strong></p>
+      </div>
+
+      <div class="card">
+        <h3>Informations AJUSP</h3>
+        <p>Retrouvez les actualités, les projets et les informations destinées aux membres.</p>
       </div>
     </div>
-    <button class="logout" id="logoutBtn">Déconnexion</button>
-  </header>
 
-  <main>
-    <div id="message">Vérification de votre connexion...</div>
+    <!-- FORMULAIRE RÉSERVÉ À L'ÉQUIPE DE COMMUNICATION -->
+    <section class="section" id="publicationSection" hidden>
+      <h2 class="section-title">Gestion des actualités AJUSP</h2>
 
-    <section id="memberContent" hidden>
-      <div class="welcome">
-        <h2>Bienvenue dans votre espace membre !</h2>
-        <p>Bonjour <strong id="memberName">Membre</strong>, heureux de vous retrouver dans votre espace personnel AJUSP.</p>
-      </div>
+      <div class="card">
+        <h3 id="formTitle">Publier une actualité</h3>
 
-      <div class="cards">
-        <div class="card">
-          <h3>Mon profil</h3>
-          <div class="info">
-            <strong>Nom :</strong> <span id="profileName"></span><br>
-            <strong>E-mail :</strong> <span id="profileEmail"></span><br>
-            <strong>Rôle :</strong> <span id="profileRole"></span><br>
-            <strong>Statut :</strong> <span id="profileStatus"></span>
+        <form id="newsForm">
+          <div class="form-group">
+            <label for="newsTitle">Titre de l'actualité *</label>
+            <input type="text" id="newsTitle" maxlength="200" required
+              placeholder="Ex. : Réunion de l'association">
           </div>
-        </div>
 
-        <div class="card">
-          <h3>Mes cotisations</h3>
-          <p>Cette rubrique permettra de consulter vos cotisations et leur historique.</p>
-          <p><strong>Fonctionnalité en préparation.</strong></p>
-        </div>
+          <div class="form-group">
+            <label for="newsCategory">Catégorie</label>
+            <select id="newsCategory">
+              <option value="Actualité">Actualité</option>
+              <option value="Événement">Événement</option>
+              <option value="Projet">Projet</option>
+              <option value="Communiqué">Communiqué</option>
+              <option value="Information">Information</option>
+            </select>
+          </div>
 
-        <div class="card">
-          <h3>Mes dons</h3>
-          <p>Cette rubrique permettra de retrouver vos contributions et vos dons à l'association.</p>
-          <p><strong>Fonctionnalité en préparation.</strong></p>
-        </div>
+          <div class="form-group">
+            <label for="newsContent">Contenu de l'actualité *</label>
+            <textarea id="newsContent" required
+              placeholder="Rédigez ici les informations à partager..."></textarea>
+          </div>
 
-        <div class="card">
-          <h3>Informations AJUSP</h3>
-          <p>Retrouvez prochainement les actualités, les projets et les informations destinées aux membres.</p>
-        </div>
-      </div>
+          <div class="form-group">
+            <label for="newsImage">Image de l'actualité</label>
+            <input type="file" id="newsImage"
+              accept="image/jpeg,image/png,image/webp">
+            <small>
+              Choisissez une image dans la galerie de votre téléphone
+              ou dans les fichiers de votre ordinateur.
+              Formats acceptés : JPG, PNG et WEBP. Maximum : 5 Mo.
+            </small>
+            <div id="imagePreview" style="margin-top:12px"></div>
+          </div>
 
-      <div class="notice">
-        Votre espace membre est actif. Les fonctionnalités seront progressivement mises à votre disposition.
+          <div class="form-group">
+            <label for="newsStatus">État de l'actualité</label>
+            <select id="newsStatus">
+              <option value="draft">Enregistrer comme brouillon</option>
+              <option value="published">Publier immédiatement</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-btn" id="saveNewsBtn">
+              Enregistrer l'actualité
+            </button>
+            <button type="button" class="secondary-btn" id="cancelEditBtn" hidden>
+              Annuler la modification
+            </button>
+          </div>
+
+          <p id="editorMessage" role="status"></p>
+        </form>
       </div>
     </section>
-  </main>
 
-  <footer>© AJUSP Pindikro - Ensemble pour un avenir meilleur</footer>
+    <!-- ACTUALITÉS VISIBLES PAR TOUS LES MEMBRES -->
+    <section class="section">
+      <h2 class="section-title">Actualités de l'AJUSP</h2>
+      <div id="newsMessage">Chargement des actualités...</div>
+      <div class="news-list" id="newsList"></div>
+    </section>
 
-  <script>
-    (async function () {
-      const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
-      const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
-      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div class="notice">
+      Votre espace membre est actif. Les fonctionnalités seront progressivement mises à votre disposition.
+    </div>
+  </section>
+</main>
 
-      const message = document.getElementById("message");
-      const content = document.getElementById("memberContent");
+<footer>© AJUSP Pindikro - Ensemble pour un avenir meilleur</footer>
 
-      document.getElementById("logoutBtn").addEventListener("click", async function () {
-        await client.auth.signOut();
-        window.location.href = "connexion.html";
+<script>
+(async function () {
+  const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const message = document.getElementById("message");
+  const content = document.getElementById("memberContent");
+  const publicationSection = document.getElementById("publicationSection");
+  const newsList = document.getElementById("newsList");
+  const newsMessage = document.getElementById("newsMessage");
+  const editorMessage = document.getElementById("editorMessage");
+
+  const communicationFunctions = [
+    "secretaire_general",
+    "secretaire_general_adjoint",
+    "responsable_communication",
+    "membre_communication"
+  ];
+
+  let currentUser = null;
+  let editingNewsId = null;
+  let existingImageUrl = null;
+
+  const escapeHTML = function (value) {
+    return String(value ?? "").replace(/[&<>"']/g, function (char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
+    });
+  };
+
+  const formatDate = function (date) {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("fr-FR");
+  };
+
+  document.getElementById("logoutBtn").addEventListener("click", async function () {
+    await client.auth.signOut();
+    window.location.href = "connexion.html";
+  });
+
+  document.getElementById("dashboardBtn").addEventListener("click", function () {
+    window.location.href = "dashboard.html";
+  });
+
+  const { data: sessionData, error: sessionError } =
+    await client.auth.getSession();
+
+  if (sessionError || !sessionData.session) {
+    window.location.href = "connexion.html";
+    return;
+  }
+
+  currentUser = sessionData.session.user;
+
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("full_name, role, status, fonction")
+    .eq("id", currentUser.id)
+    .single();
+
+  if (profileError || !profile) {
+    message.textContent =
+      "Impossible de récupérer votre profil. Veuillez contacter l'administration.";
+    return;
+  }
+
+  if (profile.status !== "active") {
+    await client.auth.signOut();
+    message.textContent =
+      "Votre compte n'est pas actif. Veuillez contacter l'administration.";
+    return;
+  }
+
+  document.getElementById("memberName").textContent =
+    profile.full_name || "Membre";
+  document.getElementById("profileName").textContent =
+    profile.full_name || "Non renseigné";
+  document.getElementById("profileEmail").textContent =
+    currentUser.email || "Non renseigné";
+  document.getElementById("profileRole").textContent =
+    profile.role || "member";
+  document.getElementById("profileFunction").textContent =
+    profile.fonction || "Non renseignée";
+  document.getElementById("profileStatus").textContent = "Actif";
+
+  if (profile.role === "admin" || profile.role === "secretary") {
+    document.getElementById("dashboardBtn").hidden = false;
+  }
+
+  const canPublish = communicationFunctions.includes(profile.fonction);
+
+  if (canPublish) {
+    publicationSection.hidden = false;
+  }
+
+  message.hidden = true;
+  content.hidden = false;
+
+  // CHARGEMENT DES ACTUALITÉS
+  async function loadNews() {
+    newsMessage.textContent = "Chargement des actualités...";
+    newsList.innerHTML = "";
+
+    const { data, error } = await client
+      .from("news")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      newsMessage.textContent =
+        "Impossible de charger les actualités : " + error.message;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      newsMessage.textContent = "Aucune actualité disponible pour le moment.";
+      return;
+    }
+
+    newsMessage.textContent = "";
+
+    data.forEach(function (news) {
+      const card = document.createElement("article");
+      card.className = "news-card";
+
+      const image = news.image_url
+        ? `<img src="${escapeHTML(news.image_url)}" alt="Image de l'actualité">`
+        : "";
+
+      const status = news.is_published
+        ? '<span class="status-published">Publié</span>'
+        : '<span class="status-draft">Brouillon</span>';
+
+      const actions = canPublish
+        ? `<div class="news-actions">
+             <button type="button" class="secondary-btn edit-news"
+               data-id="${escapeHTML(news.id)}">Modifier</button>
+             <button type="button" class="danger-btn delete-news"
+               data-id="${escapeHTML(news.id)}">Supprimer</button>
+           </div>`
+        : "";
+
+      card.innerHTML = `
+        ${image}
+        <div class="news-body">
+          <div class="news-meta">
+            ${escapeHTML(news.category || "Actualité")}
+            · ${escapeHTML(formatDate(news.created_at))}
+          </div>
+          <h3>${escapeHTML(news.title)}</h3>
+          <div>${status}</div>
+          <p class="news-content">${escapeHTML(news.content)}</p>
+          ${actions}
+        </div>
+      `;
+
+      newsList.appendChild(card);
+    });
+
+    if (canPublish) {
+      document.querySelectorAll(".edit-news").forEach(function (button) {
+        button.addEventListener("click", function () {
+          editNews(button.dataset.id, data);
+        });
       });
 
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      document.querySelectorAll(".delete-news").forEach(function (button) {
+        button.addEventListener("click", function () {
+          deleteNews(button.dataset.id);
+        });
+      });
+    }
+  }
 
-      if (sessionError || !sessionData.session) {
-        window.location.href = "connexion.html";
+  // APERÇU DE L'IMAGE CHOISIE
+  document.getElementById("newsImage").addEventListener("change", function () {
+    const file = this.files[0];
+    const preview = document.getElementById("imagePreview");
+
+    preview.innerHTML = "";
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      editorMessage.textContent = "Format d'image non accepté.";
+      this.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      editorMessage.textContent = "L'image ne doit pas dépasser 5 Mo.";
+      this.value = "";
+      return;
+    }
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.alt = "Aperçu de l'image sélectionnée";
+    img.style.maxWidth = "220px";
+    img.style.maxHeight = "160px";
+    img.style.borderRadius = "8px";
+    preview.appendChild(img);
+  });
+
+  // ENREGISTREMENT OU MODIFICATION
+  document.getElementById("newsForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (!canPublish) {
+      editorMessage.textContent = "Vous n'êtes pas autorisé à publier.";
+      return;
+    }
+
+    const saveButton = document.getElementById("saveNewsBtn");
+    const file = document.getElementById("newsImage").files[0];
+
+    const title = document.getElementById("newsTitle").value.trim();
+    const category = document.getElementById("newsCategory").value;
+    const text = document.getElementById("newsContent").value.trim();
+    const published = document.getElementById("newsStatus").value === "published";
+
+    if (!title || !text) {
+      editorMessage.textContent = "Veuillez renseigner le titre et le contenu.";
+      return;
+    }
+
+    if (file) {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        editorMessage.textContent = "Format d'image non accepté.";
         return;
       }
 
-      const user = sessionData.session.user;
-
-      const { data: profile, error: profileError } = await client
-        .from("profiles")
-        .select("full_name, role, status")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError || !profile) {
-        message.textContent = "Impossible de récupérer votre profil. Veuillez contacter l'administration.";
+      if (file.size > 5 * 1024 * 1024) {
+        editorMessage.textContent = "L'image ne doit pas dépasser 5 Mo.";
         return;
       }
+    }
 
-      if (profile.status !== "active") {
-        await client.auth.signOut();
-        message.textContent = "Votre compte n'est pas actif. Veuillez contacter l'administration.";
-        return;
+    saveButton.disabled = true;
+    saveButton.textContent = "Enregistrement en cours...";
+    editorMessage.textContent = "";
+
+    let imageUrl = existingImageUrl;
+
+    try {
+      // ENVOI DE L'IMAGE DANS SUPABASE STORAGE
+      if (file) {
+        const extension = file.name.split(".").pop().toLowerCase();
+        const safeExtension = ["jpg", "jpeg", "png", "webp"].includes(extension)
+          ? extension
+          : "jpg";
+
+        const imagePath =
+          currentUser.id + "/" + Date.now() + "-" +
+          crypto.randomUUID() + "." + safeExtension;
+
+        const { error: uploadError } = await client.storage
+          .from("news-images")
+          .upload(imagePath, file, {
+            contentType: file.type,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData } = client.storage
+          .from("news-images")
+          .getPublicUrl(imagePath);
+
+        imageUrl = publicData.publicUrl;
       }
 
-      if (profile.role === "admin" || profile.role === "secretary") {
-        window.location.href = "dashboard.html";
-        return;
+      const newsData = {
+        title: title,
+        category: category,
+        content: text,
+        image_url: imageUrl,
+        is_published: published,
+        published_at: published ? new Date().toISOString() : null
+      };
+
+      let result;
+
+      if (editingNewsId) {
+        result = await client
+          .from("news")
+          .update(newsData)
+          .eq("id", editingNewsId);
+      } else {
+        result = await client
+          .from("news")
+          .insert(newsData);
       }
 
-      document.getElementById("memberName").textContent = profile.full_name || "Membre";
-      document.getElementById("profileName").textContent = profile.full_name || "Non renseigné";
-      document.getElementById("profileEmail").textContent = user.email || "Non renseigné";
-      document.getElementById("profileRole").textContent = profile.role;
-      document.getElementById("profileStatus").textContent = "Actif";
+      if (result.error) throw result.error;
 
-      message.hidden = true;
-      content.hidden = false;
-    })();
-  </script>
+      editorMessage.textContent = editingNewsId
+        ? "L'actualité a été modifiée avec succès."
+        : "L'actualité a été enregistrée avec succès.";
+
+      resetForm();
+      await loadNews();
+
+    } catch (error) {
+      editorMessage.textContent =
+        "Erreur lors de l'enregistrement : " + error.message;
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "Enregistrer l'actualité";
+    }
+  });
+
+  // CHARGER UNE ACTUALITÉ DANS LE FORMULAIRE
+  function editNews(id, newsArray) {
+    const news = newsArray.find(item => String(item.id) === String(id));
+    if (!news) return;
+
+    editingNewsId = news.id;
+    existingImageUrl = news.image_url || null;
+
+    document.getElementById("newsTitle").value = news.title || "";
+    document.getElementById("newsCategory").value =
+      news.category || "Actualité";
+    document.getElementById("newsContent").value = news.content || "";
+    document.getElementById("newsStatus").value =
+      news.is_published ? "published" : "draft";
+
+    document.getElementById("newsImage").value = "";
+
+    document.getElementById("imagePreview").innerHTML =
+      existingImageUrl
+        ? `<p>Image actuelle conservée si vous ne choisissez pas une nouvelle image.</p>
+           <img src="${escapeHTML(existingImageUrl)}"
+             alt="Image actuelle" style="max-width:220px;max-height:160px;border-radius:8px">`
+        : "";
+
+    document.getElementById("formTitle").textContent =
+      "Modifier une actualité";
+    document.getElementById("saveNewsBtn").textContent =
+      "Enregistrer les modifications";
+    document.getElementById("cancelEditBtn").hidden = false;
+
+    publicationSection.scrollIntoView({ behavior: "smooth" });
+    editorMessage.textContent = "Modification de l'actualité sélectionnée.";
+  }
+
+  // ANNULER UNE MODIFICATION
+  function resetForm() {
+    document.getElementById("newsForm").reset();
+    editingNewsId = null;
+    existingImageUrl = null;
+
+    document.getElementById("formTitle").textContent =
+      "Publier une actualité";
+    document.getElementById("saveNewsBtn").textContent =
+      "Enregistrer l'actualité";
+    document.getElementById("cancelEditBtn").hidden = true;
+    document.getElementById("imagePreview").innerHTML = "";
+  }
+
+  document.getElementById("cancelEditBtn").addEventListener("click", function () {
+    resetForm();
+    editorMessage.textContent = "";
+  });
+
+  // SUPPRIMER UNE ACTUALITÉ
+  async function deleteNews(id) {
+    if (!confirm("Voulez-vous vraiment supprimer cette actualité ?")) return;
+
+    const { error } = await client
+      .from("news")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert("Erreur lors de la suppression : " + error.message);
+      return;
+    }
+
+    alert("L'actualité a été supprimée.");
+    await loadNews();
+  }
+
+  await loadNews();
+
+})();
+</script>
 </body>
 </html>
