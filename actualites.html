@@ -1,37 +1,438 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Actualités – AJUSP Pindikro"><title>Actualités | AJUSP</title><style>
-:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
-a{text-decoration:none;color:inherit}.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
-.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
-nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Actualités – AJUSP Pindikro">
+<title>Actualités | AJUSP</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--green:#17643D;--dark:#10452D;--yellow:#F2C94C;
+--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D;
+--red:#c0392b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{text-decoration:none;color:inherit}
+.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:56px;height:56px;object-fit:contain}
+.brand b{display:block;color:var(--green);font-size:20px}
+.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
+nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+nav a{font-size:12px;font-weight:bold;color:var(--navy)}
+nav a:hover{color:var(--green)}
+.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
 .toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
 .hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}
-.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
-h2{color:var(--navy);font-size:27px;margin:8px 0 15px}h3{color:var(--navy);margin-bottom:8px}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)}
-.card p,.muted{color:var(--muted)}.photo{width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:20px 0}
-ul{padding-left:22px;margin:12px 0 20px}li{margin:6px 0}.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
-form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:720px}
-label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}textarea{min-height:120px}
-button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}
+.hero p{max-width:760px;color:#f0f4f0}
+.wrap{max-width:1100px;margin:auto;padding:45px 6%}
+.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
+h2{color:var(--navy);font-size:27px;margin:8px 0 15px}
+h3{color:var(--navy);margin-bottom:8px}
+.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
+.card,.editor{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;margin-bottom:22px}
+.card{border-bottom:3px solid var(--yellow)}
+.card p,.muted{color:var(--muted)}
+.news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:20px}
+.news-card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 4px 20px #14263f0c}
+.news-card img{width:100%;height:230px;object-fit:cover}
+.news-content{padding:20px}
+.news-content h3{margin:8px 0}
+.news-content p{white-space:pre-wrap;overflow-wrap:anywhere}
+.category{display:inline-block;background:#eaf2eb;color:var(--green);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.date{font-size:12px;color:var(--muted);margin:8px 0}
+form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c}
+label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit;background:white}
+textarea{min-height:150px;resize:vertical}
+button{border:0;border-radius:5px;padding:11px 16px;cursor:pointer;font:inherit;font-weight:bold}
+button:disabled{opacity:.5;cursor:not-allowed}
+.submit{background:var(--green);color:white;margin-top:16px}
+.secondary{background:#eaf2eb;color:var(--dark);margin-top:16px}
+.danger{background:var(--red);color:white;margin:5px}
+.edit{background:var(--navy);color:white;margin:5px}
+.actions{margin-top:12px}
+.notice{font-size:13px;color:var(--muted);margin-top:12px}
+.message{display:none;padding:13px 16px;border-radius:6px;margin:15px 0;white-space:pre-wrap}
+.message.success{display:block;background:#d4edda;color:#155724}
+.message.error{display:block;background:#f8d7da;color:#721c24}
+.empty{text-align:center;color:var(--muted);padding:30px;background:white;border-radius:8px}
+.editor{border-top:5px solid var(--yellow)}
+.editor[hidden]{display:none}
+.editor-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
-@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}.grid{grid-template-columns:1fr}}
-</style></head><body>
+@media(max-width:900px){
+.toggle{display:block}
+nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}
+nav.open{display:flex}
+nav a{padding:8px;border-bottom:1px solid #eee}
+.news-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
 <header class="site-header">
-  <a class="brand" href="index.html"><img src="logo-ajusp.jpeg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
-  <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
-  <nav>
-    <a href="index.html">Accueil</a><a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
-    <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
-    <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
-    <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
-    <a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
-  </nav>
-</header><section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Actualités</h1><p>Les informations, annonces et activités de l'Association Jeunesse Unie et Solidaire de Pindikro.</p></section><main class="wrap">
+<a class="brand" href="index.html">
+<img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+<span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span>
+</a>
+<button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+<nav>
+<a href="index.html">Accueil</a>
+<a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+<a href="association.html">Notre association</a>
+<a href="projets.html">Nos projets</a>
+<a href="actualites.html">Actualités</a>
+<a href="galerie.html">Galerie</a>
+<a href="soutien.html">Nous soutenir</a>
+<a href="contact-adhesion.html">Adhésion</a>
+<a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
+</nav>
+</header>
+
+<section class="hero">
+<span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span>
+<h1>Actualités</h1>
+<p>Les informations, annonces et activités de l'Association Jeunesse Unie et Solidaire de Pindikro.</p>
+</section>
+
+<main class="wrap">
 <p class="lead">Retrouvez ici les communications officielles, les réunions, les événements et les nouvelles de l'association.</p>
-<div class="card"><h3>Bienvenue dans l'espace actualités de l'AJUSP</h3><p>Les prochaines publications de l'association apparaîtront sur cette page. Les responsables pourront les administrer depuis l'espace prévu à cet effet lorsque le tableau de bord sera connecté à Supabase.</p></div>
-</main><footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer><script>document.getElementById("year").textContent=new Date().getFullYear();</script><script>
-const t=document.querySelector('.toggle'),n=document.querySelector('nav');
-t?.addEventListener('click',()=>{const o=n.classList.toggle('open');t.setAttribute('aria-expanded',o);t.textContent=o?'✕':'☰'});
-</script></body></html>
+
+<div id="globalMessage" class="message"></div>
+
+<section id="editorSection" class="editor" hidden>
+<div class="editor-heading">
+<div>
+<span class="eyebrow">Espace de publication</span>
+<h2 id="formTitle">Ajouter une actualité</h2>
+</div>
+<button type="button" class="secondary" id="cancelEdit">Annuler</button>
+</div>
+
+<p class="muted">Cet espace est réservé aux responsables autorisés de l'AJUSP.</p>
+
+<form id="newsForm">
+<input type="hidden" id="newsId">
+
+<label for="title">Titre de l'actualité *</label>
+<input id="title" type="text" maxlength="200" required placeholder="Titre de votre actualité">
+
+<label for="category">Catégorie *</label>
+<select id="category" required>
+<option value="">Choisir une catégorie</option>
+<option value="Annonce">Annonce</option>
+<option value="Activité">Activité</option>
+<option value="Réunion">Réunion</option>
+<option value="Événement">Événement</option>
+<option value="Communiqué">Communiqué</option>
+<option value="Projet">Projet</option>
+<option value="Autre">Autre</option>
+</select>
+
+<label for="content">Contenu de l'actualité *</label>
+<textarea id="content" required placeholder="Rédigez votre information ici..."></textarea>
+
+<label for="imageUrl">Adresse URL de l'image (facultatif)</label>
+<input id="imageUrl" type="url" placeholder="https://...">
+
+<p class="notice">Pour cette première version, indique une adresse URL accessible publiquement pour illustrer ton actualité.</p>
+
+<label for="publicationStatus">État de publication</label>
+<select id="publicationStatus">
+<option value="draft">Enregistrer en brouillon</option>
+<option value="published">Publier immédiatement</option>
+</select>
+
+<button type="submit" class="submit" id="saveButton">Enregistrer l'actualité</button>
+</form>
+</section>
+
+<section>
+<span class="eyebrow">Vie associative</span>
+<h2>Les nouvelles de l'AJUSP</h2>
+<div id="newsList" class="news-grid">
+<div class="empty">Chargement des actualités...</div>
+</div>
+</section>
+</main>
+
+<footer>
+© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro
+<br>« Ensemble pour un avenir meilleur »
+</footer>
+
+<script>
+(async function(){
+"use strict";
+
+const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+
+const allowedFunctions=[
+"secretaire_general",
+"secretaire_general_adjoint",
+"responsable_communication",
+"membre_communication"
+];
+
+let currentUser=null;
+let canPublish=false;
+
+$("year").textContent=new Date().getFullYear();
+
+const toggle=document.querySelector(".toggle");
+const nav=document.querySelector("nav");
+toggle.addEventListener("click",()=>{
+const opened=nav.classList.toggle("open");
+toggle.setAttribute("aria-expanded",opened);
+toggle.textContent=opened?"✕":"☰";
+});
+
+function showMessage(message,type="error"){
+const box=$("globalMessage");
+box.textContent=message;
+box.className="message "+type;
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function hideMessage(){
+$("globalMessage").textContent="";
+$("globalMessage").className="message";
+}
+function escapeHTML(value){
+return String(value??"").replace(/[&<>"']/g,char=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+}[char]));
+}
+function formatDate(value){
+if(!value)return "";
+const date=new Date(value);
+return Number.isNaN(date.getTime())?"":date.toLocaleDateString("fr-FR",{
+day:"2-digit",month:"long",year:"numeric"
+});
+}
+function validImageUrl(value){
+if(!value)return "";
+try{
+const url=new URL(value);
+return ["http:","https:"].includes(url.protocol)?url.href:"";
+}catch{return "";}
+}
+
+async function checkPublicationAccess(){
+const {data:sessionData}=await client.auth.getSession();
+if(!sessionData.session)return;
+
+currentUser=sessionData.session.user;
+
+const {data:profile,error}=await client.from("profiles")
+.select("full_name,fonction,status")
+.eq("id",currentUser.id).single();
+
+if(error||!profile||profile.status!=="active")return;
+
+canPublish=allowedFunctions.includes(profile.fonction);
+
+if(canPublish){
+$("editorSection").hidden=false;
+}
+}
+
+function resetForm(){
+$("newsForm").reset();
+$("newsId").value="";
+$("formTitle").textContent="Ajouter une actualité";
+$("saveButton").textContent="Enregistrer l'actualité";
+}
+
+function renderNews(items){
+const list=$("newsList");
+
+if(!items||items.length===0){
+list.innerHTML='<div class="empty">Aucune actualité publiée pour le moment.</div>';
+return;
+}
+
+list.innerHTML=items.map(item=>{
+const image=validImageUrl(item.image_url);
+const isDraft=!item.is_published;
+
+return `
+<article class="news-card">
+${image?`<img src="${escapeHTML(image)}" alt="${escapeHTML(item.title)}" loading="lazy">`:""}
+<div class="news-content">
+<span class="category">${escapeHTML(item.category||"Actualité")}</span>
+<div class="date">${formatDate(item.published_at||item.created_at)}</div>
+<h3>${escapeHTML(item.title)}</h3>
+<p>${escapeHTML(item.content)}</p>
+${canPublish?`
+<div class="actions">
+${isDraft?'<span class="category">Brouillon</span>':'<span class="category">Publié</span>'}
+<button class="edit" data-action="edit" data-id="${escapeHTML(item.id)}">Modifier</button>
+<button class="danger" data-action="delete" data-id="${escapeHTML(item.id)}">Supprimer</button>
+</div>`:""}
+</div>
+</article>`;
+}).join("");
+}
+
+let cachedNews=[];
+
+async function loadNews(){
+const list=$("newsList");
+list.innerHTML='<div class="empty">Chargement des actualités...</div>';
+
+let query=client.from("news")
+.select("id,title,content,image_url,category,is_published,published_at,created_at")
+.order("created_at",{ascending:false});
+
+if(!canPublish){
+query=query.eq("is_published",true);
+}
+
+const {data,error}=await query;
+
+if(error){
+console.error("Erreur actualités :",error);
+list.innerHTML='<div class="empty">Impossible de charger les actualités. Veuillez réessayer.</div>';
+return;
+}
+
+cachedNews=data||[];
+renderNews(cachedNews);
+}
+
+$("newsForm").addEventListener("submit",async event=>{
+event.preventDefault();
+hideMessage();
+
+if(!canPublish||!currentUser){
+showMessage("Tu n'es pas autorisé à publier des actualités.");
+return;
+}
+
+const id=$("newsId").value;
+const title=$("title").value.trim();
+const content=$("content").value.trim();
+const category=$("category").value;
+const imageUrl=$("imageUrl").value.trim();
+const isPublished=$("publicationStatus").value==="published";
+
+if(!title||!content||!category){
+showMessage("Merci de renseigner le titre, la catégorie et le contenu.");
+return;
+}
+
+if(imageUrl&&!validImageUrl(imageUrl)){
+showMessage("L'adresse de l'image doit être une URL valide commençant par https:// ou http://.");
+return;
+}
+
+const payload={
+title,
+content,
+category,
+image_url:imageUrl||null,
+is_published:isPublished,
+published_at:isPublished?new Date().toISOString():null
+};
+
+const button=$("saveButton");
+button.disabled=true;
+button.textContent="Enregistrement...";
+
+let result;
+
+if(id){
+result=await client.from("news").update(payload).eq("id",id).select("id");
+}else{
+result=await client.from("news").insert(payload).select("id");
+}
+
+button.disabled=false;
+button.textContent="Enregistrer l'actualité";
+
+if(result.error){
+console.error(result.error);
+showMessage("Enregistrement impossible : "+result.error.message);
+return;
+}
+
+if(!result.data||result.data.length===0){
+showMessage("Aucune modification effectuée. Vérifie les autorisations.");
+return;
+}
+
+showMessage(isPublished?"L'actualité a été publiée.":"L'actualité a été enregistrée en brouillon.","success");
+resetForm();
+await loadNews();
+});
+
+$("newsList").addEventListener("click",async event=>{
+const button=event.target.closest("button[data-action]");
+if(!button||!canPublish)return;
+
+const id=button.dataset.id;
+const action=button.dataset.action;
+const item=cachedNews.find(news=>news.id===id);
+if(!item)return;
+
+if(action==="edit"){
+$("newsId").value=item.id;
+$("title").value=item.title||"";
+$("content").value=item.content||"";
+$("category").value=item.category||"";
+$("imageUrl").value=item.image_url||"";
+$("publicationStatus").value=item.is_published?"published":"draft";
+$("formTitle").textContent="Modifier une actualité";
+$("saveButton").textContent="Enregistrer les modifications";
+$("editorSection").hidden=false;
+$("editorSection").scrollIntoView({behavior:"smooth"});
+return;
+}
+
+if(action==="delete"){
+if(!confirm("Voulez-vous vraiment supprimer cette actualité ?"))return;
+
+button.disabled=true;
+const {data,error}=await client.from("news")
+.delete().eq("id",id).select("id");
+
+if(error){
+console.error(error);
+showMessage("Suppression impossible : "+error.message);
+button.disabled=false;
+return;
+}
+
+if(!data||data.length===0){
+showMessage("Aucune actualité supprimée. Vérifie tes autorisations.");
+button.disabled=false;
+return;
+}
+
+showMessage("L'actualité a été supprimée.","success");
+await loadNews();
+}
+});
+
+$("cancelEdit").addEventListener("click",()=>{
+resetForm();
+hideMessage();
+});
+
+await checkPublicationAccess();
+await loadNews();
+
+})();
+</script>
+</body>
+</html>
