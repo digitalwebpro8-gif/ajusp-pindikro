@@ -202,6 +202,43 @@
       font-weight: bold;
     }
 
+    .table-wrap { width: 100%; overflow-x: auto; }
+
+    .cotisations-table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .cotisations-table th,
+    .cotisations-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5ebe6;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .cotisations-table th {
+      background: #f0f5f1;
+      color: var(--dark);
+    }
+
+    .payment-status {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .payment-confirmed { background: #e0f3e7; color: #17643D; }
+    .payment-pending { background: #fff0c2; color: #725500; }
+    .payment-cancelled { background: #fde8e7; color: #a1261d; }
+
+    #cotisationsMessage { line-height: 1.5; }
+
     #message {
       text-align: center;
       padding: 35px;
@@ -268,8 +305,9 @@
 
       <div class="card">
         <h3>Mes cotisations</h3>
-        <p>Cette rubrique permettra de consulter vos cotisations et leur historique.</p>
-        <p><strong>Fonctionnalité en préparation.</strong></p>
+        <p><strong>Total confirmé :</strong> <span id="totalCotisations">0 FCFA</span></p>
+        <p><strong>En attente :</strong> <span id="cotisationsEnAttente">0 FCFA</span></p>
+        <p><strong>Paiements confirmés :</strong> <span id="nombreCotisations">0</span></p>
       </div>
 
       <div class="card">
@@ -283,6 +321,28 @@
         <p>Retrouvez les actualités, les projets et les informations destinées aux membres.</p>
       </div>
     </div>
+
+    <!-- HISTORIQUE PERSONNEL DES COTISATIONS -->
+    <section class="section" id="cotisationsSection">
+      <h2 class="section-title">Historique de mes cotisations</h2>
+      <div class="card">
+        <p id="cotisationsMessage">Chargement de vos cotisations...</p>
+        <div class="table-wrap">
+          <table class="cotisations-table">
+            <thead>
+              <tr>
+                <th>Période</th>
+                <th>Montant</th>
+                <th>Date de paiement</th>
+                <th>Mode de paiement</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="cotisationsList"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
     <!-- FORMULAIRE RÉSERVÉ À L'ÉQUIPE DE COMMUNICATION -->
     <section class="section" id="publicationSection" hidden>
@@ -377,6 +437,8 @@
   const newsList = document.getElementById("newsList");
   const newsMessage = document.getElementById("newsMessage");
   const editorMessage = document.getElementById("editorMessage");
+  const cotisationsMessage = document.getElementById("cotisationsMessage");
+  const cotisationsList = document.getElementById("cotisationsList");
 
   const communicationFunctions = [
     "secretaire_general",
@@ -404,6 +466,12 @@
   const formatDate = function (date) {
     if (!date) return "";
     return new Date(date).toLocaleDateString("fr-FR");
+  };
+
+  const formatFCFA = function (amount) {
+    return new Intl.NumberFormat("fr-FR", {
+      maximumFractionDigits: 0
+    }).format(Number(amount) || 0) + " FCFA";
   };
 
   document.getElementById("logoutBtn").addEventListener("click", async function () {
@@ -468,6 +536,68 @@
 
   message.hidden = true;
   content.hidden = false;
+
+  // CHARGEMENT DES COTISATIONS DU MEMBRE CONNECTÉ
+  async function loadCotisations() {
+    cotisationsMessage.textContent = "Chargement de vos cotisations...";
+    cotisationsList.innerHTML = "";
+
+    const { data, error } = await client
+      .from("cotisations")
+      .select("id, montant, periode, date_paiement, mode_paiement, statut")
+      .eq("member_id", currentUser.id)
+      .order("date_paiement", { ascending: false });
+
+    if (error) {
+      cotisationsMessage.textContent =
+        "Impossible de charger vos cotisations : " + error.message;
+      return;
+    }
+
+    const cotisations = data || [];
+    const confirmees = cotisations.filter(item => item.statut === "confirmee");
+    const enAttente = cotisations.filter(item => item.statut === "en_attente");
+    const totalConfirme = confirmees.reduce(
+      (total, item) => total + Number(item.montant || 0), 0
+    );
+    const totalAttente = enAttente.reduce(
+      (total, item) => total + Number(item.montant || 0), 0
+    );
+
+    document.getElementById("totalCotisations").textContent = formatFCFA(totalConfirme);
+    document.getElementById("cotisationsEnAttente").textContent = formatFCFA(totalAttente);
+    document.getElementById("nombreCotisations").textContent = String(confirmees.length);
+
+    if (cotisations.length === 0) {
+      cotisationsMessage.textContent = "Aucune cotisation n'a encore été enregistrée à votre nom.";
+      return;
+    }
+
+    cotisationsMessage.textContent = "Retrouvez ci-dessous l'historique de vos paiements.";
+
+    cotisations.forEach(function (item) {
+      const row = document.createElement("tr");
+      let statusLabel = "Annulée";
+      let statusClass = "payment-cancelled";
+
+      if (item.statut === "confirmee") {
+        statusLabel = "Confirmée";
+        statusClass = "payment-confirmed";
+      } else if (item.statut === "en_attente") {
+        statusLabel = "En attente";
+        statusClass = "payment-pending";
+      }
+
+      row.innerHTML = `
+        <td>${escapeHTML(item.periode || "—")}</td>
+        <td>${escapeHTML(formatFCFA(item.montant))}</td>
+        <td>${escapeHTML(formatDate(item.date_paiement) || "—")}</td>
+        <td>${escapeHTML(item.mode_paiement || "—")}</td>
+        <td><span class="payment-status ${statusClass}">${statusLabel}</span></td>
+      `;
+      cotisationsList.appendChild(row);
+    });
+  }
 
   // CHARGEMENT DES ACTUALITÉS
   async function loadNews() {
@@ -754,7 +884,7 @@
     await loadNews();
   }
 
-  await loadNews();
+  await Promise.all([loadCotisations(), loadNews()]);
 
 })();
 </script>
