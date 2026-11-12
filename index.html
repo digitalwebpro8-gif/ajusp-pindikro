@@ -6,12 +6,9 @@
   <meta name="description" content="Découvrez l'Association Jeunesse Unie et Solidaire de Pindikro. Ensemble pour un avenir meilleur.">
   <meta name="theme-color" content="#17643D">
   <title>AJUSP | Ensemble pour un avenir meilleur</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --vert:#17643D; --vert-fonce:#10452D; --jaune:#F2C94C;
-      --bleu:#14263F; --blanc:#fff; --fond:#F7F9F6;
-      --texte:#26352D; --gris:#68756D;
-    }
+    :root{--vert:#17643D;--vert-fonce:#10452D;--jaune:#F2C94C;--bleu:#14263F;--blanc:#fff;--fond:#F7F9F6;--texte:#26352D;--gris:#68756D}
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{font-family:Arial,Helvetica,sans-serif;background:var(--fond);color:var(--texte);line-height:1.6}
@@ -58,12 +55,25 @@
     .project-box{background:#fff;border-radius:12px;padding:35px;text-align:center;max-width:800px;margin:auto}
     .project-box h3{color:var(--bleu);font-size:23px;margin-bottom:12px}
     .project-box p{color:var(--gris);margin-bottom:20px}
-    .news-gallery{display:grid;grid-template-columns:1fr 1fr;gap:25px}
+    .news-gallery{display:grid;grid-template-columns:1fr 1.25fr;gap:25px;align-items:stretch}
     .info-panel{background:#fff;border-radius:12px;padding:30px;box-shadow:0 5px 25px #14263F0B}
     .info-panel h3{color:var(--bleu);margin-bottom:12px;font-size:22px}
     .info-panel p{color:var(--gris);margin-bottom:18px}
-    .gallery-preview{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:18px 0}
-    .gallery-preview img{width:100%;height:170px;object-fit:cover;border-radius:8px;background:#E5EAE5}
+    .home-gallery-panel{padding:30px}
+    .home-slideshow{position:relative;width:100%;height:430px;background:#102016;border-radius:12px;overflow:hidden;margin:22px 0 18px}
+    .home-slide{display:none;width:100%;height:100%;position:relative}
+    .home-slide.active{display:block;animation:homeFade .7s}
+    .home-slide img{width:100%;height:100%;object-fit:contain;background:#102016}
+    .home-slide-caption{position:absolute;left:0;right:0;bottom:0;padding:45px 20px 18px;color:white;background:linear-gradient(transparent,#071b12df)}
+    .home-slide-caption strong{font-size:18px}
+    .home-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:42px;height:42px;background:#ffffffdf;color:var(--bleu);font-size:25px;cursor:pointer;z-index:2}
+    .home-arrow:hover{background:var(--jaune)}
+    .home-arrow.prev{left:12px}.home-arrow.next{right:12px}
+    .home-gallery-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+    .home-dots{display:flex;gap:7px}
+    .home-dots button{width:9px;height:9px;border:0;border-radius:50%;background:#bdc9bf;padding:0;cursor:pointer}
+    .home-dots button.active{background:var(--vert);transform:scale(1.2)}
+    .gallery-status{color:var(--gris);padding:25px 10px;text-align:center;background:#f7f9f6;border-radius:9px;margin:20px 0}
     .support{background:var(--vert-fonce);color:#fff;text-align:center;padding:65px 7%}
     .support h2{font-size:clamp(26px,4vw,37px);margin-bottom:13px}
     .support p{max-width:700px;margin:0 auto 25px;color:#E4EEE6}
@@ -73,6 +83,7 @@
     footer p,footer a{color:#D7E0E5;font-size:14px}
     footer a{display:block;margin-bottom:8px}
     .copyright{border-top:1px solid #FFFFFF22;padding-top:18px;text-align:center;font-size:12px;color:#B8C4CE}
+    @keyframes homeFade{from{opacity:.45}to{opacity:1}}
     @media(max-width:1050px){nav{gap:10px}nav a{font-size:12px}.cards{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:760px){
       .topbar{justify-content:center;text-align:center}.topbar span:last-child{display:none}
@@ -85,8 +96,10 @@
       .about-image{min-height:280px}.cards{grid-template-columns:1fr 1fr;gap:12px}
       .card{padding:20px 15px}.card h3{font-size:15px}.card p{font-size:13px}
       .footer-grid{grid-template-columns:1fr;gap:25px}
+      .home-slideshow{height:330px}
     }
-    @media(max-width:420px){.cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}}
+    @media(max-width:420px){.cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}.home-slideshow{height:260px}}
+    @media(prefers-reduced-motion:reduce){.home-slide.active{animation:none}}
   </style>
 </head>
 <body>
@@ -94,62 +107,39 @@
     <span>Association Jeunesse Unie et Solidaire de Pindikro</span>
     <span>Ensemble pour un avenir meilleur</span>
   </div>
-
   <header>
     <a href="index.html" class="brand">
       <img src="logo-ajusp1.jpg" alt="Logo officiel de l'AJUSP">
-      <div>
-        <div class="brand-name">AJUSP</div>
-        <small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small>
-      </div>
+      <div><div class="brand-name">AJUSP</div><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></div>
     </a>
     <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
     <nav id="mainNav">
-      <a href="index.html">Accueil</a>
-      <a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
-      <a href="association.html">Notre association</a>
-      <a href="projets.html">Nos projets</a>
-      <a href="actualites.html">Actualités</a>
-      <a href="galerie.html">Galerie</a>
-      <a href="soutien.html">Nous soutenir</a>
-      <a href="contact-adhesion.html">Adhésion</a>
+      <a href="index.html">Accueil</a><a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+      <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
+      <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
+      <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
       <a href="connexion.html" class="nav-button">Espace membre</a>
     </nav>
   </header>
-
   <main>
-    <section class="hero">
-      <div class="hero-content">
-        <span class="hero-label">ENSEMBLE POUR UN AVENIR MEILLEUR</span>
-        <h1>Unis pour le développement de Pindikro</h1>
-        <p>L'Association Jeunesse Unie et Solidaire de Pindikro rassemble les filles et fils du village autour d'une ambition commune : construire un avenir meilleur pour toute la communauté.</p>
-        <div class="buttons">
-          <a href="association.html" class="btn btn-yellow">Découvrir l'AJUSP</a>
-          <a href="soutien.html" class="btn btn-outline">Soutenir nos actions</a>
-        </div>
+    <section class="hero"><div class="hero-content">
+      <span class="hero-label">ENSEMBLE POUR UN AVENIR MEILLEUR</span>
+      <h1>Unis pour le développement de Pindikro</h1>
+      <p>L'Association Jeunesse Unie et Solidaire de Pindikro rassemble les filles et fils du village autour d'une ambition commune : construire un avenir meilleur pour toute la communauté.</p>
+      <div class="buttons"><a href="association.html" class="btn btn-yellow">Découvrir l'AJUSP</a><a href="soutien.html" class="btn btn-outline">Soutenir nos actions</a></div>
+    </div></section>
+    <section class="section"><div class="about-grid">
+      <div class="about-image" role="img" aria-label="Communauté villageoise de Pindikro"></div>
+      <div class="about-text"><span style="color:var(--vert);font-weight:bold">QUI SOMMES-NOUS ?</span>
+        <h2>Une association au service de Pindikro</h2>
+        <p>L'AJUSP est une association qui œuvre pour le développement de Pindikro et le renforcement des liens entre ses filles et fils.</p>
+        <p>Elle encourage la solidarité, la participation communautaire et la réalisation d'initiatives utiles au progrès du village.</p>
+        <p>Notre ambition est de mobiliser toutes les générations autour d'une vision commune. L'adhésion est ouverte à tous les fils et filles de Pindikro, sans distinction d'âge.</p>
+        <a href="association.html" class="btn btn-yellow">En savoir plus</a>
       </div>
-    </section>
-
-    <section class="section">
-      <div class="about-grid">
-        <div class="about-image" role="img" aria-label="Communauté villageoise de Pindikro"></div>
-        <div class="about-text">
-          <span style="color:var(--vert);font-weight:bold">QUI SOMMES-NOUS ?</span>
-          <h2>Une association au service de Pindikro</h2>
-          <p>L'AJUSP est une association qui œuvre pour le développement de Pindikro et le renforcement des liens entre ses filles et fils.</p>
-          <p>Elle encourage la solidarité, la participation communautaire et la réalisation d'initiatives utiles au progrès du village.</p>
-          <p>Notre ambition est de mobiliser toutes les générations autour d'une vision commune. L'adhésion est ouverte à tous les fils et filles de Pindikro, sans distinction d'âge.</p>
-          <a href="association.html" class="btn btn-yellow">En savoir plus</a>
-        </div>
-      </div>
-    </section>
-
+    </div></section>
     <section class="section domains">
-      <div class="section-heading">
-        <span>Nos engagements</span>
-        <h2>Nos domaines d'intervention</h2>
-        <p>Des actions concrètes pour contribuer au développement durable de notre communauté.</p>
-      </div>
+      <div class="section-heading"><span>Nos engagements</span><h2>Nos domaines d'intervention</h2><p>Des actions concrètes pour contribuer au développement durable de notre communauté.</p></div>
       <div class="cards">
         <article class="card"><div class="card-icon">🎓</div><h3>Éducation et formation</h3><p>Encourager l'éducation, la formation et l'accompagnement des jeunes.</p></article>
         <article class="card"><div class="card-icon">🏗️</div><h3>Infrastructures</h3><p>Soutenir les initiatives d'amélioration du cadre de vie du village.</p></article>
@@ -157,79 +147,69 @@
         <article class="card"><div class="card-icon">🤝</div><h3>Solidarité communautaire</h3><p>Renforcer l'entraide, la cohésion sociale et l'unité entre les habitants.</p></article>
       </div>
     </section>
-
     <section class="section projects">
-      <div class="section-heading">
-        <span>Agir ensemble</span>
-        <h2>Nos projets pour Pindikro</h2>
-        <p>Découvrez les initiatives que l'AJUSP souhaite développer avec la participation de la communauté.</p>
-      </div>
-      <div class="project-box">
-        <h3>Construisons ensemble l'avenir de Pindikro</h3>
-        <p>Chaque projet représente une occasion de transformer nos ambitions collectives en réalisations concrètes.</p>
-        <a href="projets.html" class="btn btn-yellow">Découvrir nos projets</a>
-      </div>
+      <div class="section-heading"><span>Agir ensemble</span><h2>Nos projets pour Pindikro</h2><p>Découvrez les initiatives que l'AJUSP souhaite développer avec la participation de la communauté.</p></div>
+      <div class="project-box"><h3>Construisons ensemble l'avenir de Pindikro</h3><p>Chaque projet représente une occasion de transformer nos ambitions collectives en réalisations concrètes.</p><a href="projets.html" class="btn btn-yellow">Découvrir nos projets</a></div>
     </section>
-
     <section class="section">
-      <div class="section-heading">
-        <span>La vie de l'association</span>
-        <h2>Actualités et moments forts</h2>
-        <p>Suivez les activités de l'association et découvrez la vie de notre communauté.</p>
-      </div>
+      <div class="section-heading"><span>La vie de l'association</span><h2>Actualités et moments forts</h2><p>Suivez les activités de l'association et découvrez la vie de notre communauté.</p></div>
       <div class="news-gallery">
-        <div class="info-panel">
-          <h3>Actualités de l'AJUSP</h3>
-          <p>Retrouvez les communiqués, les réunions, les événements et les différentes activités organisées par l'association.</p>
-          <a href="actualites.html" class="btn btn-yellow">Toutes les actualités</a>
-        </div>
-        <div class="info-panel">
+        <div class="info-panel"><h3>Actualités de l'AJUSP</h3><p>Retrouvez les communiqués, les réunions, les événements et les différentes activités organisées par l'association.</p><a href="actualites.html" class="btn btn-yellow">Toutes les actualités</a></div>
+        <div class="info-panel home-gallery-panel">
           <h3>Galerie de Pindikro</h3>
-          <p>Des images pour partager les moments de solidarité, les rencontres et les activités de notre communauté.</p>
-          <div class="gallery-preview">
-            <img src="banniere-ajusp.jpeg" alt="Communauté de Pindikro">
-            <img src="banniere-ajusp.jpeg" alt="Activités communautaires à Pindikro">
+          <p>Découvrez les photos des rencontres, des actions et des moments de solidarité de notre communauté.</p>
+          <div id="homeGalleryStatus" class="gallery-status">Chargement des dernières photos...</div>
+          <div class="home-slideshow" id="homeSlideshow" hidden>
+            <div id="homeSlides"></div>
+            <button class="home-arrow prev" id="homePrev" aria-label="Photo précédente">‹</button>
+            <button class="home-arrow next" id="homeNext" aria-label="Photo suivante">›</button>
           </div>
-          <a href="galerie.html" class="btn btn-yellow">Voir la galerie</a>
+          <div class="home-gallery-bottom">
+            <div class="home-dots" id="homeDots"></div>
+            <a href="galerie.html" class="btn btn-yellow">Voir toute la galerie</a>
+          </div>
         </div>
       </div>
     </section>
-
-    <section class="support">
-      <h2>Ensemble, faisons avancer Pindikro !</h2>
-      <p>Votre engagement, vos cotisations, vos dons et vos idées peuvent contribuer à la réalisation de nos projets de développement.</p>
-      <div class="buttons" style="justify-content:center">
-        <a href="contact-adhesion.html" class="btn btn-yellow">Rejoindre l'AJUSP</a>
-        <a href="soutien.html" class="btn btn-outline">Faire un don</a>
-      </div>
+    <section class="support"><h2>Ensemble, faisons avancer Pindikro !</h2><p>Votre engagement, vos cotisations, vos dons et vos idées peuvent contribuer à la réalisation de nos projets de développement.</p>
+      <div class="buttons" style="justify-content:center"><a href="contact-adhesion.html" class="btn btn-yellow">Rejoindre l'AJUSP</a><a href="soutien.html" class="btn btn-outline">Faire un don</a></div>
     </section>
   </main>
-
   <footer>
     <div class="footer-grid">
       <div><h3>AJUSP – Pindikro</h3><p>Association Jeunesse Unie et Solidaire de Pindikro.<br>Ensemble pour un avenir meilleur.</p></div>
       <div><h4>Navigation</h4><a href="association.html">Notre association</a><a href="projets.html">Nos projets</a><a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a></div>
-      <div><h4>Nous rejoindre</h4><a href="contact-adhesion.html">Adhésion</a><a href="soutien.html">Faire un don</a><a href="espace-membre/connexion.html">Espace membre</a></div>
+      <div><h4>Nous rejoindre</h4><a href="contact-adhesion.html">Adhésion</a><a href="soutien.html">Faire un don</a><a href="connexion.html">Espace membre</a></div>
     </div>
     <div class="copyright">© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro. Tous droits réservés.</div>
   </footer>
-
   <script>
-    const menuToggle = document.getElementById("menuToggle");
-    const mainNav = document.getElementById("mainNav");
-    menuToggle.addEventListener("click", () => {
-      const isOpen = mainNav.classList.toggle("active");
-      menuToggle.setAttribute("aria-expanded", isOpen);
-      menuToggle.textContent = isOpen ? "✕" : "☰";
-    });
-    mainNav.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => {
-        mainNav.classList.remove("active");
-        menuToggle.setAttribute("aria-expanded", "false");
-        menuToggle.textContent = "☰";
-      });
-    });
-    document.getElementById("year").textContent = new Date().getFullYear();
+    const menuToggle=document.getElementById("menuToggle"),mainNav=document.getElementById("mainNav");
+    menuToggle.addEventListener("click",()=>{const open=mainNav.classList.toggle("active");menuToggle.setAttribute("aria-expanded",String(open));menuToggle.textContent=open?"✕":"☰";});
+    mainNav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{mainNav.classList.remove("active");menuToggle.setAttribute("aria-expanded","false");menuToggle.textContent="☰";}));
+    document.getElementById("year").textContent=new Date().getFullYear();
+
+    (async function loadHomeGallery(){
+      const status=document.getElementById("homeGalleryStatus"),box=document.getElementById("homeSlideshow");
+      const slides=document.getElementById("homeSlides"),dots=document.getElementById("homeDots");
+      const client=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
+      let index=0,timer=null;
+      const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+      function show(n){const all=slides.querySelectorAll(".home-slide"),buttons=dots.querySelectorAll("button");if(!all.length)return;index=(n+all.length)%all.length;all.forEach((el,i)=>el.classList.toggle("active",i===index));buttons.forEach((el,i)=>el.classList.toggle("active",i===index));}
+      function start(){clearInterval(timer);if(slides.children.length>1)timer=setInterval(()=>show(index+1),4500);}
+      try{
+        const {data,error}=await client.from("gallery").select("id,title,description,media_url,media_type,created_at").eq("is_published",true).eq("media_type","image").order("created_at",{ascending:false}).limit(8);
+        if(error)throw error;
+        if(!data||!data.length){status.textContent="Les photos des activités de l'AJUSP apparaîtront ici dès leur publication.";return;}
+        slides.innerHTML=data.map((item,i)=>`<div class="home-slide ${i===0?"active":""}"><img src="${esc(item.media_url)}" alt="${esc(item.title)}" ${i===0?'fetchpriority="high"':'loading="lazy"'}><div class="home-slide-caption"><strong>${esc(item.title)}</strong>${item.description?`<p>${esc(item.description)}</p>`:""}</div></div>`).join("");
+        dots.innerHTML=data.map((item,i)=>`<button type="button" aria-label="Afficher la photo ${i+1}" class="${i===0?"active":""}" data-index="${i}"></button>`).join("");
+        dots.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{show(Number(b.dataset.index));start();}));
+        document.getElementById("homePrev").addEventListener("click",()=>{show(index-1);start();});
+        document.getElementById("homeNext").addEventListener("click",()=>{show(index+1);start();});
+        box.hidden=false;status.hidden=true;start();
+        box.addEventListener("mouseenter",()=>clearInterval(timer));box.addEventListener("mouseleave",start);
+      }catch(e){status.textContent="La galerie est momentanément indisponible. "+(e.message||"");}
+    })();
   </script>
 </body>
 </html>
