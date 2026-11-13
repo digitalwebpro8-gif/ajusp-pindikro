@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -97,7 +96,7 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
 
   <section class="cards admin-only">
     <div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
-    <div class="card"><p>Demandes en attente</p><span class="number" id="requestsCount">...</span></div>
+    <div class="card"><p>Demandes d'adhésion en attente</p><span class="number" id="requestsCount">...</span></div>
     <div class="card"><p>Projets</p><span class="number" id="projectsCount">...</span></div>
     <div class="card"><p>Actualités</p><span class="number" id="newsCount">...</span></div>
   </section>
@@ -110,13 +109,8 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
     <p>Consulte les demandes reçues et traite les nouvelles adhésions.</p>
     <div class="table-wrap">
       <table>
-        <thead><tr>
-          <th>Nom et prénoms</th><th>Téléphone</th><th>E-mail</th>
-          <th>Résidence</th><th>Date</th><th>Statut</th><th>Actions</th>
-        </tr></thead>
-        <tbody id="requestsTable">
-          <tr><td colspan="7" class="empty">Chargement des demandes...</td></tr>
-        </tbody>
+        <thead><tr><th>Nom et prénoms</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="requestsTable"><tr><td colspan="7" class="empty">Chargement des demandes...</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -126,36 +120,43 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
       <h2>Gestion des responsables</h2>
       <button class="refresh" id="refreshProfilesBtn">Actualiser</button>
     </div>
-
-    <div class="notice">
-      Cette rubrique permet d'attribuer les fonctions associatives.
-      Seul l'administrateur technique peut modifier les responsabilités
-      et les droits associés. L'adresse e-mail des membres n'est pas modifiée ici.
-    </div>
-
+    <div class="notice">Cette rubrique permet d'attribuer les fonctions associatives. Seul l'administrateur technique peut modifier les responsabilités et les droits associés. L'adresse e-mail des membres n'est pas modifiée ici.</div>
     <p id="responsablesInfo">Chargement des membres...</p>
-
     <div class="table-wrap">
       <table>
-        <thead><tr>
-          <th>Nom et prénoms</th>
-          <th>Rôle technique</th>
-          <th>Fonction associative</th>
-          <th>Statut</th>
-          <th>Gestion</th>
-        </tr></thead>
-        <tbody id="profilesTable">
-          <tr><td colspan="5" class="empty">Chargement...</td></tr>
-        </tbody>
+        <thead><tr><th>Nom et prénoms</th><th>Rôle technique</th><th>Fonction associative</th><th>Statut</th><th>Gestion</th></tr></thead>
+        <tbody id="profilesTable"><tr><td colspan="5" class="empty">Chargement...</td></tr></tbody>
       </table>
     </div>
   </section>
 
+  <section class="panel admin-only" id="donationsPanel">
+    <div class="panel-header"><h2>Propositions de dons</h2><button class="refresh" id="refreshDonationsBtn">Actualiser</button></div>
+    <p>Un don ne doit être confirmé qu'après réception et vérification effective du versement.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Donateur</th><th>Montant</th><th>Téléphone</th><th>E-mail</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="donationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel admin-only" id="partnershipsPanel">
+    <div class="panel-header"><h2>Demandes de partenariat</h2><button class="refresh" id="refreshPartnershipsBtn">Actualiser</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Organisation</th><th>Contact</th><th>Téléphone</th><th>E-mail</th><th>Type</th><th>Domaine</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="partnershipsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel admin-only" id="skillsPanel">
+    <div class="panel-header"><h2>Compétences proposées</h2><button class="refresh" id="refreshSkillsBtn">Actualiser</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nom</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Compétence</th><th>Disponibilité</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="skillsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
+    </table></div>
+  </section>
+
   <section class="panel" id="cotisationsPanel">
-    <div class="panel-header">
-      <h2>Gestion des cotisations</h2>
-      <button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button>
-    </div>
+    <div class="panel-header"><h2>Gestion des cotisations</h2><button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button></div>
     <p id="cotisationsAccessInfo">Suivi des cotisations enregistrées pour les membres de l'AJUSP.</p>
     <div class="cotisation-summary">
       <div class="cotisation-stat">Montant confirmé<strong id="cotTotalConfirme">0 FCFA</strong></div>
@@ -166,81 +167,35 @@ footer{text-align:center;padding:25px;color:var(--gray);font-size:13px}
       <h3 id="cotisationFormTitle">Enregistrer une cotisation</h3>
       <form id="cotisationForm">
         <div class="form-grid">
-          <div class="form-group">
-            <label for="cotMember">Membre concerné *</label>
-            <select id="cotMember" required><option value="">Chargement des membres...</option></select>
-          </div>
-          <div class="form-group">
-            <label for="cotAmount">Montant (FCFA) *</label>
-            <input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000">
-          </div>
-          <div class="form-group">
-            <label for="cotPeriod">Période concernée *</label>
-            <input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026">
-          </div>
-          <div class="form-group">
-            <label for="cotDate">Date de paiement *</label>
-            <input id="cotDate" type="date" required>
-          </div>
-          <div class="form-group">
-            <label for="cotMode">Mode de paiement</label>
-            <select id="cotMode">
-              <option value="Espèces">Espèces</option>
-              <option value="Mobile Money">Mobile Money</option>
-              <option value="Virement bancaire">Virement bancaire</option>
-              <option value="Chèque">Chèque</option>
-              <option value="Autre">Autre</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="cotStatus">Statut *</label>
-            <select id="cotStatus" required>
-              <option value="confirmee">Paiement confirmé</option>
-              <option value="en_attente">En attente</option>
-            </select>
-          </div>
+          <div class="form-group"><label for="cotMember">Membre concerné *</label><select id="cotMember" required><option value="">Chargement des membres...</option></select></div>
+          <div class="form-group"><label for="cotAmount">Montant (FCFA) *</label><input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000"></div>
+          <div class="form-group"><label for="cotPeriod">Période concernée *</label><input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026"></div>
+          <div class="form-group"><label for="cotDate">Date de paiement *</label><input id="cotDate" type="date" required></div>
+          <div class="form-group"><label for="cotMode">Mode de paiement</label><select id="cotMode"><option value="Espèces">Espèces</option><option value="Mobile Money">Mobile Money</option><option value="Virement bancaire">Virement bancaire</option><option value="Chèque">Chèque</option><option value="Autre">Autre</option></select></div>
+          <div class="form-group"><label for="cotStatus">Statut *</label><select id="cotStatus" required><option value="confirmee">Paiement confirmé</option><option value="en_attente">En attente</option></select></div>
         </div>
-        <div class="form-group">
-          <label for="cotDescription">Observation (facultatif)</label>
-          <textarea id="cotDescription" maxlength="1000" placeholder="Précision sur le paiement..."></textarea>
-        </div>
-        <div class="action-buttons">
-          <button type="submit" class="primary" id="saveCotisationBtn">Enregistrer la cotisation</button>
-          <button type="button" class="secondary" id="cancelCotisationEditBtn" hidden>Annuler</button>
-        </div>
+        <div class="form-group"><label for="cotDescription">Observation (facultatif)</label><textarea id="cotDescription" maxlength="1000" placeholder="Précision sur le paiement..."></textarea></div>
+        <div class="action-buttons"><button type="submit" class="primary" id="saveCotisationBtn">Enregistrer la cotisation</button><button type="button" class="secondary" id="cancelCotisationEditBtn" hidden>Annuler</button></div>
         <p id="cotisationFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
       </form>
     </div>
     <h3>Historique des cotisations</h3>
     <div id="cotisationsMessage" class="empty">Chargement des cotisations...</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Membre</th><th>Période</th><th>Montant</th><th>Date</th>
-          <th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th>
-        </tr></thead>
-        <tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
-      </table>
-    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th></tr></thead>
+      <tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+    </table></div>
   </section>
 
   <section class="panel admin-only">
     <h2>Accès rapides</h2>
     <div class="quick-links">
-      <a href="index.html">Voir le site public</a>
-      <a href="membres.html">Gestion des membres</a>
-      <a href="actualites.html">Gestion des actualités</a>
-      <a href="projets.html">Gestion des projets</a>
-      <a href="cotisations.html">Cotisations et dons</a>
-      <a href="depenses.html">Recettes et dépenses</a>
+      <a href="index.html">Voir le site public</a><a href="membres.html">Gestion des membres</a><a href="actualites.html">Gestion des actualités</a><a href="projets.html">Gestion des projets</a><a href="cotisations.html">Cotisations et dons</a><a href="depenses.html">Recettes et dépenses</a>
     </div>
   </section>
 </main>
 
-<footer>
-  Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)
-  <br>Ensemble pour un avenir meilleur
-</footer>
+<footer>Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>Ensemble pour un avenir meilleur</footer>
 
 <script>
 (async function(){
@@ -251,12 +206,8 @@ const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
 const TECHNICAL_ADMIN_ID="b44858ef-0e0e-4efb-a6c6-9b9bc7167fa2";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-let currentUser=null;
-let isTechnicalAdmin=false;
-let isAdmin=false;
-let canManageCotisations=false;
-let editingCotisationId=null;
-let cotisationRows=[];
+let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false;
+let editingCotisationId=null,cotisationRows=[];
 
 const functions=[
  {value:"president",label:"Président"},
@@ -269,460 +220,257 @@ const functions=[
  {value:"responsable_communication",label:"Responsable communication"},
  {value:"membre_communication",label:"Membre communication"}
 ];
-
-const executiveFunctions=[
- "president","vice_president_1","vice_president_2","secretaire_general"
-];
+const executiveFunctions=["president","vice_president_1","vice_president_2","secretaire_general"];
 
 function showMessage(message,type="error"){
- const box=$("globalMessage");
- box.textContent=message;
- box.className="message "+type;
+ const box=$("globalMessage");box.textContent=message;box.className="message "+type;
 }
-function hideMessage(){
- $("globalMessage").textContent="";
- $("globalMessage").className="message";
-}
-function safeText(value){
- return String(value??"").replace(/[&<>"']/g,char=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
- }[char]));
-}
-function formatDate(value){
- if(!value)return "—";
- const date=new Date(value);
- return Number.isNaN(date.getTime())?"—":date.toLocaleDateString("fr-FR");
-}
-function functionLabel(value){
- const found=functions.find(item=>item.value===value);
- return found?found.label:(value||"Aucune fonction");
-}
+function hideMessage(){$("globalMessage").textContent="";$("globalMessage").className="message";}
+function safeText(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));}
+function formatDate(value){if(!value)return "—";const date=new Date(value);return Number.isNaN(date.getTime())?"—":date.toLocaleDateString("fr-FR");}
+function functionLabel(value){const found=functions.find(item=>item.value===value);return found?found.label:(value||"Aucune fonction");}
 function statusLabel(status){
  if(status==="pending")return '<span class="status pending">En attente</span>';
- if(status==="approved")return '<span class="status approved">Approuvée</span>';
+ if(status==="approved"||status==="confirmed")return '<span class="status approved">'+(status==="confirmed"?"Confirmé":"Approuvée")+'</span>';
  if(status==="rejected")return '<span class="status rejected">Rejetée</span>';
  return safeText(status||"Inconnu");
 }
-
-async function checkAccess(){
- const {data:sessionData,error:sessionError}=await client.auth.getSession();
- if(sessionError||!sessionData.session){
-  window.location.href="connexion.html";
-  return false;
- }
- currentUser=sessionData.session.user;
- const {data:profile,error}=await client.from("profiles")
-  .select("full_name,role,status,fonction")
-  .eq("id",currentUser.id).single();
- if(error||!profile||profile.status!=="active"){
-  showMessage("Accès refusé : votre compte n'est pas actif ou votre profil est introuvable.");
-  await client.auth.signOut();
-  setTimeout(()=>window.location.href="connexion.html",2500);
-  return false;
- }
- isAdmin=profile.role==="admin";
- canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
- isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
- if(!isAdmin&&!canManageCotisations){
-  showMessage("Accès refusé : cette page est réservée aux administrateurs et aux responsables de la trésorerie.");
-  await client.auth.signOut();
-  setTimeout(()=>window.location.href="connexion.html",2500);
-  return false;
- }
- $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
- if(!isAdmin){
-  document.querySelectorAll(".admin-only").forEach(section=>section.hidden=true);
-  $("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
- }
- if(canManageCotisations){
-  $("cotisationFormPanel").hidden=false;
-  $("cotActionsHeader").hidden=false;
- }else{
-  $("cotisationsAccessInfo").textContent="Consultation des cotisations. Seuls le trésorier et son adjoint peuvent enregistrer ou modifier les paiements.";
- }
- return true;
-}
-
-async function loadMembersCount(){
- const {count,error}=await client.from("profiles")
-  .select("id",{count:"exact",head:true})
-  .eq("status","active").eq("role","member");
- $("membersCount").textContent=error?"—":(count??0);
- if(error)console.error(error);
-}
-
-async function loadRequests(){
- const table=$("requestsTable");
- table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("membership_requests")
-  .select("id,full_name,phone,email,residence,message,status,created_at,user_id")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  $("requestsCount").textContent="—";
-  table.innerHTML='<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';
-  showMessage("Erreur de lecture des demandes : "+error.message);
-  return;
- }
-
- const requests=data||[];
- $("requestsCount").textContent=requests.filter(r=>r.status==="pending").length;
-
- if(!requests.length){
-  table.innerHTML="<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";
-  return;
- }
-
- table.innerHTML=requests.map(request=>{
-  const canProcess=request.status==="pending"&&!request.user_id;
-  const actions=canProcess?`
-   <button class="approve" data-action="approve" data-id="${safeText(request.id)}">Approuver</button>
-   <button class="reject" data-action="reject" data-id="${safeText(request.id)}">Rejeter</button>
-  `:"—";
-  return `<tr>
-   <td><strong>${safeText(request.full_name)}</strong>
-   ${request.message?`<br><small>${safeText(request.message)}</small>`:""}</td>
-   <td>${safeText(request.phone||"—")}</td>
-   <td>${safeText(request.email||"—")}</td>
-   <td>${safeText(request.residence||"—")}</td>
-   <td>${formatDate(request.created_at)}</td>
-   <td>${statusLabel(request.status)}</td>
-   <td>${actions}</td>
-  </tr>`;
- }).join("");
-}
-
-async function loadOptionalCount(tableName,elementId){
- const {count,error}=await client.from(tableName)
-  .select("*",{count:"exact",head:true});
- $(elementId).textContent=error?"—":(count??0);
- if(error)console.warn(error);
-}
-
-async function loadProfiles(){
- const table=$("profilesTable");
- table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("profiles")
-  .select("id,full_name,role,fonction,status,created_at")
-  .order("created_at",{ascending:true});
-
- if(error){
-  console.error(error);
-  table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';
-  $("responsablesInfo").textContent="Erreur : "+error.message;
-  return;
- }
-
- const profiles=data||[];
- $("responsablesInfo").textContent=profiles.length+" profil(s) enregistré(s).";
-
- if(!profiles.length){
-  table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';
-  return;
- }
-
- table.innerHTML=profiles.map(profile=>{
-  const isProtected=profile.id===TECHNICAL_ADMIN_ID;
-  const options=functions.map(item=>
-   `<option value="${item.value}" ${profile.fonction===item.value?"selected":""}>${item.label}</option>`
-  ).join("");
-
-  const management=isTechnicalAdmin&&!isProtected
-   ?`<select id="fonction-${safeText(profile.id)}">${options}
-      <option value="" ${!profile.fonction?"selected":""}>Aucune fonction</option>
-     </select>
-     <br><button class="save-function" data-action="save-function" data-id="${safeText(profile.id)}">Enregistrer</button>`
-   :isProtected
-    ?'<span class="locked">Compte technique protégé</span>'
-    :'<span class="locked">Consultation uniquement</span>';
-
-  return `<tr>
-   <td><strong>${safeText(profile.full_name||"Sans nom")}</strong></td>
-   <td>${safeText(profile.role)}</td>
-   <td>${safeText(functionLabel(profile.fonction))}</td>
-   <td>${safeText(profile.status)}</td>
-   <td>${management}</td>
-  </tr>`;
- }).join("");
-}
-
-async function saveFunction(memberId){
- if(!isTechnicalAdmin){
-  showMessage("Seul l'administrateur technique peut modifier les fonctions.");
-  return;
- }
- if(memberId===TECHNICAL_ADMIN_ID){
-  showMessage("Le compte technique est protégé et ne peut pas être modifié ici.");
-  return;
- }
-
- const select=$("fonction-"+memberId);
- if(!select)return;
- const newFunction=select.value||null;
- const newRole=executiveFunctions.includes(newFunction)?"admin":"member";
-
- const message=newFunction
-  ?`Confirmer l'attribution de la fonction « ${functionLabel(newFunction)} » ?\nRôle technique attribué : ${newRole}.`
-  :"Confirmer le retrait de la fonction associative ?\nLe rôle technique deviendra member.";
-
- if(!confirm(message))return;
-
- hideMessage();
- const button=document.querySelector(`button[data-action="save-function"][data-id="${memberId}"]`);
- if(button)button.disabled=true;
-
- const {data,error}=await client.from("profiles")
-  .update({fonction:newFunction,role:newRole})
-  .eq("id",memberId)
-  .select("id,full_name,role,fonction");
-
- if(button)button.disabled=false;
-
- if(error){
-  console.error(error);
-  showMessage("Modification impossible : "+error.message);
-  return;
- }
- if(!data||data.length===0){
-  showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");
-  return;
- }
-
- showMessage("La fonction de "+(data[0].full_name||"ce membre")+" a été mise à jour.","success");
- await loadProfiles();
- await loadMembersCount();
-}
-
-async function approveRequest(requestId){
- if(!confirm("Confirmer l'approbation de cette demande ?"))return;
- hideMessage();
-
- const {data,error}=await client.functions.invoke("approve-membership",{
-  body:{request_id:requestId}
- });
- if(error){
-  console.error(error);
-  showMessage("Échec de l'approbation : "+error.message);
-  return;
- }
- if(!data||!data.success){
-  showMessage(data?.error||"L'approbation n'a pas pu être effectuée.");
-  return;
- }
- showMessage(data.message||"Demande approuvée avec succès.","success");
- await loadDashboard();
-}
-
-async function rejectRequest(requestId){
- if(!confirm("Confirmer le rejet de cette demande ?"))return;
- hideMessage();
-
- const {data,error}=await client.from("membership_requests")
-  .update({status:"rejected"})
-  .eq("id",requestId).eq("status","pending")
-  .is("user_id",null).select("id");
-
- if(error){
-  showMessage("Impossible de rejeter la demande : "+error.message);
-  return;
- }
- if(!data||!data.length){
-  showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");
-  return;
- }
- showMessage("La demande a été rejetée.","success");
- await loadDashboard();
-}
-
-function formatFCFA(value){
- return Number(value||0).toLocaleString("fr-FR")+" FCFA";
-}
+function formatFCFA(value){return Number(value||0).toLocaleString("fr-FR")+" FCFA";}
 function cotStatusLabel(status){
  if(status==="confirmee")return '<span class="status approved">Confirmée</span>';
  if(status==="en_attente")return '<span class="status pending">En attente</span>';
  if(status==="annulee")return '<span class="status rejected">Annulée</span>';
  return safeText(status||"Inconnu");
 }
+
+async function checkAccess(){
+ const {data:sessionData,error:sessionError}=await client.auth.getSession();
+ if(sessionError||!sessionData.session){window.location.href="connexion.html";return false;}
+ currentUser=sessionData.session.user;
+ const {data:profile,error}=await client.from("profiles").select("full_name,role,status,fonction").eq("id",currentUser.id).single();
+ if(error||!profile||profile.status!=="active"){
+  showMessage("Accès refusé : votre compte n'est pas actif ou votre profil est introuvable.");
+  await client.auth.signOut();setTimeout(()=>window.location.href="connexion.html",2500);return false;
+ }
+ isAdmin=profile.role==="admin";
+ canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
+ isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
+ if(!isAdmin&&!canManageCotisations){
+  showMessage("Accès refusé : cette page est réservée aux administrateurs et aux responsables de la trésorerie.");
+  await client.auth.signOut();setTimeout(()=>window.location.href="connexion.html",2500);return false;
+ }
+ $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
+ if(!isAdmin){
+  document.querySelectorAll(".admin-only").forEach(section=>section.hidden=true);
+  $("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
+ }
+ if(canManageCotisations){$("cotisationFormPanel").hidden=false;$("cotActionsHeader").hidden=false;}
+ else $("cotisationsAccessInfo").textContent="Consultation des cotisations. Seuls le trésorier et son adjoint peuvent enregistrer ou modifier les paiements.";
+ return true;
+}
+
+async function loadMembersCount(){
+ const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true}).eq("status","active").eq("role","member");
+ $("membersCount").textContent=error?"—":(count??0);if(error)console.error(error);
+}
+async function loadRequests(){
+ const table=$("requestsTable");table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
+ const {data,error}=await client.from("membership_requests").select("id,full_name,phone,email,residence,message,status,created_at,user_id").order("created_at",{ascending:false});
+ if(error){console.error(error);$("requestsCount").textContent="—";table.innerHTML='<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';showMessage("Erreur de lecture des demandes : "+error.message);return;}
+ const requests=data||[];$("requestsCount").textContent=requests.filter(r=>r.status==="pending").length;
+ if(!requests.length){table.innerHTML="<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";return;}
+ table.innerHTML=requests.map(request=>{
+  const canProcess=request.status==="pending"&&!request.user_id;
+  const actions=canProcess?`<button class="approve" data-action="approve" data-id="${safeText(request.id)}">Approuver</button><button class="reject" data-action="reject" data-id="${safeText(request.id)}">Rejeter</button>`:"—";
+  return `<tr><td><strong>${safeText(request.full_name)}</strong>${request.message?`<br><small>${safeText(request.message)}</small>`:""}</td><td>${safeText(request.phone||"—")}</td><td>${safeText(request.email||"—")}</td><td>${safeText(request.residence||"—")}</td><td>${formatDate(request.created_at)}</td><td>${statusLabel(request.status)}</td><td>${actions}</td></tr>`;
+ }).join("");
+}
+async function loadOptionalCount(tableName,elementId){
+ const {count,error}=await client.from(tableName).select("*",{count:"exact",head:true});
+ $(elementId).textContent=error?"—":(count??0);if(error)console.warn(error);
+}
+async function loadProfiles(){
+ const table=$("profilesTable");table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
+ const {data,error}=await client.from("profiles").select("id,full_name,role,fonction,status,created_at").order("created_at",{ascending:true});
+ if(error){console.error(error);table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';$("responsablesInfo").textContent="Erreur : "+error.message;return;}
+ const profiles=data||[];$("responsablesInfo").textContent=profiles.length+" profil(s) enregistré(s).";
+ if(!profiles.length){table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';return;}
+ table.innerHTML=profiles.map(profile=>{
+  const isProtected=profile.id===TECHNICAL_ADMIN_ID;
+  const options=functions.map(item=>`<option value="${item.value}" ${profile.fonction===item.value?"selected":""}>${item.label}</option>`).join("");
+  const management=isTechnicalAdmin&&!isProtected?`<select id="fonction-${safeText(profile.id)}"><option value="" ${!profile.fonction?"selected":""}>Aucune fonction</option>${options}</select><br><button class="save-function" data-action="save-function" data-id="${safeText(profile.id)}">Enregistrer</button>`:isProtected?'<span class="locked">Compte technique protégé</span>':'<span class="locked">Consultation uniquement</span>';
+  return `<tr><td><strong>${safeText(profile.full_name||"Sans nom")}</strong></td><td>${safeText(profile.role)}</td><td>${safeText(functionLabel(profile.fonction))}</td><td>${safeText(profile.status)}</td><td>${management}</td></tr>`;
+ }).join("");
+}
+async function saveFunction(memberId){
+ if(!isTechnicalAdmin){showMessage("Seul l'administrateur technique peut modifier les fonctions.");return;}
+ if(memberId===TECHNICAL_ADMIN_ID){showMessage("Le compte technique est protégé et ne peut pas être modifié ici.");return;}
+ const select=$("fonction-"+memberId);if(!select)return;
+ const newFunction=select.value||null,newRole=executiveFunctions.includes(newFunction)?"admin":"member";
+ const message=newFunction?`Confirmer l'attribution de la fonction « ${functionLabel(newFunction)} » ?\nRôle technique attribué : ${newRole}.`:"Confirmer le retrait de la fonction associative ?\nLe rôle technique deviendra member.";
+ if(!confirm(message))return;
+ hideMessage();const button=document.querySelector(`button[data-action="save-function"][data-id="${memberId}"]`);if(button)button.disabled=true;
+ const {data,error}=await client.from("profiles").update({fonction:newFunction,role:newRole}).eq("id",memberId).select("id,full_name,role,fonction");
+ if(button)button.disabled=false;
+ if(error){console.error(error);showMessage("Modification impossible : "+error.message);return;}
+ if(!data||data.length===0){showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");return;}
+ showMessage("La fonction de "+(data[0].full_name||"ce membre")+" a été mise à jour.","success");await loadProfiles();await loadMembersCount();
+}
+async function approveRequest(requestId){
+ if(!confirm("Confirmer l'approbation de cette demande ?"))return;hideMessage();
+ const {data,error}=await client.functions.invoke("approve-membership",{body:{request_id:requestId}});
+ if(error){console.error(error);showMessage("Échec de l'approbation : "+error.message);return;}
+ if(!data||!data.success){showMessage(data?.error||"L'approbation n'a pas pu être effectuée.");return;}
+ showMessage(data.message||"Demande approuvée avec succès.","success");await loadDashboard();
+}
+async function rejectRequest(requestId){
+ if(!confirm("Confirmer le rejet de cette demande ?"))return;hideMessage();
+ const {data,error}=await client.from("membership_requests").update({status:"rejected"}).eq("id",requestId).eq("status","pending").is("user_id",null).select("id");
+ if(error){showMessage("Impossible de rejeter la demande : "+error.message);return;}
+ if(!data||!data.length){showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");return;}
+ showMessage("La demande a été rejetée.","success");await loadDashboard();
+}
+
+/* Suivi des dons, partenariats et compétences */
+async function loadDonations(){
+ const table=$("donationsTable");table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
+ const {data,error}=await client.from("donations").select("id,donor_name,amount,currency,phone,email,message,status,created_at").order("created_at",{ascending:false});
+ if(error){console.error(error);table.innerHTML=`<tr><td colspan="7" class="empty">Erreur de chargement : ${safeText(error.message)}</td></tr>`;return;}
+ if(!data||!data.length){table.innerHTML='<tr><td colspan="7" class="empty">Aucune proposition de don.</td></tr>';return;}
+ table.innerHTML=data.map(row=>{
+  const actions=row.status==="pending"?`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(row.id)}">Confirmer reçu</button><button class="reject" data-support-action="donation-reject" data-id="${safeText(row.id)}">Rejeter</button>`:"—";
+  const amount=formatFCFA(row.amount)+(row.currency&&row.currency!=="FCFA"?" ("+safeText(row.currency)+")":"");
+  return `<tr><td><strong>${safeText(row.donor_name)}</strong>${row.message?`<br><small>${safeText(row.message)}</small>`:""}</td><td>${amount}</td><td>${safeText(row.phone||"—")}</td><td>${safeText(row.email||"—")}</td><td>${formatDate(row.created_at)}</td><td>${statusLabel(row.status)}</td><td>${actions}</td></tr>`;
+ }).join("");
+}
+async function loadPartnerships(){
+ const table=$("partnershipsTable");table.innerHTML='<tr><td colspan="10" class="empty">Chargement...</td></tr>';
+ const {data,error}=await client.from("partnership_requests").select("id,organization,contact_name,phone,email,partnership_type,domain,message,status,created_at").order("created_at",{ascending:false});
+ if(error){console.error(error);table.innerHTML=`<tr><td colspan="10" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;return;}
+ if(!data||!data.length){table.innerHTML='<tr><td colspan="10" class="empty">Aucune demande de partenariat.</td></tr>';return;}
+ table.innerHTML=data.map(row=>{
+  const actions=row.status==="pending"?`<button class="approve" data-support-action="partnership-approve" data-id="${safeText(row.id)}">Approuver</button><button class="reject" data-support-action="partnership-reject" data-id="${safeText(row.id)}">Rejeter</button>`:"—";
+  return `<tr><td><strong>${safeText(row.organization)}</strong></td><td>${safeText(row.contact_name)}</td><td>${safeText(row.phone)}</td><td>${safeText(row.email||"—")}</td><td>${safeText(row.partnership_type)}</td><td>${safeText(row.domain||"—")}</td><td>${safeText(row.message)}</td><td>${formatDate(row.created_at)}</td><td>${statusLabel(row.status)}</td><td>${actions}</td></tr>`;
+ }).join("");
+}
+async function loadSkills(){
+ const table=$("skillsTable");table.innerHTML='<tr><td colspan="10" class="empty">Chargement...</td></tr>';
+ const {data,error}=await client.from("skill_offers").select("id,full_name,phone,email,residence,skill,availability,message,status,created_at").order("created_at",{ascending:false});
+ if(error){console.error(error);table.innerHTML=`<tr><td colspan="10" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;return;}
+ if(!data||!data.length){table.innerHTML='<tr><td colspan="10" class="empty">Aucune compétence proposée.</td></tr>';return;}
+ table.innerHTML=data.map(row=>{
+  const actions=row.status==="pending"?`<button class="approve" data-support-action="skill-approve" data-id="${safeText(row.id)}">Approuver</button><button class="reject" data-support-action="skill-reject" data-id="${safeText(row.id)}">Rejeter</button>`:"—";
+  return `<tr><td><strong>${safeText(row.full_name)}</strong></td><td>${safeText(row.phone)}</td><td>${safeText(row.email||"—")}</td><td>${safeText(row.residence||"—")}</td><td>${safeText(row.skill)}</td><td>${safeText(row.availability)}</td><td>${safeText(row.message)}</td><td>${formatDate(row.created_at)}</td><td>${statusLabel(row.status)}</td><td>${actions}</td></tr>`;
+ }).join("");
+}
+async function updateSupportRequest(tableName,id,newStatus,label){
+ if(!isAdmin){showMessage("Seul un administrateur peut traiter ces demandes.");return;}
+ const confirmation=tableName==="donations"&&newStatus==="confirmed"?"Confirmer que le versement du don a réellement été reçu ?":newStatus==="approved"?"Confirmer l'approbation de cette demande ?":"Confirmer le rejet de cette demande ?";
+ if(!confirm(confirmation))return;hideMessage();
+ const {data,error}=await client.from(tableName).update({status:newStatus}).eq("id",id).eq("status","pending").select("id");
+ if(error){console.error(error);showMessage("Modification impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("La demande n'a pas été modifiée. Elle a peut-être déjà été traitée.");return;}
+ showMessage(label+" : opération effectuée avec succès.","success");
+ if(tableName==="donations")await loadDonations();
+ if(tableName==="partnership_requests")await loadPartnerships();
+ if(tableName==="skill_offers")await loadSkills();
+}
+async function handleSupportAction(event){
+ const button=event.target.closest("button[data-support-action]");if(!button)return;
+ const action=button.dataset.supportAction,id=button.dataset.id;button.disabled=true;
+ try{
+  if(action==="donation-confirm")await updateSupportRequest("donations",id,"confirmed","Don");
+  if(action==="donation-reject")await updateSupportRequest("donations",id,"rejected","Don");
+  if(action==="partnership-approve")await updateSupportRequest("partnership_requests",id,"approved","Partenariat");
+  if(action==="partnership-reject")await updateSupportRequest("partnership_requests",id,"rejected","Partenariat");
+  if(action==="skill-approve")await updateSupportRequest("skill_offers",id,"approved","Offre de compétence");
+  if(action==="skill-reject")await updateSupportRequest("skill_offers",id,"rejected","Offre de compétence");
+ }finally{button.disabled=false;}
+}
+
 async function loadCotisationMembers(){
  if(!canManageCotisations)return;
- const select=$("cotMember");
- select.innerHTML='<option value="">Chargement des membres...</option>';
- const {data,error}=await client.from("profiles").select("id,full_name")
-  .eq("status","active").order("full_name",{ascending:true});
- if(error){
-  select.innerHTML='<option value="">Impossible de charger les membres</option>';
-  showMessage("Chargement des membres impossible : "+error.message);
-  return;
- }
- if(!data||!data.length){
-  select.innerHTML='<option value="">Aucun membre actif trouvé</option>';
-  return;
- }
- select.innerHTML='<option value="">Sélectionner un membre</option>'+
-  data.map(member=>`<option value="${safeText(member.id)}">${safeText(member.full_name||"Membre sans nom")}</option>`).join("");
+ const select=$("cotMember");select.innerHTML='<option value="">Chargement des membres...</option>';
+ const {data,error}=await client.from("profiles").select("id,full_name").eq("status","active").order("full_name",{ascending:true});
+ if(error){select.innerHTML='<option value="">Impossible de charger les membres</option>';showMessage("Chargement des membres impossible : "+error.message);return;}
+ if(!data||!data.length){select.innerHTML='<option value="">Aucun membre actif trouvé</option>';return;}
+ select.innerHTML='<option value="">Sélectionner un membre</option>'+data.map(member=>`<option value="${safeText(member.id)}">${safeText(member.full_name||"Membre sans nom")}</option>`).join("");
 }
 async function loadCotisations(){
- const table=$("cotisationsTable");
- $("cotisationsMessage").textContent="Chargement des cotisations...";
- table.innerHTML="";
- const {data,error}=await client.from("cotisations")
-  .select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)")
-  .order("date_paiement",{ascending:false});
- if(error){
-  $("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;
-  table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';
-  console.error(error);
-  return;
- }
+ const table=$("cotisationsTable");$("cotisationsMessage").textContent="Chargement des cotisations...";table.innerHTML="";
+ const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
+ if(error){$("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';console.error(error);return;}
  cotisationRows=data||[];
- const confirmed=cotisationRows.filter(row=>row.statut==="confirmee");
- const waiting=cotisationRows.filter(row=>row.statut==="en_attente");
+ const confirmed=cotisationRows.filter(row=>row.statut==="confirmee"),waiting=cotisationRows.filter(row=>row.statut==="en_attente");
  $("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((sum,row)=>sum+Number(row.montant||0),0));
- $("cotTotalAttente").textContent=formatFCFA(waiting.reduce((sum,row)=>sum+Number(row.montant||0),0));
- $("cotNombre").textContent=String(cotisationRows.length);
- if(!cotisationRows.length){
-  $("cotisationsMessage").textContent="Aucune cotisation enregistrée pour le moment.";
-  table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';
-  return;
- }
+ $("cotTotalAttente").textContent=formatFCFA(waiting.reduce((sum,row)=>sum+Number(row.montant||0),0));$("cotNombre").textContent=String(cotisationRows.length);
+ if(!cotisationRows.length){$("cotisationsMessage").textContent="Aucune cotisation enregistrée pour le moment.";table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';return;}
  $("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregistrée(s).";
  table.innerHTML=cotisationRows.map(row=>{
   const memberName=row.profiles?.full_name||"Membre";
-  const actions=canManageCotisations
-   ?`<td><div class="action-buttons">
-       <button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(row.id)}">Modifier</button>
-       <button type="button" class="danger" data-cot-action="delete" data-id="${safeText(row.id)}">Supprimer</button>
-     </div></td>`:"";
-  return `<tr><td>${safeText(memberName)}</td><td>${safeText(row.periode)}</td>
-   <td>${formatFCFA(row.montant)}</td><td>${formatDate(row.date_paiement)}</td>
-   <td>${safeText(row.mode_paiement||"—")}</td><td>${cotStatusLabel(row.statut)}</td>${actions}</tr>`;
+  const actions=canManageCotisations?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(row.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(row.id)}">Supprimer</button></div></td>`:"";
+  return `<tr><td>${safeText(memberName)}</td><td>${safeText(row.periode)}</td><td>${formatFCFA(row.montant)}</td><td>${formatDate(row.date_paiement)}</td><td>${safeText(row.mode_paiement||"—")}</td><td>${cotStatusLabel(row.statut)}</td>${actions}</tr>`;
  }).join("");
 }
 function resetCotisationForm(){
- $("cotisationForm").reset();
- editingCotisationId=null;
- $("cotisationFormTitle").textContent="Enregistrer une cotisation";
- $("saveCotisationBtn").textContent="Enregistrer la cotisation";
- $("cancelCotisationEditBtn").hidden=true;
- $("cotDate").value=new Date().toISOString().slice(0,10);
- $("cotisationFormMessage").textContent="";
+ $("cotisationForm").reset();editingCotisationId=null;$("cotisationFormTitle").textContent="Enregistrer une cotisation";$("saveCotisationBtn").textContent="Enregistrer la cotisation";$("cancelCotisationEditBtn").hidden=true;$("cotDate").value=new Date().toISOString().slice(0,10);$("cotisationFormMessage").textContent="";
 }
 function editCotisation(id){
- if(!canManageCotisations)return;
- const row=cotisationRows.find(item=>String(item.id)===String(id));
- if(!row)return;
- editingCotisationId=row.id;
- $("cotMember").value=row.member_id;
- $("cotAmount").value=row.montant;
- $("cotPeriod").value=row.periode||"";
- $("cotDate").value=row.date_paiement||"";
- $("cotMode").value=row.mode_paiement||"Espèces";
- $("cotStatus").value=row.statut||"confirmee";
- $("cotDescription").value=row.description||"";
- $("cotisationFormTitle").textContent="Modifier une cotisation";
- $("saveCotisationBtn").textContent="Enregistrer les modifications";
- $("cancelCotisationEditBtn").hidden=false;
- $("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+ if(!canManageCotisations)return;const row=cotisationRows.find(item=>String(item.id)===String(id));if(!row)return;
+ editingCotisationId=row.id;$("cotMember").value=row.member_id;$("cotAmount").value=row.montant;$("cotPeriod").value=row.periode||"";$("cotDate").value=row.date_paiement||"";$("cotMode").value=row.mode_paiement||"Espèces";$("cotStatus").value=row.statut||"confirmee";$("cotDescription").value=row.description||"";
+ $("cotisationFormTitle").textContent="Modifier une cotisation";$("saveCotisationBtn").textContent="Enregistrer les modifications";$("cancelCotisationEditBtn").hidden=false;$("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function saveCotisation(event){
- event.preventDefault();
- if(!canManageCotisations){
-  $("cotisationFormMessage").textContent="Vous n'êtes pas autorisé à enregistrer des cotisations.";
-  return;
- }
- const payload={
-  member_id:$("cotMember").value,
-  montant:Number($("cotAmount").value),
-  periode:$("cotPeriod").value.trim(),
-  date_paiement:$("cotDate").value,
-  mode_paiement:$("cotMode").value,
-  statut:$("cotStatus").value,
-  description:$("cotDescription").value.trim()||null
- };
- if(!payload.member_id||!payload.montant||payload.montant<=0||!payload.periode||!payload.date_paiement){
-  $("cotisationFormMessage").textContent="Veuillez renseigner le membre, un montant positif, la période et la date.";
-  return;
- }
- const button=$("saveCotisationBtn");
- button.disabled=true;
- button.textContent="Enregistrement...";
- $("cotisationFormMessage").textContent="";
- const wasEditing=Boolean(editingCotisationId);
+ event.preventDefault();if(!canManageCotisations){$("cotisationFormMessage").textContent="Vous n'êtes pas autorisé à enregistrer des cotisations.";return;}
+ const payload={member_id:$("cotMember").value,montant:Number($("cotAmount").value),periode:$("cotPeriod").value.trim(),date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
+ if(!payload.member_id||!payload.montant||payload.montant<=0||!payload.periode||!payload.date_paiement){$("cotisationFormMessage").textContent="Veuillez renseigner le membre, un montant positif, la période et la date.";return;}
+ const button=$("saveCotisationBtn");button.disabled=true;button.textContent="Enregistrement...";$("cotisationFormMessage").textContent="";const wasEditing=Boolean(editingCotisationId);
  try{
-  const result=wasEditing
-   ?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id")
-   :await client.from("cotisations").insert(payload).select("id");
-  if(result.error)throw result.error;
-  if(!result.data||!result.data.length)throw new Error("Aucune cotisation n'a été enregistrée. Vérifiez les autorisations Supabase.");
-  $("cotisationFormMessage").textContent=wasEditing?"Cotisation modifiée avec succès.":"Cotisation enregistrée avec succès.";
-  resetCotisationForm();
-  await loadCotisations();
- }catch(error){
-  $("cotisationFormMessage").textContent="Erreur : "+error.message;
- }finally{
-  button.disabled=false;
-  button.textContent="Enregistrer la cotisation";
- }
+  const result=wasEditing?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id"):await client.from("cotisations").insert(payload).select("id");
+  if(result.error)throw result.error;if(!result.data||!result.data.length)throw new Error("Aucune cotisation n'a été enregistrée. Vérifiez les autorisations Supabase.");
+  $("cotisationFormMessage").textContent=wasEditing?"Cotisation modifiée avec succès.":"Cotisation enregistrée avec succès.";resetCotisationForm();await loadCotisations();
+ }catch(error){$("cotisationFormMessage").textContent="Erreur : "+error.message;}
+ finally{button.disabled=false;button.textContent="Enregistrer la cotisation";}
 }
 async function deleteCotisation(id){
- if(!canManageCotisations)return;
- if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;
+ if(!canManageCotisations)return;if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;
  const {data,error}=await client.from("cotisations").delete().eq("id",id).select("id");
- if(error){showMessage("Suppression impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucune cotisation supprimée. Vérifiez les autorisations Supabase.");return;}
- showMessage("Cotisation supprimée avec succès.","success");
- await loadCotisations();
+ if(error){showMessage("Suppression impossible : "+error.message);return;}if(!data||!data.length){showMessage("Aucune cotisation supprimée. Vérifiez les autorisations Supabase.");return;}
+ showMessage("Cotisation supprimée avec succès.","success");await loadCotisations();
 }
 
 async function loadDashboard(){
  hideMessage();
- await Promise.all([
-  loadMembersCount(),
-  loadRequests(),
-  loadOptionalCount("projects","projectsCount"),
-  loadOptionalCount("news","newsCount"),
-  loadProfiles()
- ]);
+ await Promise.all([loadMembersCount(),loadRequests(),loadOptionalCount("projects","projectsCount"),loadOptionalCount("news","newsCount"),loadProfiles(),loadDonations(),loadPartnerships(),loadSkills()]);
 }
 
+/* Événements */
 $("requestsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-action]");
- if(!button)return;
- button.disabled=true;
- try{
-  if(button.dataset.action==="approve")await approveRequest(button.dataset.id);
-  if(button.dataset.action==="reject")await rejectRequest(button.dataset.id);
- }finally{button.disabled=false;}
+ const button=event.target.closest("button[data-action]");if(!button)return;button.disabled=true;
+ try{if(button.dataset.action==="approve")await approveRequest(button.dataset.id);if(button.dataset.action==="reject")await rejectRequest(button.dataset.id);}
+ finally{button.disabled=false;}
 });
-
 $("profilesTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-action='save-function']");
- if(!button)return;
- await saveFunction(button.dataset.id);
+ const button=event.target.closest("button[data-action='save-function']");if(button)await saveFunction(button.dataset.id);
 });
-
 $("refreshBtn").addEventListener("click",loadDashboard);
 $("refreshProfilesBtn").addEventListener("click",loadProfiles);
+$("refreshDonationsBtn").addEventListener("click",loadDonations);
+$("refreshPartnershipsBtn").addEventListener("click",loadPartnerships);
+$("refreshSkillsBtn").addEventListener("click",loadSkills);
+$("donationsTable").addEventListener("click",handleSupportAction);
+$("partnershipsTable").addEventListener("click",handleSupportAction);
+$("skillsTable").addEventListener("click",handleSupportAction);
 $("refreshCotisationsBtn").addEventListener("click",loadCotisations);
 $("cotisationForm").addEventListener("submit",saveCotisation);
 $("cancelCotisationEditBtn").addEventListener("click",resetCotisationForm);
 $("cotisationsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-cot-action]");
- if(!button)return;
+ const button=event.target.closest("button[data-cot-action]");if(!button)return;
  if(button.dataset.cotAction==="edit")editCotisation(button.dataset.id);
  if(button.dataset.cotAction==="delete")await deleteCotisation(button.dataset.id);
 });
-
 $("logoutBtn").addEventListener("click",async()=>{
- const {error}=await client.auth.signOut();
- if(error){
-  showMessage("Erreur lors de la déconnexion : "+error.message);
-  return;
- }
- window.location.href="connexion.html";
+ const {error}=await client.auth.signOut();if(error){showMessage("Erreur lors de la déconnexion : "+error.message);return;}window.location.href="connexion.html";
 });
 
 if(await checkAccess()){
@@ -731,7 +479,6 @@ if(await checkAccess()){
  await loadCotisations();
  resetCotisationForm();
 }
-
 })();
 </script>
 </body>
