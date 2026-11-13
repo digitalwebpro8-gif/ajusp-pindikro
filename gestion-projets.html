@@ -6,8 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestion des projets | AJUSP Pindikro</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root {
+:root{
   --green:#17643D;
   --dark:#10452D;
   --yellow:#F2C94C;
@@ -56,11 +57,12 @@ button,.btn{
   display:inline-block;
   font-size:14px;
 }
+button:disabled{opacity:.6;cursor:not-allowed}
 .primary{background:var(--green);color:white}
 .secondary{background:#e8eee9;color:var(--dark)}
 .danger{background:#fce9e7;color:var(--red)}
 .warning{background:var(--yellow);color:#302800}
-button:hover,.btn:hover{opacity:.88}
+button:hover{opacity:.88}
 .panel{
   background:white;
   padding:22px;
@@ -127,7 +129,7 @@ input:focus,textarea:focus,select:focus{
 }
 .project-content{padding:16px}
 .project-content h3{margin:0 0 9px;color:var(--dark)}
-.project-content p{font-size:14px;line-height:1.5}
+.project-content p{font-size:14px;line-height:1.5;white-space:pre-line}
 .meta{font-size:13px;color:#647168;margin:8px 0}
 .status{
   display:inline-block;
@@ -137,6 +139,7 @@ input:focus,textarea:focus,select:focus{
   color:var(--dark);
   font-size:12px;
   font-weight:bold;
+  margin:3px 3px 3px 0;
 }
 .published{background:#e1f4e7;color:#17643D}
 .unpublished{background:#fff2d4;color:#795a00}
@@ -153,16 +156,16 @@ input:focus,textarea:focus,select:focus{
 }
 </style>
 </head>
+
 <body>
 
 <header>
   <h1>AJUSP Pindikro – Gestion des projets</h1>
-  <div>
-    <a href="dashboard.html">← Retour au tableau de bord</a>
-  </div>
+  <a href="dashboard.html">← Retour au tableau de bord</a>
 </header>
 
 <main class="container">
+
   <div class="topbar">
     <div>
       <h2>Gestion des projets</h2>
@@ -171,7 +174,7 @@ input:focus,textarea:focus,select:focus{
     <button class="primary" onclick="nouveauProjet()">+ Nouveau projet</button>
   </div>
 
-  <div id="message"></div>
+  <div id="message" role="alert"></div>
 
   <section class="panel" id="formPanel" style="display:none">
     <h2 id="formTitle">Ajouter un projet</h2>
@@ -180,39 +183,44 @@ input:focus,textarea:focus,select:focus{
       <input type="hidden" id="projectId">
 
       <div class="form-grid">
+
         <div class="field full">
           <label for="title">Titre du projet *</label>
-          <input id="title" required maxlength="180" placeholder="Ex : Construction d'une bibliothèque">
+          <input id="title" required maxlength="180"
+          placeholder="Ex : Construction d'une bibliothèque">
         </div>
 
         <div class="field full">
           <label for="description">Description du projet</label>
-          <textarea id="description" placeholder="Présentez le projet..."></textarea>
+          <textarea id="description"
+          placeholder="Présentez le projet..."></textarea>
         </div>
 
         <div class="field full">
           <label for="objective">Objectif du projet</label>
-          <textarea id="objective" placeholder="Quel est le résultat attendu ?"></textarea>
+          <textarea id="objective"
+          placeholder="Quel est le résultat attendu ?"></textarea>
         </div>
 
         <div class="field">
           <label for="budget">Budget estimatif (FCFA)</label>
-          <input id="budget" type="number" min="0" step="1" placeholder="Ex : 500000">
+          <input id="budget" type="number" min="0" step="1"
+          placeholder="Ex : 500000">
         </div>
 
         <div class="field">
           <label for="status">Statut du projet *</label>
           <select id="status" required>
-            <option value="En préparation">En préparation</option>
-            <option value="En cours">En cours</option>
-            <option value="Terminé">Terminé</option>
-            <option value="Suspendu">Suspendu</option>
+            <option value="planned">En préparation</option>
+            <option value="ongoing">En cours</option>
+            <option value="completed">Terminé</option>
           </select>
         </div>
 
         <div class="field full">
           <label for="image_url">URL de l'image</label>
-          <input id="image_url" type="url" placeholder="https://...">
+          <input id="image_url" type="url"
+          placeholder="https://...">
           <img id="imagePreview" alt="Aperçu de l'image du projet">
         </div>
 
@@ -232,11 +240,15 @@ input:focus,textarea:focus,select:focus{
             Publier ce projet sur le site public
           </label>
         </div>
+
       </div>
 
       <div class="actions">
-        <button type="submit" class="primary" id="saveButton">Enregistrer le projet</button>
-        <button type="button" class="secondary" onclick="annulerFormulaire()">Annuler</button>
+        <button type="submit" class="primary" id="saveButton">
+          Enregistrer le projet
+        </button>
+        <button type="button" class="secondary"
+        onclick="annulerFormulaire()">Annuler</button>
       </div>
     </form>
   </section>
@@ -246,6 +258,7 @@ input:focus,textarea:focus,select:focus{
     <div id="loading">Chargement des projets...</div>
     <div id="projectList" class="project-list"></div>
   </section>
+
 </main>
 
 <script>
@@ -259,21 +272,27 @@ const supabaseClient = window.supabase.createClient(
 
 let currentUser = null;
 
-function afficherMessage(texte, type="success"){
-  const box = document.getElementById("message");
-  box.textContent = texte;
-  box.className = type;
-  box.style.display = "block";
+const statusLabels = {
+  planned:"En préparation",
+  ongoing:"En cours",
+  completed:"Terminé"
+};
+
+function afficherMessage(texte,type="success"){
+  const box=document.getElementById("message");
+  box.textContent=texte;
+  box.className=type;
+  box.style.display="block";
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function cacherMessage(){
-  const box = document.getElementById("message");
-  box.style.display = "none";
+  const box=document.getElementById("message");
+  box.style.display="none";
 }
 
 function echapper(value){
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
+  return String(value ?? "").replace(/[&<>"']/g,c=>({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
@@ -282,31 +301,46 @@ function echapper(value){
   })[c]);
 }
 
+function formaterDate(date){
+  if(!date)return "Non définie";
+  const parts=date.split("-");
+  if(parts.length!==3)return echapper(date);
+  return parts[2]+"/"+parts[1]+"/"+parts[0];
+}
+
+function formaterBudget(budget){
+  if(budget===null || budget===undefined)return "Non défini";
+  return Number(budget).toLocaleString("fr-FR")+" FCFA";
+}
+
 async function verifierAcces(){
-  const {data:{session},error} = await supabaseClient.auth.getSession();
+
+  const {data:{session},error}=await supabaseClient.auth.getSession();
 
   if(error || !session){
-    window.location.href = "connexion.html";
+    window.location.href="connexion.html";
     return false;
   }
 
-  currentUser = session.user;
+  currentUser=session.user;
 
-  const {data:profile,error:profileError} = await supabaseClient
+  const {data:profile,error:profileError}=await supabaseClient
     .from("profiles")
     .select("role,status")
     .eq("id",currentUser.id)
     .maybeSingle();
 
   if(profileError || !profile ||
-     profile.status !== "active" ||
+     profile.status!=="active" ||
      !["admin","project_manager"].includes(profile.role)){
-    document.body.innerHTML = `
+
+    document.body.innerHTML=`
       <div style="max-width:600px;margin:80px auto;padding:25px;text-align:center;font-family:Arial">
         <h2>Accès non autorisé</h2>
         <p>Cette page est réservée aux administrateurs et aux responsables de projets autorisés.</p>
         <a href="dashboard.html">Retour au tableau de bord</a>
       </div>`;
+
     return false;
   }
 
@@ -316,82 +350,97 @@ async function verifierAcces(){
 function nouveauProjet(){
   cacherMessage();
   document.getElementById("projectForm").reset();
-  document.getElementById("projectId").value = "";
-  document.getElementById("formTitle").textContent = "Ajouter un projet";
-  document.getElementById("saveButton").textContent = "Enregistrer le projet";
-  document.getElementById("imagePreview").style.display = "none";
-  document.getElementById("formPanel").style.display = "block";
+  document.getElementById("projectId").value="";
+  document.getElementById("status").value="planned";
+  document.getElementById("formTitle").textContent="Ajouter un projet";
+  document.getElementById("saveButton").textContent="Enregistrer le projet";
+  document.getElementById("imagePreview").style.display="none";
+  document.getElementById("formPanel").style.display="block";
   document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
 }
 
 function annulerFormulaire(){
-  document.getElementById("formPanel").style.display = "none";
+  document.getElementById("formPanel").style.display="none";
   document.getElementById("projectForm").reset();
 }
 
 document.getElementById("image_url").addEventListener("input",function(){
-  const preview = document.getElementById("imagePreview");
-  const url = this.value.trim();
+  const preview=document.getElementById("imagePreview");
+  const url=this.value.trim();
 
   if(url){
-    preview.src = url;
-    preview.style.display = "block";
-    preview.onerror = () => preview.style.display = "none";
+    preview.src=url;
+    preview.style.display="block";
+    preview.onerror=()=>preview.style.display="none";
   }else{
-    preview.style.display = "none";
+    preview.style.display="none";
   }
 });
 
 async function chargerProjets(){
-  document.getElementById("loading").style.display = "block";
-  const list = document.getElementById("projectList");
-  list.innerHTML = "";
 
-  const {data,error} = await supabaseClient
+  document.getElementById("loading").style.display="block";
+  const list=document.getElementById("projectList");
+  list.innerHTML="";
+
+  const {data,error}=await supabaseClient
     .from("projects")
     .select("*")
     .order("created_at",{ascending:false});
 
-  document.getElementById("loading").style.display = "none";
+  document.getElementById("loading").style.display="none";
 
   if(error){
-    afficherMessage("Impossible de charger les projets : " + error.message,"error");
+    afficherMessage("Impossible de charger les projets : "+error.message,"error");
     return;
   }
 
-  if(!data || data.length === 0){
-    list.innerHTML = '<div class="empty">Aucun projet enregistré pour le moment.</div>';
+  if(!data || data.length===0){
+    list.innerHTML='<div class="empty">Aucun projet enregistré pour le moment.</div>';
     return;
   }
 
-  list.innerHTML = data.map(p => {
-    const image = p.image_url
+  list.innerHTML=data.map(p=>{
+
+    const image=p.image_url
       ? `<img src="${echapper(p.image_url)}" alt="Image du projet" onerror="this.style.display='none'">`
       : "";
 
-    const budget = p.budget !== null && p.budget !== undefined
-      ? Number(p.budget).toLocaleString("fr-FR") + " FCFA"
-      : "Non défini";
+    const statusLabel=statusLabels[p.status] || p.status;
 
     return `
       <article class="project-card">
         ${image}
         <div class="project-content">
           <h3>${echapper(p.title)}</h3>
-          <span class="status">${echapper(p.status)}</span>
+
+          <span class="status">${echapper(statusLabel)}</span>
+
           <span class="status ${p.is_published ? "published":"unpublished"}">
             ${p.is_published ? "Publié":"Non publié"}
           </span>
+
           <p>${echapper(p.description || "Aucune description.")}</p>
-          <div class="meta"><strong>Budget :</strong> ${budget}</div>
-          <div class="meta"><strong>Début :</strong> ${echapper(p.start_date || "Non défini")}</div>
-          <div class="meta"><strong>Fin :</strong> ${echapper(p.end_date || "Non définie")}</div>
+
+          ${p.objective ? `<p><strong>Objectif :</strong> ${echapper(p.objective)}</p>` : ""}
+
+          <div class="meta"><strong>Budget :</strong> ${formaterBudget(p.budget)}</div>
+          <div class="meta"><strong>Début :</strong> ${formaterDate(p.start_date)}</div>
+          <div class="meta"><strong>Fin :</strong> ${formaterDate(p.end_date)}</div>
+
           <div class="card-actions">
-            <button class="secondary" onclick="modifierProjet('${p.id}')">Modifier</button>
-            <button class="warning" onclick="changerPublication('${p.id}',${!p.is_published})">
+            <button class="secondary" onclick="modifierProjet('${p.id}')">
+              Modifier
+            </button>
+
+            <button class="warning"
+            onclick="changerPublication('${p.id}',${!p.is_published})">
               ${p.is_published ? "Dépublier":"Publier"}
             </button>
-            <button class="danger" onclick="supprimerProjet('${p.id}')">Supprimer</button>
+
+            <button class="danger" onclick="supprimerProjet('${p.id}')">
+              Supprimer
+            </button>
           </div>
         </div>
       </article>`;
@@ -399,9 +448,10 @@ async function chargerProjets(){
 }
 
 async function modifierProjet(id){
+
   cacherMessage();
 
-  const {data,error} = await supabaseClient
+  const {data,error}=await supabaseClient
     .from("projects")
     .select("*")
     .eq("id",id)
@@ -412,44 +462,45 @@ async function modifierProjet(id){
     return;
   }
 
-  document.getElementById("projectId").value = data.id;
-  document.getElementById("title").value = data.title || "";
-  document.getElementById("description").value = data.description || "";
-  document.getElementById("objective").value = data.objective || "";
-  document.getElementById("budget").value = data.budget ?? "";
-  document.getElementById("status").value = data.status || "En préparation";
-  document.getElementById("image_url").value = data.image_url || "";
-  document.getElementById("start_date").value = data.start_date || "";
-  document.getElementById("end_date").value = data.end_date || "";
-  document.getElementById("is_published").checked = data.is_published === true;
+  document.getElementById("projectId").value=data.id;
+  document.getElementById("title").value=data.title || "";
+  document.getElementById("description").value=data.description || "";
+  document.getElementById("objective").value=data.objective || "";
+  document.getElementById("budget").value=data.budget ?? "";
+  document.getElementById("status").value=data.status || "planned";
+  document.getElementById("image_url").value=data.image_url || "";
+  document.getElementById("start_date").value=data.start_date || "";
+  document.getElementById("end_date").value=data.end_date || "";
+  document.getElementById("is_published").checked=data.is_published===true;
 
-  const preview = document.getElementById("imagePreview");
+  const preview=document.getElementById("imagePreview");
+
   if(data.image_url){
-    preview.src = data.image_url;
-    preview.style.display = "block";
+    preview.src=data.image_url;
+    preview.style.display="block";
   }else{
-    preview.style.display = "none";
+    preview.style.display="none";
   }
 
-  document.getElementById("formTitle").textContent = "Modifier le projet";
-  document.getElementById("saveButton").textContent = "Enregistrer les modifications";
-  document.getElementById("formPanel").style.display = "block";
+  document.getElementById("formTitle").textContent="Modifier le projet";
+  document.getElementById("saveButton").textContent="Enregistrer les modifications";
+  document.getElementById("formPanel").style.display="block";
   document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
 }
 
 document.getElementById("projectForm").addEventListener("submit",async function(e){
+
   e.preventDefault();
   cacherMessage();
 
-  const id = document.getElementById("projectId").value;
+  const id=document.getElementById("projectId").value;
+  const budgetValue=document.getElementById("budget").value;
 
-  const budgetValue = document.getElementById("budget").value;
-
-  const project = {
+  const project={
     title:document.getElementById("title").value.trim(),
     description:document.getElementById("description").value.trim() || null,
     objective:document.getElementById("objective").value.trim() || null,
-    budget:budgetValue === "" ? null : Number(budgetValue),
+    budget:budgetValue==="" ? null : Number(budgetValue),
     status:document.getElementById("status").value,
     image_url:document.getElementById("image_url").value.trim() || null,
     start_date:document.getElementById("start_date").value || null,
@@ -462,77 +513,97 @@ document.getElementById("projectForm").addEventListener("submit",async function(
     return;
   }
 
-  if(project.budget !== null &&
-     (!Number.isFinite(project.budget) || project.budget < 0)){
+  if(!["planned","ongoing","completed"].includes(project.status)){
+    afficherMessage("Le statut sélectionné est invalide.","error");
+    return;
+  }
+
+  if(project.budget!==null &&
+     (!Number.isFinite(project.budget) || project.budget<0)){
     afficherMessage("Le budget doit être un nombre positif.","error");
     return;
   }
 
   if(project.start_date && project.end_date &&
-     project.end_date < project.start_date){
+     project.end_date<project.start_date){
     afficherMessage("La date de fin ne peut pas précéder la date de début.","error");
     return;
   }
 
-  const button = document.getElementById("saveButton");
-  button.disabled = true;
-  button.textContent = "Enregistrement...";
+  const button=document.getElementById("saveButton");
+  button.disabled=true;
+  button.textContent="Enregistrement...";
 
   let result;
 
   if(id){
-    result = await supabaseClient
+    result=await supabaseClient
       .from("projects")
       .update(project)
       .eq("id",id);
   }else{
-    result = await supabaseClient
+    result=await supabaseClient
       .from("projects")
       .insert(project);
   }
 
-  button.disabled = false;
-  button.textContent = id ? "Enregistrer les modifications" : "Enregistrer le projet";
+  button.disabled=false;
+  button.textContent=id
+    ? "Enregistrer les modifications"
+    : "Enregistrer le projet";
 
   if(result.error){
-    afficherMessage("Erreur lors de l'enregistrement : " + result.error.message,"error");
+    afficherMessage("Erreur lors de l'enregistrement : "+result.error.message,"error");
     return;
   }
 
   annulerFormulaire();
-  afficherMessage(id ? "Projet modifié avec succès." : "Projet ajouté avec succès.");
+
+  afficherMessage(
+    id
+      ? "Projet modifié avec succès."
+      : "Projet ajouté avec succès."
+  );
+
   await chargerProjets();
 });
 
 async function changerPublication(id,publier){
-  const action = publier ? "publier" : "dépublier";
 
-  if(!confirm("Voulez-vous vraiment " + action + " ce projet ?")) return;
+  const action=publier ? "publier" : "dépublier";
 
-  const {error} = await supabaseClient
+  if(!confirm("Voulez-vous vraiment "+action+" ce projet ?"))return;
+
+  const {error}=await supabaseClient
     .from("projects")
     .update({is_published:publier})
     .eq("id",id);
 
   if(error){
-    afficherMessage("Erreur : " + error.message,"error");
+    afficherMessage("Erreur : "+error.message,"error");
     return;
   }
 
-  afficherMessage(publier ? "Projet publié sur le site." : "Projet dépublié.");
+  afficherMessage(
+    publier
+      ? "Projet publié sur le site."
+      : "Projet dépublié."
+  );
+
   await chargerProjets();
 }
 
 async function supprimerProjet(id){
-  if(!confirm("Attention : voulez-vous vraiment supprimer définitivement ce projet ?")) return;
 
-  const {error} = await supabaseClient
+  if(!confirm("Attention : voulez-vous vraiment supprimer définitivement ce projet ?"))return;
+
+  const {error}=await supabaseClient
     .from("projects")
     .delete()
     .eq("id",id);
 
   if(error){
-    afficherMessage("Impossible de supprimer le projet : " + error.message,"error");
+    afficherMessage("Impossible de supprimer le projet : "+error.message,"error");
     return;
   }
 
@@ -541,11 +612,14 @@ async function supprimerProjet(id){
 }
 
 async function demarrer(){
-  const acces = await verifierAcces();
-  if(acces) await chargerProjets();
+  const acces=await verifierAcces();
+  if(acces){
+    await chargerProjets();
+  }
 }
 
 demarrer();
 </script>
+
 </body>
 </html>
