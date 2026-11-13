@@ -1,43 +1,318 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Nos projets – AJUSP Pindikro"><title>Nos projets | AJUSP</title><style>
-:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
-a{text-decoration:none;color:inherit}.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
-.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
-nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
+
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Nos projets – AJUSP Pindikro">
+<title>Nos projets | AJUSP</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--green:#17643D;
+--dark:#10452D;
+--yellow:#F2C94C;
+--navy:#14263F;
+--bg:#F7F9F6;
+--text:#26352D;
+--muted:#68756D
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{text-decoration:none;color:inherit}
+
+.site-header{
+background:white;padding:12px 6%;display:flex;align-items:center;
+justify-content:space-between;gap:20px;position:sticky;top:0;
+z-index:10;box-shadow:0 3px 14px #0001
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:56px;height:56px;object-fit:contain}
+.brand b{display:block;color:var(--green);font-size:20px}
+.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
+nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+nav a{font-size:12px;font-weight:bold;color:var(--navy)}
+nav a:hover{color:var(--green)}
+.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
 .toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
-.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}
-.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
-h2{color:var(--navy);font-size:27px;margin:8px 0 15px}h3{color:var(--navy);margin-bottom:8px}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)}
-.card p,.muted{color:var(--muted)}.photo{width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:20px 0}
-ul{padding-left:22px;margin:12px 0 20px}li{margin:6px 0}.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
-form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:720px}
-label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}textarea{min-height:120px}
-button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
-footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
-@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}.grid{grid-template-columns:1fr}}
-</style></head><body>
+
+.hero{
+padding:75px 8%;
+background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;
+color:white
+}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}
+.hero p{max-width:760px;color:#f0f4f0}
+
+.wrap{max-width:1100px;margin:auto;padding:55px 6%}
+.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
+h2{color:var(--navy);font-size:27px;margin:8px 0 15px}
+h3{color:var(--navy);margin-bottom:8px}
+.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.card{
+background:white;padding:24px;border-radius:10px;
+box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)
+}
+.card p,.muted{color:var(--muted)}
+.project-image{
+width:100%;height:220px;object-fit:cover;
+border-radius:8px;margin-bottom:15px
+}
+.project-status{
+display:inline-block;padding:5px 10px;border-radius:20px;
+font-size:12px;font-weight:bold;margin:10px 0;
+background:#eaf2eb;color:var(--green)
+}
+.status-ongoing{background:#fff3cd;color:#805900}
+.status-completed{background:#dcefe3;color:#17643D}
+.project-info{
+font-size:13px;color:var(--muted);margin-top:12px;
+border-top:1px solid #edf0ed;padding-top:12px
+}
+.project-info p{margin:4px 0}
+.empty-state,.loading-state,.error-state{
+background:white;padding:25px;border-radius:10px;
+text-align:center;color:var(--muted);grid-column:1/-1
+}
+.error-state{color:#a12c2c}
+.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
+
+footer{
+background:var(--navy);color:#dce5e8;padding:28px 6%;
+text-align:center;font-size:13px;margin-top:30px
+}
+
+@media(max-width:900px){
+.toggle{display:block}
+nav{
+display:none;position:absolute;top:100%;left:0;right:0;
+background:white;padding:18px 6%;flex-direction:column;align-items:stretch
+}
+nav.open{display:flex}
+nav a{padding:8px;border-bottom:1px solid #eee}
+.grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
 <header class="site-header">
-  <a class="brand" href="index.html"><img src="logo-ajusp.jpeg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
+  <a class="brand" href="index.html">
+    <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+    <span>
+      <b>AJUSP</b>
+      <small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small>
+    </span>
+  </a>
+
   <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+
   <nav>
-    <a href="index.html">Accueil</a><a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
-    <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
-    <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
-    <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
+    <a href="index.html">Accueil</a>
+    <a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+    <a href="association.html">Notre association</a>
+    <a href="projets.html">Nos projets</a>
+    <a href="actualites.html">Actualités</a>
+    <a href="galerie.html">Galerie</a>
+    <a href="soutien.html">Nous soutenir</a>
+    <a href="contact-adhesion.html">Adhésion</a>
     <a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
   </nav>
-</header><section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Nos projets</h1><p>Des initiatives collectives pour répondre aux besoins et aux priorités de Pindikro.</p></section><main class="wrap">
-<p class="lead">Les projets de l'AJUSP ont vocation à améliorer progressivement le cadre de vie et les perspectives de la communauté.</p>
-<div class="grid">
-<article class="card"><h3>Éducation et formation</h3><p>Encourager l'accès au savoir, l'orientation, la formation et l'accompagnement des jeunes.</p></article>
-<article class="card"><h3>Cadre de vie et infrastructures</h3><p>Contribuer aux initiatives communautaires visant l'amélioration des équipements et des espaces collectifs.</p></article>
-<article class="card"><h3>Activités économiques</h3><p>Identifier et valoriser les possibilités d'activités génératrices de revenus et les compétences locales.</p></article>
-<article class="card"><h3>Solidarité et cohésion</h3><p>Renforcer l'entraide, les liens intergénérationnels et la participation des habitants.</p></article>
-</div>
-<div class="callout"><h3>Projets en préparation</h3><p>Les projets précis, leurs objectifs, budgets, calendriers et niveaux d'avancement seront publiés après validation par les responsables de l'AJUSP.</p></div>
-</main><footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer><script>document.getElementById("year").textContent=new Date().getFullYear();</script><script>
-const t=document.querySelector('.toggle'),n=document.querySelector('nav');
-t?.addEventListener('click',()=>{const o=n.classList.toggle('open');t.setAttribute('aria-expanded',o);t.textContent=o?'✕':'☰'});
-</script></body></html>
+</header>
+
+<section class="hero">
+  <span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span>
+  <h1>Nos projets</h1>
+  <p>Des initiatives collectives pour répondre aux besoins et aux priorités de Pindikro.</p>
+</section>
+
+<main class="wrap">
+
+  <p class="lead">
+    Les projets de l'AJUSP ont vocation à améliorer progressivement
+    le cadre de vie et les perspectives de la communauté.
+  </p>
+
+  <h2>Les projets de l'AJUSP</h2>
+  <p class="muted" style="margin-bottom:22px">
+    Découvrez les initiatives proposées et leur niveau d'avancement.
+  </p>
+
+  <div class="grid" id="projectsGrid">
+    <div class="loading-state">Chargement des projets...</div>
+  </div>
+
+  <div class="callout">
+    <h3>Ensemble pour le développement de Pindikro</h3>
+    <p>
+      Vous souhaitez soutenir un projet, apporter une compétence ou
+      devenir partenaire de l'AJUSP ?
+      <a href="soutien.html" style="color:var(--green);font-weight:bold">
+        Découvrez comment nous soutenir.
+      </a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro ·
+« Ensemble pour un avenir meilleur »
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+const toggle = document.querySelector(".toggle");
+const nav = document.querySelector("nav");
+
+toggle?.addEventListener("click", () => {
+  const opened = nav.classList.toggle("open");
+  toggle.setAttribute("aria-expanded", opened);
+  toggle.textContent = opened ? "✕" : "☰";
+});
+
+// Connexion à Supabase
+const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const projectsGrid = document.getElementById("projectsGrid");
+
+// Protection de l'affichage du contenu
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+// Traduction des statuts
+function getStatus(status) {
+  const statuses = {
+    planned: "En préparation",
+    ongoing: "En cours",
+    completed: "Terminé"
+  };
+  return statuses[status] || "Statut non précisé";
+}
+
+// Format du budget
+function formatBudget(budget) {
+  if (budget === null || budget === undefined || budget === "") {
+    return "Non communiqué";
+  }
+
+  return Number(budget).toLocaleString("fr-FR") + " FCFA";
+}
+
+// Format des dates
+function formatDate(date) {
+  if (!date) return "Non précisée";
+
+  const parsedDate = new Date(date + "T00:00:00");
+
+  if (isNaN(parsedDate.getTime())) return "Non précisée";
+
+  return parsedDate.toLocaleDateString("fr-FR");
+}
+
+// Affichage des projets
+function displayProjects(projects) {
+
+  if (!projects || projects.length === 0) {
+    projectsGrid.innerHTML = `
+      <div class="empty-state">
+        <h3>Aucun projet publié pour le moment</h3>
+        <p>
+          Les projets de l'AJUSP seront présentés ici dès leur publication.
+          Merci de votre intérêt pour le développement de Pindikro.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  projectsGrid.innerHTML = projects.map(project => {
+
+    const statusClass =
+      project.status === "ongoing" ? "status-ongoing" :
+      project.status === "completed" ? "status-completed" : "";
+
+    const image = project.image_url
+      ? `<img class="project-image" src="${escapeHTML(project.image_url)}" alt="${escapeHTML(project.title)}" loading="lazy">`
+      : "";
+
+    const description = project.description
+      ? `<p>${escapeHTML(project.description).replace(/\n/g, "<br>")}</p>`
+      : "";
+
+    const objective = project.objective
+      ? `<p><strong>Objectif :</strong> ${escapeHTML(project.objective)}</p>`
+      : "";
+
+    return `
+      <article class="card">
+        ${image}
+        <h3>${escapeHTML(project.title)}</h3>
+
+        <span class="project-status ${statusClass}">
+          ${escapeHTML(getStatus(project.status))}
+        </span>
+
+        ${description}
+        ${objective}
+
+        <div class="project-info">
+          <p><strong>Budget :</strong> ${escapeHTML(formatBudget(project.budget))}</p>
+          <p><strong>Date de début :</strong> ${escapeHTML(formatDate(project.start_date))}</p>
+          <p><strong>Date de fin :</strong> ${escapeHTML(formatDate(project.end_date))}</p>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+// Récupération des projets publiés uniquement
+async function loadProjects() {
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("projects")
+      .select("*")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    displayProjects(data);
+
+  } catch (error) {
+    console.error("Erreur de chargement des projets :", error);
+
+    projectsGrid.innerHTML = `
+      <div class="error-state">
+        <h3>Impossible de charger les projets</h3>
+        <p>Veuillez réessayer ultérieurement.</p>
+      </div>
+    `;
+  }
+}
+
+loadProjects();
+</script>
+
+</body>
+</html>
