@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion des projets | AJUSP Pindikro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --green:#17643D;
+  --dark:#10452D;
+  --yellow:#F2C94C;
+  --navy:#14263F;
+  --bg:#F7F9F6;
+  --white:#fff;
+  --red:#c0392b;
+  --border:#e2e8e3;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:#26332b;
+}
+header{
+  background:var(--dark);
+  color:white;
+  padding:18px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
+header h1{font-size:20px;margin:0}
+header a{color:white;text-decoration:none}
+.container{max-width:1150px;margin:30px auto;padding:0 16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:20px;
+}
+h2{color:var(--dark);margin-top:0}
+button,.btn{
+  border:0;
+  border-radius:7px;
+  padding:11px 16px;
+  cursor:pointer;
+  font-weight:bold;
+  text-decoration:none;
+  display:inline-block;
+  font-size:14px;
+}
+.primary{background:var(--green);color:white}
+.secondary{background:#e8eee9;color:var(--dark)}
+.danger{background:#fce9e7;color:var(--red)}
+.warning{background:var(--yellow);color:#302800}
+button:hover,.btn:hover{opacity:.88}
+.panel{
+  background:white;
+  padding:22px;
+  border-radius:12px;
+  box-shadow:0 2px 12px #14263f0d;
+  margin-bottom:22px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
+}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{font-weight:bold;font-size:14px;color:var(--dark)}
+input,textarea,select{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  font:inherit;
+  background:white;
+}
+textarea{min-height:100px;resize:vertical}
+input:focus,textarea:focus,select:focus{
+  outline:2px solid #17643d33;
+  border-color:var(--green);
+}
+.checkline{display:flex;align-items:center;gap:10px}
+.checkline input{width:auto}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+#message{
+  display:none;
+  padding:12px;
+  border-radius:7px;
+  margin-bottom:15px;
+}
+#message.success{display:block;background:#e5f5e9;color:#17643D}
+#message.error{display:block;background:#fdecea;color:#a5281b}
+#imagePreview{
+  display:none;
+  max-width:220px;
+  max-height:140px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-top:8px;
+}
+.project-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+.project-card{
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  background:white;
+}
+.project-card img{
+  width:100%;
+  height:165px;
+  object-fit:cover;
+  background:#edf1ed;
+}
+.project-content{padding:16px}
+.project-content h3{margin:0 0 9px;color:var(--dark)}
+.project-content p{font-size:14px;line-height:1.5}
+.meta{font-size:13px;color:#647168;margin:8px 0}
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#edf1ed;
+  color:var(--dark);
+  font-size:12px;
+  font-weight:bold;
+}
+.published{background:#e1f4e7;color:#17643D}
+.unpublished{background:#fff2d4;color:#795a00}
+.card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.card-actions button{padding:8px 10px;font-size:12px}
+.empty{text-align:center;color:#69756d;padding:30px}
+#loading{text-align:center;padding:20px;color:#647168}
+@media(max-width:650px){
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  header{align-items:flex-start;flex-direction:column}
+  .container{margin-top:20px}
+  .panel{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AJUSP Pindikro – Gestion des projets</h1>
+  <div>
+    <a href="dashboard.html">← Retour au tableau de bord</a>
+  </div>
+</header>
+
+<main class="container">
+  <div class="topbar">
+    <div>
+      <h2>Gestion des projets</h2>
+      <p>Ajouter, modifier et publier les projets de l'association.</p>
+    </div>
+    <button class="primary" onclick="nouveauProjet()">+ Nouveau projet</button>
+  </div>
+
+  <div id="message"></div>
+
+  <section class="panel" id="formPanel" style="display:none">
+    <h2 id="formTitle">Ajouter un projet</h2>
+
+    <form id="projectForm">
+      <input type="hidden" id="projectId">
+
+      <div class="form-grid">
+        <div class="field full">
+          <label for="title">Titre du projet *</label>
+          <input id="title" required maxlength="180" placeholder="Ex : Construction d'une bibliothèque">
+        </div>
+
+        <div class="field full">
+          <label for="description">Description du projet</label>
+          <textarea id="description" placeholder="Présentez le projet..."></textarea>
+        </div>
+
+        <div class="field full">
+          <label for="objective">Objectif du projet</label>
+          <textarea id="objective" placeholder="Quel est le résultat attendu ?"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="budget">Budget estimatif (FCFA)</label>
+          <input id="budget" type="number" min="0" step="1" placeholder="Ex : 500000">
+        </div>
+
+        <div class="field">
+          <label for="status">Statut du projet *</label>
+          <select id="status" required>
+            <option value="En préparation">En préparation</option>
+            <option value="En cours">En cours</option>
+            <option value="Terminé">Terminé</option>
+            <option value="Suspendu">Suspendu</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label for="image_url">URL de l'image</label>
+          <input id="image_url" type="url" placeholder="https://...">
+          <img id="imagePreview" alt="Aperçu de l'image du projet">
+        </div>
+
+        <div class="field">
+          <label for="start_date">Date de début</label>
+          <input id="start_date" type="date">
+        </div>
+
+        <div class="field">
+          <label for="end_date">Date de fin</label>
+          <input id="end_date" type="date">
+        </div>
+
+        <div class="field full">
+          <label class="checkline">
+            <input type="checkbox" id="is_published">
+            Publier ce projet sur le site public
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="saveButton">Enregistrer le projet</button>
+        <button type="button" class="secondary" onclick="annulerFormulaire()">Annuler</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Liste des projets</h2>
+    <div id="loading">Chargement des projets...</div>
+    <div id="projectList" class="project-list"></div>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentUser = null;
+
+function afficherMessage(texte, type="success"){
+  const box = document.getElementById("message");
+  box.textContent = texte;
+  box.className = type;
+  box.style.display = "block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function cacherMessage(){
+  const box = document.getElementById("message");
+  box.style.display = "none";
+}
+
+function echapper(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[c]);
+}
+
+async function verifierAcces(){
+  const {data:{session},error} = await supabaseClient.auth.getSession();
+
+  if(error || !session){
+    window.location.href = "connexion.html";
+    return false;
+  }
+
+  currentUser = session.user;
+
+  const {data:profile,error:profileError} = await supabaseClient
+    .from("profiles")
+    .select("role,status")
+    .eq("id",currentUser.id)
+    .maybeSingle();
+
+  if(profileError || !profile ||
+     profile.status !== "active" ||
+     !["admin","project_manager"].includes(profile.role)){
+    document.body.innerHTML = `
+      <div style="max-width:600px;margin:80px auto;padding:25px;text-align:center;font-family:Arial">
+        <h2>Accès non autorisé</h2>
+        <p>Cette page est réservée aux administrateurs et aux responsables de projets autorisés.</p>
+        <a href="dashboard.html">Retour au tableau de bord</a>
+      </div>`;
+    return false;
+  }
+
+  return true;
+}
+
+function nouveauProjet(){
+  cacherMessage();
+  document.getElementById("projectForm").reset();
+  document.getElementById("projectId").value = "";
+  document.getElementById("formTitle").textContent = "Ajouter un projet";
+  document.getElementById("saveButton").textContent = "Enregistrer le projet";
+  document.getElementById("imagePreview").style.display = "none";
+  document.getElementById("formPanel").style.display = "block";
+  document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
+}
+
+function annulerFormulaire(){
+  document.getElementById("formPanel").style.display = "none";
+  document.getElementById("projectForm").reset();
+}
+
+document.getElementById("image_url").addEventListener("input",function(){
+  const preview = document.getElementById("imagePreview");
+  const url = this.value.trim();
+
+  if(url){
+    preview.src = url;
+    preview.style.display = "block";
+    preview.onerror = () => preview.style.display = "none";
+  }else{
+    preview.style.display = "none";
+  }
+});
+
+async function chargerProjets(){
+  document.getElementById("loading").style.display = "block";
+  const list = document.getElementById("projectList");
+  list.innerHTML = "";
+
+  const {data,error} = await supabaseClient
+    .from("projects")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  document.getElementById("loading").style.display = "none";
+
+  if(error){
+    afficherMessage("Impossible de charger les projets : " + error.message,"error");
+    return;
+  }
+
+  if(!data || data.length === 0){
+    list.innerHTML = '<div class="empty">Aucun projet enregistré pour le moment.</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(p => {
+    const image = p.image_url
+      ? `<img src="${echapper(p.image_url)}" alt="Image du projet" onerror="this.style.display='none'">`
+      : "";
+
+    const budget = p.budget !== null && p.budget !== undefined
+      ? Number(p.budget).toLocaleString("fr-FR") + " FCFA"
+      : "Non défini";
+
+    return `
+      <article class="project-card">
+        ${image}
+        <div class="project-content">
+          <h3>${echapper(p.title)}</h3>
+          <span class="status">${echapper(p.status)}</span>
+          <span class="status ${p.is_published ? "published":"unpublished"}">
+            ${p.is_published ? "Publié":"Non publié"}
+          </span>
+          <p>${echapper(p.description || "Aucune description.")}</p>
+          <div class="meta"><strong>Budget :</strong> ${budget}</div>
+          <div class="meta"><strong>Début :</strong> ${echapper(p.start_date || "Non défini")}</div>
+          <div class="meta"><strong>Fin :</strong> ${echapper(p.end_date || "Non définie")}</div>
+          <div class="card-actions">
+            <button class="secondary" onclick="modifierProjet('${p.id}')">Modifier</button>
+            <button class="warning" onclick="changerPublication('${p.id}',${!p.is_published})">
+              ${p.is_published ? "Dépublier":"Publier"}
+            </button>
+            <button class="danger" onclick="supprimerProjet('${p.id}')">Supprimer</button>
+          </div>
+        </div>
+      </article>`;
+  }).join("");
+}
+
+async function modifierProjet(id){
+  cacherMessage();
+
+  const {data,error} = await supabaseClient
+    .from("projects")
+    .select("*")
+    .eq("id",id)
+    .single();
+
+  if(error || !data){
+    afficherMessage("Impossible de récupérer ce projet.","error");
+    return;
+  }
+
+  document.getElementById("projectId").value = data.id;
+  document.getElementById("title").value = data.title || "";
+  document.getElementById("description").value = data.description || "";
+  document.getElementById("objective").value = data.objective || "";
+  document.getElementById("budget").value = data.budget ?? "";
+  document.getElementById("status").value = data.status || "En préparation";
+  document.getElementById("image_url").value = data.image_url || "";
+  document.getElementById("start_date").value = data.start_date || "";
+  document.getElementById("end_date").value = data.end_date || "";
+  document.getElementById("is_published").checked = data.is_published === true;
+
+  const preview = document.getElementById("imagePreview");
+  if(data.image_url){
+    preview.src = data.image_url;
+    preview.style.display = "block";
+  }else{
+    preview.style.display = "none";
+  }
+
+  document.getElementById("formTitle").textContent = "Modifier le projet";
+  document.getElementById("saveButton").textContent = "Enregistrer les modifications";
+  document.getElementById("formPanel").style.display = "block";
+  document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("projectForm").addEventListener("submit",async function(e){
+  e.preventDefault();
+  cacherMessage();
+
+  const id = document.getElementById("projectId").value;
+
+  const budgetValue = document.getElementById("budget").value;
+
+  const project = {
+    title:document.getElementById("title").value.trim(),
+    description:document.getElementById("description").value.trim() || null,
+    objective:document.getElementById("objective").value.trim() || null,
+    budget:budgetValue === "" ? null : Number(budgetValue),
+    status:document.getElementById("status").value,
+    image_url:document.getElementById("image_url").value.trim() || null,
+    start_date:document.getElementById("start_date").value || null,
+    end_date:document.getElementById("end_date").value || null,
+    is_published:document.getElementById("is_published").checked
+  };
+
+  if(!project.title){
+    afficherMessage("Veuillez renseigner le titre du projet.","error");
+    return;
+  }
+
+  if(project.budget !== null &&
+     (!Number.isFinite(project.budget) || project.budget < 0)){
+    afficherMessage("Le budget doit être un nombre positif.","error");
+    return;
+  }
+
+  if(project.start_date && project.end_date &&
+     project.end_date < project.start_date){
+    afficherMessage("La date de fin ne peut pas précéder la date de début.","error");
+    return;
+  }
+
+  const button = document.getElementById("saveButton");
+  button.disabled = true;
+  button.textContent = "Enregistrement...";
+
+  let result;
+
+  if(id){
+    result = await supabaseClient
+      .from("projects")
+      .update(project)
+      .eq("id",id);
+  }else{
+    result = await supabaseClient
+      .from("projects")
+      .insert(project);
+  }
+
+  button.disabled = false;
+  button.textContent = id ? "Enregistrer les modifications" : "Enregistrer le projet";
+
+  if(result.error){
+    afficherMessage("Erreur lors de l'enregistrement : " + result.error.message,"error");
+    return;
+  }
+
+  annulerFormulaire();
+  afficherMessage(id ? "Projet modifié avec succès." : "Projet ajouté avec succès.");
+  await chargerProjets();
+});
+
+async function changerPublication(id,publier){
+  const action = publier ? "publier" : "dépublier";
+
+  if(!confirm("Voulez-vous vraiment " + action + " ce projet ?")) return;
+
+  const {error} = await supabaseClient
+    .from("projects")
+    .update({is_published:publier})
+    .eq("id",id);
+
+  if(error){
+    afficherMessage("Erreur : " + error.message,"error");
+    return;
+  }
+
+  afficherMessage(publier ? "Projet publié sur le site." : "Projet dépublié.");
+  await chargerProjets();
+}
+
+async function supprimerProjet(id){
+  if(!confirm("Attention : voulez-vous vraiment supprimer définitivement ce projet ?")) return;
+
+  const {error} = await supabaseClient
+    .from("projects")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    afficherMessage("Impossible de supprimer le projet : " + error.message,"error");
+    return;
+  }
+
+  afficherMessage("Projet supprimé avec succès.");
+  await chargerProjets();
+}
+
+async function demarrer(){
+  const acces = await verifierAcces();
+  if(acces) await chargerProjets();
+}
+
+demarrer();
+</script>
+</body>
+</html>
