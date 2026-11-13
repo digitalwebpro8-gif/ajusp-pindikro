@@ -55,7 +55,38 @@
     .project-box{background:#fff;border-radius:12px;padding:35px;text-align:center;max-width:800px;margin:auto}
     .project-box h3{color:var(--bleu);font-size:23px;margin-bottom:12px}
     .project-box p{color:var(--gris);margin-bottom:20px}
-    .news-gallery{display:grid;grid-template-columns:1fr 1.25fr;gap:25px;align-items:stretch}
+
+    /* Actualités dynamiques */
+    .news-section{background:#fff}
+    .news-feature-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);gap:22px;align-items:stretch}
+    .news-feature{position:relative;min-height:430px;border-radius:15px;overflow:hidden;background:linear-gradient(135deg,#10452D,#14263F);color:#fff;box-shadow:0 8px 28px #14263F18}
+    .news-feature-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.78;transition:transform .7s}
+    .news-feature:hover .news-feature-image{transform:scale(1.035)}
+    .news-feature-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,25,15,.96),rgba(5,25,15,.08) 75%)}
+    .news-feature-content{position:absolute;left:0;right:0;bottom:0;padding:32px 34px;z-index:2}
+    .news-tag{display:inline-block;background:var(--jaune);color:var(--bleu);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;padding:6px 11px;border-radius:30px;margin-bottom:12px}
+    .news-date{display:block;color:#e4eee6;font-size:12px;margin-bottom:9px}
+    .news-feature h3{font-size:clamp(23px,3vw,32px);line-height:1.2;margin-bottom:12px;max-width:700px}
+    .news-feature p{color:#edf3ee;font-size:14px;max-width:680px;margin-bottom:18px}
+    .news-read{display:inline-block;background:var(--jaune);color:var(--bleu);padding:10px 17px;border-radius:6px;font-size:13px;font-weight:800}
+    .news-feature-controls{position:absolute;right:20px;top:20px;display:flex;gap:8px;z-index:3}
+    .news-feature-controls button{width:38px;height:38px;border:1px solid #ffffff88;border-radius:50%;background:#10201699;color:#fff;font-size:23px;cursor:pointer}
+    .news-feature-controls button:hover{background:var(--jaune);color:var(--bleu)}
+    .news-side{display:grid;grid-template-rows:repeat(3,1fr);gap:12px}
+    .news-small-card{display:grid;grid-template-columns:112px 1fr;gap:14px;min-height:130px;padding:12px;background:var(--fond);border-radius:11px;border:1px solid #e8eee8;transition:.2s}
+    .news-small-card:hover{transform:translateX(3px);border-color:#b9d2bf}
+    .news-small-card img{width:112px;height:100%;min-height:105px;object-fit:cover;border-radius:8px;background:#dce8de}
+    .news-small-content{align-self:center;min-width:0}
+    .news-small-content .news-tag{font-size:9px;padding:4px 8px;margin-bottom:5px}
+    .news-small-content time{display:block;font-size:10px;color:var(--gris);margin-bottom:5px}
+    .news-small-content h4{font-size:14px;line-height:1.35;color:var(--bleu);margin-bottom:5px}
+    .news-small-content p{font-size:11px;color:var(--gris);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .news-bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-top:22px}
+    .news-dots{display:flex;gap:7px}
+    .news-dots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:#c6d1c8;cursor:pointer}
+    .news-dots button.active{background:var(--vert);transform:scale(1.25)}
+    .news-status{padding:30px;background:var(--fond);border-radius:12px;text-align:center;color:var(--gris);grid-column:1/-1}
+    .news-gallery{display:grid;grid-template-columns:1fr 1.25fr;gap:25px;align-items:stretch;margin-top:55px}
     .info-panel{background:#fff;border-radius:12px;padding:30px;box-shadow:0 5px 25px #14263F0B}
     .info-panel h3{color:var(--bleu);margin-bottom:12px;font-size:22px}
     .info-panel p{color:var(--gris);margin-bottom:18px}
@@ -84,7 +115,7 @@
     footer a{display:block;margin-bottom:8px}
     .copyright{border-top:1px solid #FFFFFF22;padding-top:18px;text-align:center;font-size:12px;color:#B8C4CE}
     @keyframes homeFade{from{opacity:.45}to{opacity:1}}
-    @media(max-width:1050px){nav{gap:10px}nav a{font-size:12px}.cards{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:1050px){nav{gap:10px}nav a{font-size:12px}.cards{grid-template-columns:repeat(2,1fr)}.news-feature-layout{grid-template-columns:1fr}.news-side{grid-template-columns:repeat(3,1fr);grid-template-rows:none}.news-small-card{grid-template-columns:1fr}.news-small-card img{width:100%;height:115px}}
     @media(max-width:760px){
       .topbar{justify-content:center;text-align:center}.topbar span:last-child{display:none}
       header{padding:10px 5%}.brand img{width:52px;height:52px}.brand-name{font-size:17px}.brand small{font-size:9px}
@@ -92,14 +123,16 @@
       nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;padding:20px 6%;flex-direction:column;align-items:stretch;box-shadow:0 10px 15px #00000012}
       nav.active{display:flex}nav a{padding:10px 0;border-bottom:1px solid #eee;font-size:14px}
       .hero{min-height:500px;padding:65px 7%}.hero p{font-size:15px}
-      .section{padding:55px 6%}.about-grid,.news-gallery{grid-template-columns:1fr}
+      .section{padding:55px 6%}.about-grid{grid-template-columns:1fr}
       .about-image{min-height:280px}.cards{grid-template-columns:1fr 1fr;gap:12px}
       .card{padding:20px 15px}.card h3{font-size:15px}.card p{font-size:13px}
       .footer-grid{grid-template-columns:1fr;gap:25px}
+      .news-feature{min-height:390px}.news-feature-content{padding:24px 20px}.news-side{grid-template-columns:1fr;grid-template-rows:none}.news-small-card{grid-template-columns:112px 1fr}.news-small-card img{width:112px;height:100%;min-height:100px}
+      .news-gallery{grid-template-columns:1fr;margin-top:40px}
       .home-slideshow{height:330px}
     }
-    @media(max-width:420px){.cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}.home-slideshow{height:260px}}
-    @media(prefers-reduced-motion:reduce){.home-slide.active{animation:none}}
+    @media(max-width:420px){.cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}.home-slideshow{height:260px}.news-feature{min-height:420px}.news-feature-content{padding:20px 16px}.news-small-card{grid-template-columns:95px 1fr}.news-small-card img{width:95px}}
+    @media(prefers-reduced-motion:reduce){.home-slide.active{animation:none}.news-small-card:hover,.news-feature:hover .news-feature-image{transform:none}}
   </style>
 </head>
 <body>
@@ -151,10 +184,19 @@
       <div class="section-heading"><span>Agir ensemble</span><h2>Nos projets pour Pindikro</h2><p>Découvrez les initiatives que l'AJUSP souhaite développer avec la participation de la communauté.</p></div>
       <div class="project-box"><h3>Construisons ensemble l'avenir de Pindikro</h3><p>Chaque projet représente une occasion de transformer nos ambitions collectives en réalisations concrètes.</p><a href="projets.html" class="btn btn-yellow">Découvrir nos projets</a></div>
     </section>
-    <section class="section">
-      <div class="section-heading"><span>La vie de l'association</span><h2>Actualités et moments forts</h2><p>Suivez les activités de l'association et découvrez la vie de notre communauté.</p></div>
+
+    <section class="section news-section">
+      <div class="section-heading"><span>La vie de l'association</span><h2>Actualités et moments forts</h2><p>Les dernières nouvelles, les activités et les initiatives qui font avancer Pindikro.</p></div>
+      <div class="news-feature-layout" id="homeNewsArea">
+        <div class="news-status">Chargement des dernières actualités...</div>
+      </div>
+      <div class="news-bottom">
+        <div class="news-dots" id="newsDots" aria-label="Choisir une actualité à mettre en avant"></div>
+        <a href="actualites.html" class="btn btn-yellow">Toutes les actualités</a>
+      </div>
+
       <div class="news-gallery">
-        <div class="info-panel"><h3>Actualités de l'AJUSP</h3><p>Retrouvez les communiqués, les réunions, les événements et les différentes activités organisées par l'association.</p><a href="actualites.html" class="btn btn-yellow">Toutes les actualités</a></div>
+        <div class="info-panel"><h3>La mémoire de nos actions</h3><p>Retrouvez en images les rencontres, les réalisations et les moments de solidarité de notre communauté.</p><a href="galerie.html" class="btn btn-yellow">Voir toute la galerie</a></div>
         <div class="info-panel home-gallery-panel">
           <h3>Galerie de Pindikro</h3>
           <p>Découvrez les photos des rencontres, des actions et des moments de solidarité de notre communauté.</p>
@@ -189,19 +231,106 @@
     mainNav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{mainNav.classList.remove("active");menuToggle.setAttribute("aria-expanded","false");menuToggle.textContent="☰";}));
     document.getElementById("year").textContent=new Date().getFullYear();
 
+    const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
+    const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    function formatNewsDate(value){
+      if(!value)return "";
+      const d=new Date(value);
+      if(Number.isNaN(d.getTime()))return "";
+      return new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"long",year:"numeric"}).format(d);
+    }
+
+    (async function loadHomeNews(){
+      const area=document.getElementById("homeNewsArea"),dots=document.getElementById("newsDots");
+      let news=[],activeIndex=0,timer=null;
+      try{
+        const {data,error}=await supabaseClient.from("news")
+          .select("id,title,content,image_url,category,is_published,published_at,created_at")
+          .eq("is_published",true)
+          .order("published_at",{ascending:false})
+          .limit(4);
+        if(error)throw error;
+        news=data||[];
+        if(!news.length){
+          area.innerHTML='<div class="news-status">Les actualités de l’AJUSP apparaîtront ici dès leur publication.</div>';
+          return;
+        }
+        const featured=news[0];
+        const imageMarkup=item=>item.image_url
+          ? `<img src="${escapeHTML(item.image_url)}" alt="${escapeHTML(item.title)}" loading="lazy">`
+          : "";
+        area.innerHTML=`
+          <article class="news-feature" id="newsFeature">
+            <img class="news-feature-image" id="newsFeatureImage" src="${escapeHTML(featured.image_url||"banniere-ajusp.jpeg")}" alt="${escapeHTML(featured.title)}">
+            <div class="news-feature-shade"></div>
+            <div class="news-feature-controls">
+              <button type="button" id="newsPrev" aria-label="Actualité précédente">‹</button>
+              <button type="button" id="newsNext" aria-label="Actualité suivante">›</button>
+            </div>
+            <div class="news-feature-content">
+              <span class="news-tag" id="newsFeatureCategory">${escapeHTML(featured.category||"Actualité")}</span>
+              <time class="news-date" id="newsFeatureDate">${formatNewsDate(featured.published_at||featured.created_at)}</time>
+              <h3 id="newsFeatureTitle">${escapeHTML(featured.title)}</h3>
+              <p id="newsFeatureText">${escapeHTML((featured.content||"").replace(/\\s+/g," ").slice(0,210))}${(featured.content||"").length>210?"…":""}</p>
+              <a class="news-read" id="newsFeatureLink" href="actualites.html">Lire l'actualité</a>
+            </div>
+          </article>
+          <div class="news-side" id="newsSide"></div>`;
+        const side=document.getElementById("newsSide");
+        side.innerHTML=news.slice(1,4).map(item=>`
+          <a class="news-small-card" href="actualites.html" aria-label="Lire ${escapeHTML(item.title)}">
+            ${item.image_url?`<img src="${escapeHTML(item.image_url)}" alt="${escapeHTML(item.title)}" loading="lazy">`:'<div class="news-small-placeholder" aria-hidden="true"></div>'}
+            <div class="news-small-content">
+              <span class="news-tag">${escapeHTML(item.category||"Actualité")}</span>
+              <time>${formatNewsDate(item.published_at||item.created_at)}</time>
+              <h4>${escapeHTML(item.title)}</h4>
+              <p>${escapeHTML((item.content||"").replace(/\\s+/g," ").slice(0,105))}</p>
+            </div>
+          </a>`).join("");
+        const featureImage=document.getElementById("newsFeatureImage");
+        const featureCategory=document.getElementById("newsFeatureCategory");
+        const featureDate=document.getElementById("newsFeatureDate");
+        const featureTitle=document.getElementById("newsFeatureTitle");
+        const featureText=document.getElementById("newsFeatureText");
+        function showNews(n){
+          activeIndex=(n+news.length)%news.length;
+          const item=news[activeIndex];
+          featureImage.src=item.image_url||"banniere-ajusp.jpeg";
+          featureImage.alt=item.title||"Actualité AJUSP";
+          featureCategory.textContent=item.category||"Actualité";
+          featureDate.textContent=formatNewsDate(item.published_at||item.created_at);
+          featureTitle.textContent=item.title||"Actualité de l'AJUSP";
+          const content=(item.content||"").replace(/\\s+/g," ");
+          featureText.textContent=content.slice(0,210)+(content.length>210?"…":"");
+          dots.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("active",i===activeIndex));
+        }
+        dots.innerHTML=news.map((item,i)=>`<button type="button" aria-label="Mettre en avant l'actualité ${i+1}" class="${i===0?"active":""}" data-index="${i}"></button>`).join("");
+        dots.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{showNews(Number(b.dataset.index));restart();}));
+        document.getElementById("newsPrev").addEventListener("click",()=>{showNews(activeIndex-1);restart();});
+        document.getElementById("newsNext").addEventListener("click",()=>{showNews(activeIndex+1);restart();});
+        function restart(){clearInterval(timer);if(news.length>1)timer=setInterval(()=>showNews(activeIndex+1),5000);}
+        restart();
+        const feature=document.getElementById("newsFeature");
+        feature.addEventListener("mouseenter",()=>clearInterval(timer));
+        feature.addEventListener("mouseleave",restart);
+        if(news.length===1){document.querySelector(".news-feature-controls").hidden=true;}
+      }catch(error){
+        area.innerHTML='<div class="news-status">Impossible de charger les actualités pour le moment. Veuillez consulter la page Actualités.</div>';
+        console.error("Erreur chargement actualités AJUSP:",error);
+      }
+    })();
+
     (async function loadHomeGallery(){
       const status=document.getElementById("homeGalleryStatus"),box=document.getElementById("homeSlideshow");
       const slides=document.getElementById("homeSlides"),dots=document.getElementById("homeDots");
-      const client=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
       let index=0,timer=null;
-      const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
       function show(n){const all=slides.querySelectorAll(".home-slide"),buttons=dots.querySelectorAll("button");if(!all.length)return;index=(n+all.length)%all.length;all.forEach((el,i)=>el.classList.toggle("active",i===index));buttons.forEach((el,i)=>el.classList.toggle("active",i===index));}
       function start(){clearInterval(timer);if(slides.children.length>1)timer=setInterval(()=>show(index+1),4500);}
       try{
-        const {data,error}=await client.from("gallery").select("id,title,description,media_url,media_type,created_at").eq("is_published",true).eq("media_type","image").order("created_at",{ascending:false}).limit(8);
+        const {data,error}=await supabaseClient.from("gallery").select("id,title,description,media_url,media_type,created_at").eq("is_published",true).eq("media_type","image").order("created_at",{ascending:false}).limit(8);
         if(error)throw error;
         if(!data||!data.length){status.textContent="Les photos des activités de l'AJUSP apparaîtront ici dès leur publication.";return;}
-        slides.innerHTML=data.map((item,i)=>`<div class="home-slide ${i===0?"active":""}"><img src="${esc(item.media_url)}" alt="${esc(item.title)}" ${i===0?'fetchpriority="high"':'loading="lazy"'}><div class="home-slide-caption"><strong>${esc(item.title)}</strong>${item.description?`<p>${esc(item.description)}</p>`:""}</div></div>`).join("");
+        slides.innerHTML=data.map((item,i)=>`<div class="home-slide ${i===0?"active":""}"><img src="${escapeHTML(item.media_url)}" alt="${escapeHTML(item.title)}" ${i===0?'fetchpriority="high"':'loading="lazy"'}><div class="home-slide-caption"><strong>${escapeHTML(item.title)}</strong>${item.description?`<p>${escapeHTML(item.description)}</p>`:""}</div></div>`).join("");
         dots.innerHTML=data.map((item,i)=>`<button type="button" aria-label="Afficher la photo ${i+1}" class="${i===0?"active":""}" data-index="${i}"></button>`).join("");
         dots.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{show(Number(b.dataset.index));start();}));
         document.getElementById("homePrev").addEventListener("click",()=>{show(index-1);start();});
