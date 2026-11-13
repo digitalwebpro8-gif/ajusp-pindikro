@@ -52,9 +52,21 @@
     .card h3{color:var(--bleu);margin-bottom:9px;font-size:18px}
     .card p{font-size:14px;color:var(--gris)}
     .projects{background:#F0F5F0}
-    .project-box{background:#fff;border-radius:12px;padding:35px;text-align:center;max-width:800px;margin:auto}
+    .project-box{background:#fff;border-radius:12px;padding:35px;text-align:center;max-width:800px;margin:25px auto 0}
     .project-box h3{color:var(--bleu);font-size:23px;margin-bottom:12px}
     .project-box p{color:var(--gris);margin-bottom:20px}
+    .home-projects-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+    .home-project-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 5px 25px #14263F0B;border-bottom:4px solid var(--jaune)}
+    .home-project-card img{width:100%;height:190px;object-fit:cover}
+    .home-project-content{padding:21px}
+    .home-project-content h3{color:var(--bleu);font-size:18px;margin:8px 0}
+    .home-project-content p{font-size:13px;color:var(--gris);margin-bottom:12px}
+    .home-project-status{display:inline-block;padding:5px 10px;border-radius:30px;background:#E8F2EA;color:var(--vert);font-size:11px;font-weight:800}
+    .home-project-status.ongoing{background:#FFF3CD;color:#805900}
+    .home-project-status.completed{background:#DCEFE3;color:#17643D}
+    .home-project-meta{font-size:12px;color:var(--gris);border-top:1px solid #edf0ed;padding-top:10px;margin-top:12px}
+    .home-project-meta span{display:block;margin:3px 0}
+    .home-projects-status{grid-column:1/-1;background:#fff;border-radius:12px;padding:28px;text-align:center;color:var(--gris)}
 
     /* Actualités : une actualité principale et trois actualités récentes */
     .news-section{background:#fff}
@@ -122,6 +134,7 @@
     @media(max-width:1050px){
       nav{gap:10px}nav a{font-size:12px}
       .cards{grid-template-columns:repeat(2,1fr)}
+      .home-projects-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .news-feature-layout{grid-template-columns:1fr}
       .news-side{grid-template-columns:repeat(3,1fr);grid-template-rows:none}
       .news-small-card{grid-template-columns:1fr}
@@ -136,6 +149,7 @@
       .hero{min-height:500px;padding:65px 7%}.hero p{font-size:15px}
       .section{padding:55px 6%}.about-grid{grid-template-columns:1fr}
       .about-image{min-height:280px}.cards{grid-template-columns:1fr 1fr;gap:12px}
+      .home-projects-grid{grid-template-columns:1fr}
       .card{padding:20px 15px}.card h3{font-size:15px}.card p{font-size:13px}
       .footer-grid{grid-template-columns:1fr;gap:25px}
       .news-feature{min-height:410px}.news-feature-content{padding:24px 20px}
@@ -209,7 +223,14 @@
     </section>
     <section class="section projects">
       <div class="section-heading"><span>Agir ensemble</span><h2>Nos projets pour Pindikro</h2><p>Découvrez les initiatives que l'AJUSP souhaite développer avec la participation de la communauté.</p></div>
-      <div class="project-box"><h3>Construisons ensemble l'avenir de Pindikro</h3><p>Chaque projet représente une occasion de transformer nos ambitions collectives en réalisations concrètes.</p><a href="projets.html" class="btn btn-yellow">Découvrir nos projets</a></div>
+      <div class="home-projects-grid" id="homeProjectsGrid">
+        <div class="home-projects-status">Chargement des projets...</div>
+      </div>
+      <div class="project-box">
+        <h3>Construisons ensemble l'avenir de Pindikro</h3>
+        <p>Chaque projet représente une occasion de transformer nos ambitions collectives en réalisations concrètes.</p>
+        <a href="projets.html" class="btn btn-yellow">Découvrir tous nos projets</a>
+      </div>
     </section>
 
     <section class="section news-section">
@@ -263,6 +284,75 @@
 
     const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
     const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+
+    // Afficher automatiquement sur l'accueil les trois derniers projets publiés.
+    (async function loadHomeProjects(){
+      const area=document.getElementById("homeProjectsGrid");
+      if(!area)return;
+
+      function projectStatus(status){
+        const labels={planned:"En préparation",ongoing:"En cours",completed:"Terminé"};
+        return labels[status]||"Statut non précisé";
+      }
+      function projectDate(value){
+        if(!value)return "Non précisée";
+        const date=new Date(value+"T00:00:00");
+        if(Number.isNaN(date.getTime()))return "Non précisée";
+        return new Intl.DateTimeFormat("fr-FR",{day:"2-digit",month:"long",year:"numeric"}).format(date);
+      }
+      function projectBudget(value){
+        if(value===null||value===undefined||value==="")return "Non communiqué";
+        const amount=Number(value);
+        return Number.isFinite(amount)?amount.toLocaleString("fr-FR")+" FCFA":"Non communiqué";
+      }
+
+      try{
+        const {data,error}=await supabaseClient.from("projects")
+          .select("id,title,description,objective,budget,status,image_url,start_date,end_date,created_at")
+          .eq("is_published",true)
+          .order("created_at",{ascending:false})
+          .limit(3);
+
+        if(error)throw error;
+
+        if(!data||!data.length){
+          area.innerHTML='<div class="home-projects-status">Les projets de l’AJUSP apparaîtront ici dès leur publication.</div>';
+          return;
+        }
+
+        area.innerHTML=data.map(project=>{
+          const statusClass=project.status==="ongoing"?"ongoing":project.status==="completed"?"completed":"";
+          const image=project.image_url
+            ?`<img src="${escapeHTML(project.image_url)}" alt="${escapeHTML(project.title||"Projet AJUSP")}" loading="lazy">`
+            :"";
+          const description=project.description
+            ?`<p>${escapeHTML(project.description)}</p>`
+            :"";
+          const objective=project.objective
+            ?`<p><strong>Objectif :</strong> ${escapeHTML(project.objective)}</p>`
+            :"";
+
+          return `
+            <article class="home-project-card">
+              ${image}
+              <div class="home-project-content">
+                <span class="home-project-status ${statusClass}">${escapeHTML(projectStatus(project.status))}</span>
+                <h3>${escapeHTML(project.title||"Projet de l’AJUSP")}</h3>
+                ${description}
+                ${objective}
+                <div class="home-project-meta">
+                  <span><strong>Budget :</strong> ${escapeHTML(projectBudget(project.budget))}</span>
+                  <span><strong>Début :</strong> ${escapeHTML(projectDate(project.start_date))}</span>
+                  <span><strong>Fin :</strong> ${escapeHTML(projectDate(project.end_date))}</span>
+                </div>
+              </div>
+            </article>`;
+        }).join("");
+      }catch(error){
+        area.innerHTML='<div class="home-projects-status">Les projets ne peuvent pas être chargés pour le moment. Consultez la page Nos projets.</div>';
+        console.error("Erreur chargement projets AJUSP:",error);
+      }
+    })();
     function formatNewsDate(value){
       if(!value)return "";
       const d=new Date(value);
