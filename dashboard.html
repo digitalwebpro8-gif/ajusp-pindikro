@@ -206,7 +206,7 @@ const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
 const TECHNICAL_ADMIN_ID="b44858ef-0e0e-4efb-a6c6-9b9bc7167fa2";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false;
+let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false,canManageSupport=false;
 let editingCotisationId=null,cotisationRows=[];
 
 const functions=[
@@ -215,8 +215,8 @@ const functions=[
  {value:"vice_president_2",label:"Deuxième vice-président"},
  {value:"secretaire_general",label:"Secrétaire général"},
  {value:"secretaire_general_adjoint",label:"Secrétaire général adjoint"},
- {value:"tresorier",label:"Trésorier"},
- {value:"adjoint_tresorier",label:"Trésorier adjoint"},
+ {value:"tresorier",label:"Trésorier général"},
+ {value:"adjoint_tresorier",label:"Trésorier général adjoint"},
  {value:"responsable_communication",label:"Responsable communication"},
  {value:"membre_communication",label:"Membre communication"}
 ];
@@ -254,6 +254,7 @@ async function checkAccess(){
  }
  isAdmin=profile.role==="admin";
  canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
+ canManageSupport=isAdmin||canManageCotisations;
  isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
  if(!isAdmin&&!canManageCotisations){
   showMessage("Accès refusé : cette page est réservée aux administrateurs et aux responsables de la trésorerie.");
@@ -262,6 +263,13 @@ async function checkAccess(){
  $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
  if(!isAdmin){
   document.querySelectorAll(".admin-only").forEach(section=>section.hidden=true);
+  /* Les responsables de trésorerie voient les trois rubriques de soutien,
+     sans accéder à la gestion des adhésions, des profils et des responsables. */
+  if(canManageSupport){
+   $("donationsPanel").hidden=false;
+   $("partnershipsPanel").hidden=false;
+   $("skillsPanel").hidden=false;
+  }
   $("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
  }
  if(canManageCotisations){$("cotisationFormPanel").hidden=false;$("cotActionsHeader").hidden=false;}
@@ -364,7 +372,7 @@ async function loadSkills(){
  }).join("");
 }
 async function updateSupportRequest(tableName,id,newStatus,label){
- if(!isAdmin){showMessage("Seul un administrateur peut traiter ces demandes.");return;}
+ if(!canManageSupport){showMessage("Vous n\u0027êtes pas autorisé à traiter ces demandes.");return;}
  const confirmation=tableName==="donations"&&newStatus==="confirmed"?"Confirmer que le versement du don a réellement été reçu ?":newStatus==="approved"?"Confirmer l'approbation de cette demande ?":"Confirmer le rejet de cette demande ?";
  if(!confirm(confirmation))return;hideMessage();
  const {data,error}=await client.from(tableName).update({status:newStatus}).eq("id",id).eq("status","pending").select("id");
@@ -475,6 +483,7 @@ $("logoutBtn").addEventListener("click",async()=>{
 
 if(await checkAccess()){
  if(isAdmin)await loadDashboard();
+ else if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
  if(canManageCotisations)await loadCotisationMembers();
  await loadCotisations();
  resetCotisationForm();
