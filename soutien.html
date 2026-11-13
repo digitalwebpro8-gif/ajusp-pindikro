@@ -1,23 +1,111 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Nous soutenir – AJUSP Pindikro"><title>Nous soutenir | AJUSP</title><style>
-:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
-a{text-decoration:none;color:inherit}.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
-.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
-nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
-.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
-.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}
-.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
-h2{color:var(--navy);font-size:27px;margin:8px 0 15px}h3{color:var(--navy);margin-bottom:8px}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)}
-.card p,.muted{color:var(--muted)}.photo{width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:20px 0}
-ul{padding-left:22px;margin:12px 0 20px}li{margin:6px 0}.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
-form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:720px}
-label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}textarea{min-height:120px}
-button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
-footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
-@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}.grid{grid-template-columns:1fr}}
-</style></head><body>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Soutenez l'AJUSP Pindikro : faire un don, devenir partenaire, apporter une compétence ou participer aux cotisations.">
+<meta name="theme-color" content="#17643D">
+<title>Nous soutenir | AJUSP Pindikro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D;--line:#e3eae4}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font:inherit}
+.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:20;box-shadow:0 3px 14px #0001}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand img{width:56px;height:56px;object-fit:contain}
+.brand b{display:block;color:var(--green);font-size:20px}
+.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
+nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+nav a{font-size:12px;font-weight:bold;color:var(--navy)}
+nav a:hover{color:var(--green)}
+.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:6px}
+.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px;cursor:pointer}
+.hero{padding:82px 8%;background:linear-gradient(90deg,#103e2ff0,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
+.hero .tag{color:var(--yellow);font-weight:bold;letter-spacing:2px;font-size:12px}
+.hero h1{font-size:clamp(32px,5vw,52px);line-height:1.12;max-width:850px;margin:10px 0 15px}
+.hero p{max-width:760px;color:#f0f4f0;font-size:18px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;cursor:pointer;font-weight:bold;padding:12px 18px;transition:.2s}
+.btn:hover{background:var(--dark);transform:translateY(-2px)}
+.btn-light{background:white;color:var(--green)!important}
+.btn-outline{background:transparent;border:1px solid #ffffffa8;color:white!important}
+.wrap{max-width:1160px;margin:auto;padding:58px 6%}
+.center{text-align:center}
+.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
+h2{color:var(--navy);font-size:clamp(25px,3vw,32px);margin:8px 0 12px;line-height:1.2}
+h3{color:var(--navy);margin-bottom:8px;line-height:1.25}
+.lead{font-size:17px;color:var(--muted);max-width:780px;margin:0 auto 30px}
+.intro{max-width:850px;margin:0 auto 34px;text-align:center}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}
+.support-card{background:white;padding:23px 20px;border-radius:13px;box-shadow:0 5px 22px #14263f0c;border:1px solid var(--line);border-bottom:4px solid var(--yellow);display:flex;flex-direction:column;min-height:260px;transition:.2s}
+.support-card:hover{transform:translateY(-5px);box-shadow:0 12px 28px #14263f14}
+.card-icon{width:52px;height:52px;border-radius:14px;background:#eaf2eb;display:grid;place-items:center;font-size:26px;margin-bottom:16px}
+.support-card p{color:var(--muted);font-size:14px;flex:1}
+.support-card .btn{margin-top:18px;width:100%;font-size:14px}
+.info-strip{margin-top:26px;background:#eaf2eb;border-left:5px solid var(--green);padding:20px 23px;border-radius:9px;color:#385342}
+.info-strip strong{color:var(--dark)}
+.form-section{display:none;margin-top:42px;scroll-margin-top:110px}
+.form-section.active{display:block;animation:appear .3s ease}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.form-shell{display:grid;grid-template-columns:.8fr 1.2fr;gap:25px;align-items:start}
+.form-aside{background:var(--navy);color:white;border-radius:13px;padding:27px;position:sticky;top:105px}
+.form-aside h3{color:white;font-size:22px}
+.form-aside p{color:#dce5e8;font-size:14px}
+.form-aside ul{padding-left:19px;margin:15px 0}
+.form-aside li{margin:7px 0;color:#e7eeee;font-size:14px}
+.form-box{background:white;padding:28px;border-radius:13px;box-shadow:0 5px 24px #14263f0c;border:1px solid var(--line)}
+.form-box h3{font-size:22px;margin-bottom:5px}
+.form-help{font-size:13px;color:var(--muted);margin-bottom:16px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:0 15px}
+.field.full{grid-column:1/-1}
+label{display:block;font-weight:bold;color:var(--navy);font-size:13px;margin:12px 0 5px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:6px;background:white;color:var(--text);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px #17643d18}
+textarea{min-height:105px;resize:vertical}
+.checkline{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--muted)}
+.checkline input{width:auto;margin-top:5px}
+.checkline label{margin:0;font-weight:normal;color:var(--muted)}
+.form-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.submit{background:var(--green);color:white;border:0;border-radius:6px;padding:13px 20px;font-weight:bold;cursor:pointer}
+.submit:hover{background:var(--dark)}
+.submit:disabled{opacity:.6;cursor:wait}
+.cancel{border:1px solid var(--line);background:white;color:var(--navy);padding:12px 17px;border-radius:6px;cursor:pointer}
+.status{display:none;padding:12px 14px;border-radius:7px;margin-top:15px;font-size:14px}
+.status.success{display:block;background:#e7f5eb;color:#17643D}
+.status.error{display:block;background:#fff0ed;color:#9b2c1d}
+.transparency{background:white;border-radius:13px;padding:27px;margin-top:35px;border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:25px}
+.transparency p{color:var(--muted);font-size:14px}
+.transparency ul{padding-left:20px;color:var(--muted);font-size:14px}
+.transparency li{margin:5px 0}
+footer{background:var(--navy);color:#dce5e8;padding:30px 6%;text-align:center;font-size:13px;margin-top:25px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}nav{gap:9px}nav a{font-size:11px}}
+@media(max-width:760px){
+ .toggle{display:block}
+ nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch;box-shadow:0 8px 14px #0001}
+ nav.open{display:flex}nav a{padding:9px;border-bottom:1px solid #eee;font-size:13px}
+ .hero{padding:62px 7%}.wrap{padding:44px 5%}
+ .cards{grid-template-columns:1fr 1fr;gap:12px}
+ .support-card{padding:18px 15px;min-height:270px}
+ .form-shell{grid-template-columns:1fr}
+ .form-aside{position:static}
+ .transparency{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+ .brand img{width:46px;height:46px}.brand b{font-size:18px}.brand small{font-size:8px;max-width:190px}
+ .cards{grid-template-columns:1fr}
+ .support-card{min-height:unset}
+ .fields{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .form-box{padding:20px 16px}
+ .hero p{font-size:16px}
+}
+</style>
+</head>
+<body>
 <header class="site-header">
   <a class="brand" href="index.html"><img src="logo-ajusp.jpeg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
   <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
@@ -26,13 +114,240 @@ footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;fo
     <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
     <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
     <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
-    <a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
+    <a class="nav-cta" href="connexion.html">Espace membre</a>
   </nav>
-</header><section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Nous soutenir</h1><p>Votre engagement peut contribuer à faire avancer les initiatives de développement de Pindikro.</p></section><main class="wrap">
-<p class="lead">Chaque contribution, chaque compétence partagée et chaque geste de solidarité peut faire la différence.</p>
-<div class="grid"><article class="card"><h3>Faire un don</h3><p>Les dons permettront de soutenir les projets validés par l'association. Les modalités de paiement et de reçu seront précisées lorsque le dispositif sécurisé sera activé.</p></article><article class="card"><h3>Devenir partenaire</h3><p>Entreprises, associations, institutions et personnes de bonne volonté peuvent accompagner l'AJUSP selon leurs possibilités.</p></article><article class="card"><h3>Apporter une compétence</h3><p>Partagez votre expérience, votre expertise ou votre temps au service des initiatives communautaires.</p></article><article class="card"><h3>Participer aux cotisations</h3><p>Les membres pourront consulter les modalités officielles de cotisation auprès des responsables de l'association.</p></article></div>
-<div class="callout"><h3>Transparence</h3><p>Les contributions et les dépenses liées aux projets devront faire l'objet d'un suivi et d'une communication transparents.</p></div>
-</main><footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer><script>document.getElementById("year").textContent=new Date().getFullYear();</script><script>
-const t=document.querySelector('.toggle'),n=document.querySelector('nav');
-t?.addEventListener('click',()=>{const o=n.classList.toggle('open');t.setAttribute('aria-expanded',o);t.textContent=o?'✕':'☰'});
-</script></body></html>
+</header>
+
+<section class="hero">
+  <span class="tag">AJUSP · PINDIKRO</span>
+  <h1>Ensemble, faisons grandir Pindikro</h1>
+  <p>Un don, un partenariat, une compétence ou une cotisation : chaque engagement compte pour construire un avenir meilleur pour notre communauté.</p>
+  <div class="hero-actions">
+    <a class="btn btn-light" href="#contributions">Je souhaite contribuer</a>
+    <a class="btn btn-outline" href="projets.html">Découvrir nos projets</a>
+  </div>
+</section>
+
+<main class="wrap">
+  <section id="contributions">
+    <div class="intro">
+      <span class="eyebrow">Votre engagement fait la différence</span>
+      <h2>Comment souhaitez-vous soutenir l’AJUSP ?</h2>
+      <p class="lead">Choisissez la forme de contribution qui vous correspond. Que vous soyez membre, habitant, ressortissant de Pindikro, entreprise ou partenaire, votre participation est précieuse.</p>
+    </div>
+
+    <div class="cards">
+      <article class="support-card">
+        <div class="card-icon">💚</div><h3>Faire un don</h3>
+        <p>Contribuez financièrement aux projets et aux actions de développement portés par l’association.</p>
+        <button class="btn" type="button" data-open="don">Faire un don</button>
+      </article>
+      <article class="support-card">
+        <div class="card-icon">🤝</div><h3>Devenir partenaire</h3>
+        <p>Associez votre structure ou votre initiative aux actions de solidarité et de développement de Pindikro.</p>
+        <button class="btn" type="button" data-open="partenaire">Proposer un partenariat</button>
+      </article>
+      <article class="support-card">
+        <div class="card-icon">🛠️</div><h3>Apporter une compétence</h3>
+        <p>Mettez votre savoir-faire, votre expérience ou votre temps au service de la communauté.</p>
+        <button class="btn" type="button" data-open="competence">Proposer mes compétences</button>
+      </article>
+      <article class="support-card">
+        <div class="card-icon">👥</div><h3>Participer aux cotisations</h3>
+        <p>Retrouvez votre espace membre pour consulter les informations et le suivi de vos cotisations.</p>
+        <a class="btn" href="connexion.html">Accéder aux cotisations</a>
+      </article>
+    </div>
+
+    <div class="info-strip"><strong>Notre engagement :</strong> les contributions reçues doivent être enregistrées, suivies et utilisées dans le cadre des actions de l’association. L’AJUSP veille à la transparence dans la gestion de ses ressources.</div>
+  </section>
+
+  <section class="form-section" id="form-don">
+    <div class="form-shell">
+      <aside class="form-aside">
+        <h3>Faire un don à l’AJUSP</h3>
+        <p>Votre soutien financier contribue à la réalisation des projets collectifs et des actions prioritaires de Pindikro.</p>
+        <ul><li>Vous choisissez librement le montant que vous souhaitez proposer.</li><li>Vous pouvez choisir de ne pas afficher votre nom publiquement.</li><li>Les responsables vous contacteront pour vous communiquer les modalités de versement et confirmer la réception.</li></ul>
+        <p><strong>Important :</strong> ce formulaire enregistre une intention de don. Il ne déclenche aucun paiement en ligne.</p>
+      </aside>
+      <div class="form-box">
+        <h3>Formulaire de proposition de don</h3><p class="form-help">Les champs marqués d’un * sont obligatoires.</p>
+        <form id="donForm">
+          <div class="fields">
+            <div class="field"><label for="don-name">Nom et prénoms *</label><input id="don-name" name="donor_name" required maxlength="120" placeholder="Votre nom"></div>
+            <div class="field"><label for="don-amount">Montant proposé (FCFA) *</label><input id="don-amount" name="amount" type="number" min="1" step="1" required placeholder="Ex. 10000"></div>
+            <div class="field"><label for="don-phone">Téléphone *</label><input id="don-phone" name="phone" type="tel" required maxlength="30" placeholder="Votre numéro"></div>
+            <div class="field"><label for="don-email">Adresse e-mail</label><input id="don-email" name="email" type="email" maxlength="160" placeholder="exemple@email.com"></div>
+            <div class="field full"><label for="don-message">Message ou précision (facultatif)</label><textarea id="don-message" name="message" maxlength="1000" placeholder="Précisez éventuellement le projet que vous souhaitez soutenir..."></textarea></div>
+          </div>
+          <div class="checkline"><input id="don-public" type="checkbox"><label for="don-public">J’autorise l’AJUSP à afficher mon nom dans la liste publique des donateurs, après confirmation du don.</label></div>
+          <div class="form-actions"><button class="submit" type="submit">Envoyer ma proposition</button><button class="cancel" type="button" data-close>Annuler</button></div>
+          <div class="status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="form-partenaire">
+    <div class="form-shell">
+      <aside class="form-aside">
+        <h3>Construisons des partenariats utiles</h3>
+        <p>L’AJUSP est ouverte aux collaborations avec les entreprises, associations, institutions, organisations et personnes de bonne volonté.</p>
+        <ul><li>Appui financier ou matériel</li><li>Accompagnement technique ou institutionnel</li><li>Soutien à un projet ou à une activité</li><li>Mécénat et parrainage</li></ul>
+        <p>Après réception, l’équipe de l’AJUSP prendra contact avec vous pour étudier votre proposition.</p>
+      </aside>
+      <div class="form-box">
+        <h3>Proposer un partenariat</h3><p class="form-help">Présentez-nous votre structure et le type d’accompagnement envisagé.</p>
+        <form id="partnerForm">
+          <div class="fields">
+            <div class="field"><label for="p-structure">Nom de la structure *</label><input id="p-structure" name="organization" required maxlength="160"></div>
+            <div class="field"><label for="p-person">Nom du responsable *</label><input id="p-person" name="contact_name" required maxlength="120"></div>
+            <div class="field"><label for="p-phone">Téléphone *</label><input id="p-phone" name="phone" type="tel" required maxlength="30"></div>
+            <div class="field"><label for="p-email">Adresse e-mail</label><input id="p-email" name="email" type="email" maxlength="160"></div>
+            <div class="field"><label for="p-type">Type de partenariat *</label><select id="p-type" name="partnership_type" required><option value="">Choisir...</option><option>Financier</option><option>Matériel</option><option>Technique</option><option>Institutionnel</option><option>Mécénat ou parrainage</option><option>Autre</option></select></div>
+            <div class="field"><label for="p-domain">Domaine d’intervention</label><input id="p-domain" name="domain" maxlength="120" placeholder="Ex. éducation, santé, agriculture"></div>
+            <div class="field full"><label for="p-message">Présentez votre proposition *</label><textarea id="p-message" name="message" required maxlength="2000" placeholder="Décrivez votre structure, votre proposition et les formes d'appui possibles..."></textarea></div>
+          </div>
+          <div class="form-actions"><button class="submit" type="submit">Envoyer ma proposition</button><button class="cancel" type="button" data-close>Annuler</button></div>
+          <div class="status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" id="form-competence">
+    <div class="form-shell">
+      <aside class="form-aside">
+        <h3>Votre savoir-faire est une richesse</h3>
+        <p>Le développement local a besoin de talents, de disponibilité et de partage d’expérience. Faites connaître les compétences que vous pouvez mettre à disposition.</p>
+        <ul><li>Éducation et formation</li><li>Santé et action sociale</li><li>Informatique et communication</li><li>Bâtiment, électricité et métiers techniques</li><li>Agriculture, élevage et entrepreneuriat</li><li>Gestion, organisation et mobilisation communautaire</li></ul>
+      </aside>
+      <div class="form-box">
+        <h3>Proposer mes compétences</h3><p class="form-help">Ces informations permettront à l’association de vous contacter selon les besoins de ses projets.</p>
+        <form id="skillForm">
+          <div class="fields">
+            <div class="field"><label for="s-name">Nom et prénoms *</label><input id="s-name" name="full_name" required maxlength="120"></div>
+            <div class="field"><label for="s-phone">Téléphone *</label><input id="s-phone" name="phone" type="tel" required maxlength="30"></div>
+            <div class="field"><label for="s-email">Adresse e-mail</label><input id="s-email" name="email" type="email" maxlength="160"></div>
+            <div class="field"><label for="s-residence">Lieu de résidence</label><input id="s-residence" name="residence" maxlength="120"></div>
+            <div class="field"><label for="s-skill">Compétence principale *</label><input id="s-skill" name="skill" required maxlength="160" placeholder="Ex. électricien, enseignant..."></div>
+            <div class="field"><label for="s-availability">Disponibilité *</label><select id="s-availability" name="availability" required><option value="">Choisir...</option><option>Ponctuelle</option><option>Régulière</option><option>À distance</option><option>Selon les besoins</option></select></div>
+            <div class="field full"><label for="s-message">Présentez votre expérience et votre contribution possible *</label><textarea id="s-message" name="message" required maxlength="2000" placeholder="Décrivez votre expérience, vos compétences et la manière dont vous souhaitez aider..."></textarea></div>
+          </div>
+          <div class="form-actions"><button class="submit" type="submit">Envoyer mon offre</button><button class="cancel" type="button" data-close>Annuler</button></div>
+          <div class="status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="transparency">
+    <div><span class="eyebrow">Une gestion responsable</span><h2>La transparence au cœur de nos actions</h2><p>L’AJUSP s’engage à assurer un suivi des contributions et à rendre compte de leur utilisation dans le cadre des projets et activités de l’association.</p></div>
+    <div><h3>Après votre participation</h3><ul><li>Votre proposition est enregistrée par l’association.</li><li>Les responsables examinent votre demande.</li><li>Vous êtes contacté pour les prochaines étapes.</li><li>Les dons ne sont considérés comme reçus qu’après confirmation effective du versement.</li></ul></div>
+  </section>
+</main>
+
+<footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro<br>« Ensemble pour un avenir meilleur »</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+const toggle = document.querySelector(".toggle");
+const nav = document.querySelector("nav");
+toggle?.addEventListener("click", () => {
+  const opened = nav.classList.toggle("open");
+  toggle.setAttribute("aria-expanded", String(opened));
+  toggle.textContent = opened ? "✕" : "☰";
+});
+nav?.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+  nav.classList.remove("open");
+  toggle?.setAttribute("aria-expanded","false");
+  if(toggle) toggle.textContent = "☰";
+}));
+
+const sections = {
+  don: document.getElementById("form-don"),
+  partenaire: document.getElementById("form-partenaire"),
+  competence: document.getElementById("form-competence")
+};
+document.querySelectorAll("[data-open]").forEach(button => button.addEventListener("click", () => {
+  Object.values(sections).forEach(section => section.classList.remove("active"));
+  const target = sections[button.dataset.open];
+  if(target){target.classList.add("active");target.scrollIntoView({behavior:"smooth",block:"start"});}
+}));
+document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", () => {
+  const section = button.closest(".form-section");
+  section?.classList.remove("active");
+  document.getElementById("contributions").scrollIntoView({behavior:"smooth"});
+}));
+
+const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const db = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function formData(form){
+  return Object.fromEntries(new FormData(form).entries());
+}
+function showStatus(form, message, success){
+  const box = form.querySelector(".status");
+  box.textContent = message;
+  box.className = "status " + (success ? "success" : "error");
+}
+async function submitToTable(form, table, payload, successMessage){
+  const submit = form.querySelector('[type="submit"]');
+  submit.disabled = true;
+  submit.textContent = "Envoi en cours...";
+  try{
+    if(!db) throw new Error("La connexion au service est indisponible.");
+    const {error} = await db.from(table).insert(payload);
+    if(error) throw error;
+    showStatus(form, successMessage, true);
+    form.reset();
+  }catch(error){
+    console.error("AJUSP submission:", error);
+    showStatus(form, "Votre demande n'a pas pu être envoyée. Vérifiez la configuration Supabase et les autorisations, puis réessayez. (" + (error.message || "Erreur") + ")", false);
+  }finally{
+    submit.disabled = false;
+    submit.textContent = form.id === "donForm" ? "Envoyer ma proposition" : form.id === "partnerForm" ? "Envoyer ma proposition" : "Envoyer mon offre";
+  }
+}
+
+document.getElementById("donForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const d = formData(event.currentTarget);
+  const amount = Number(d.amount);
+  if(!Number.isFinite(amount) || amount <= 0){showStatus(event.currentTarget,"Veuillez saisir un montant valide.",false);return;}
+  await submitToTable(event.currentTarget,"donations",{
+    donor_name:d.donor_name.trim(),
+    amount:amount,
+    currency:"FCFA",
+    is_public:document.getElementById("don-public").checked,
+    phone:d.phone.trim(),
+    email:d.email.trim() || null,
+    message:d.message.trim() || null,
+    status:"pending"
+  },"Votre proposition de don a bien été transmise à l'AJUSP. Les responsables vous contacteront pour les modalités de versement. Merci pour votre générosité !");
+});
+
+document.getElementById("partnerForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const d = formData(event.currentTarget);
+  await submitToTable(event.currentTarget,"partnership_requests",{
+    organization:d.organization.trim(),contact_name:d.contact_name.trim(),phone:d.phone.trim(),
+    email:d.email.trim() || null,partnership_type:d.partnership_type,domain:d.domain.trim() || null,
+    message:d.message.trim(),status:"pending"
+  },"Votre proposition de partenariat a bien été envoyée à l'AJUSP. Merci pour votre intérêt !");
+});
+
+document.getElementById("skillForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const d = formData(event.currentTarget);
+  await submitToTable(event.currentTarget,"skill_offers",{
+    full_name:d.full_name.trim(),phone:d.phone.trim(),email:d.email.trim() || null,
+    residence:d.residence.trim() || null,skill:d.skill.trim(),availability:d.availability,
+    message:d.message.trim(),status:"pending"
+  },"Votre offre de compétence a bien été transmise à l'AJUSP. Merci de mettre votre savoir-faire au service de Pindikro !");
+});
+</script>
+</body>
+</html>
