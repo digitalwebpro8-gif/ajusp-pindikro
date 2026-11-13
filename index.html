@@ -56,10 +56,10 @@
     .project-box h3{color:var(--bleu);font-size:23px;margin-bottom:12px}
     .project-box p{color:var(--gris);margin-bottom:20px}
 
-    /* Actualités dynamiques */
+    /* Actualités : une actualité principale et trois actualités récentes */
     .news-section{background:#fff}
     .news-feature-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);gap:22px;align-items:stretch}
-    .news-feature{position:relative;min-height:430px;border-radius:15px;overflow:hidden;background:linear-gradient(135deg,#10452D,#14263F);color:#fff;box-shadow:0 8px 28px #14263F18}
+    .news-feature{position:relative;min-height:440px;border-radius:15px;overflow:hidden;background:linear-gradient(135deg,#10452D,#14263F);color:#fff;box-shadow:0 8px 28px #14263F18}
     .news-feature-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.78;transition:transform .7s}
     .news-feature:hover .news-feature-image{transform:scale(1.035)}
     .news-feature-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,25,15,.96),rgba(5,25,15,.08) 75%)}
@@ -75,7 +75,8 @@
     .news-side{display:grid;grid-template-rows:repeat(3,1fr);gap:12px}
     .news-small-card{display:grid;grid-template-columns:112px 1fr;gap:14px;min-height:130px;padding:12px;background:var(--fond);border-radius:11px;border:1px solid #e8eee8;transition:.2s}
     .news-small-card:hover{transform:translateX(3px);border-color:#b9d2bf}
-    .news-small-card img{width:112px;height:100%;min-height:105px;object-fit:cover;border-radius:8px;background:#dce8de}
+    .news-small-card img,.news-small-placeholder{width:112px;height:100%;min-height:105px;object-fit:cover;border-radius:8px;background:#dce8de}
+    .news-small-placeholder{background:linear-gradient(135deg,#dce8de,#edf3ee)}
     .news-small-content{align-self:center;min-width:0}
     .news-small-content .news-tag{font-size:9px;padding:4px 8px;margin-bottom:5px}
     .news-small-content time{display:block;font-size:10px;color:var(--gris);margin-bottom:5px}
@@ -86,25 +87,28 @@
     .news-dots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:#c6d1c8;cursor:pointer}
     .news-dots button.active{background:var(--vert);transform:scale(1.25)}
     .news-status{padding:30px;background:var(--fond);border-radius:12px;text-align:center;color:var(--gris);grid-column:1/-1}
-    .news-gallery{display:grid;grid-template-columns:1fr 1.25fr;gap:25px;align-items:stretch;margin-top:55px}
-    .info-panel{background:#fff;border-radius:12px;padding:30px;box-shadow:0 5px 25px #14263F0B}
-    .info-panel h3{color:var(--bleu);margin-bottom:12px;font-size:22px}
-    .info-panel p{color:var(--gris);margin-bottom:18px}
-    .home-gallery-panel{padding:30px}
-    .home-slideshow{position:relative;width:100%;height:430px;background:#102016;border-radius:12px;overflow:hidden;margin:22px 0 18px}
+
+    /* Galerie : bloc indépendant, pleine largeur et plus grand */
+    .home-gallery-section{margin-top:58px;padding:34px;background:#F7F9F6;border:1px solid #e8eee8;border-radius:16px}
+    .home-gallery-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+    .home-gallery-heading .eyebrow{color:var(--vert);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
+    .home-gallery-heading h3{color:var(--bleu);font-size:25px;margin:5px 0}
+    .home-gallery-heading p{color:var(--gris);max-width:680px;font-size:14px}
+    .home-slideshow{position:relative;width:100%;height:530px;background:#102016;border-radius:13px;overflow:hidden;margin:0 0 18px}
     .home-slide{display:none;width:100%;height:100%;position:relative}
     .home-slide.active{display:block;animation:homeFade .7s}
     .home-slide img{width:100%;height:100%;object-fit:contain;background:#102016}
-    .home-slide-caption{position:absolute;left:0;right:0;bottom:0;padding:45px 20px 18px;color:white;background:linear-gradient(transparent,#071b12df)}
-    .home-slide-caption strong{font-size:18px}
-    .home-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:42px;height:42px;background:#ffffffdf;color:var(--bleu);font-size:25px;cursor:pointer;z-index:2}
+    .home-slide-caption{position:absolute;left:0;right:0;bottom:0;padding:55px 25px 20px;color:white;background:linear-gradient(transparent,#071b12df)}
+    .home-slide-caption strong{font-size:19px}
+    .home-slide-caption p{font-size:13px;color:#edf3ee;margin-top:4px}
+    .home-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:46px;height:46px;background:#ffffffdf;color:var(--bleu);font-size:27px;cursor:pointer;z-index:2}
     .home-arrow:hover{background:var(--jaune)}
-    .home-arrow.prev{left:12px}.home-arrow.next{right:12px}
+    .home-arrow.prev{left:16px}.home-arrow.next{right:16px}
     .home-gallery-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
     .home-dots{display:flex;gap:7px}
     .home-dots button{width:9px;height:9px;border:0;border-radius:50%;background:#bdc9bf;padding:0;cursor:pointer}
     .home-dots button.active{background:var(--vert);transform:scale(1.2)}
-    .gallery-status{color:var(--gris);padding:25px 10px;text-align:center;background:#f7f9f6;border-radius:9px;margin:20px 0}
+    .gallery-status{color:var(--gris);padding:35px 15px;text-align:center;background:#fff;border-radius:9px;margin:0 0 18px}
     .support{background:var(--vert-fonce);color:#fff;text-align:center;padding:65px 7%}
     .support h2{font-size:clamp(26px,4vw,37px);margin-bottom:13px}
     .support p{max-width:700px;margin:0 auto 25px;color:#E4EEE6}
@@ -115,7 +119,14 @@
     footer a{display:block;margin-bottom:8px}
     .copyright{border-top:1px solid #FFFFFF22;padding-top:18px;text-align:center;font-size:12px;color:#B8C4CE}
     @keyframes homeFade{from{opacity:.45}to{opacity:1}}
-    @media(max-width:1050px){nav{gap:10px}nav a{font-size:12px}.cards{grid-template-columns:repeat(2,1fr)}.news-feature-layout{grid-template-columns:1fr}.news-side{grid-template-columns:repeat(3,1fr);grid-template-rows:none}.news-small-card{grid-template-columns:1fr}.news-small-card img{width:100%;height:115px}}
+    @media(max-width:1050px){
+      nav{gap:10px}nav a{font-size:12px}
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .news-feature-layout{grid-template-columns:1fr}
+      .news-side{grid-template-columns:repeat(3,1fr);grid-template-rows:none}
+      .news-small-card{grid-template-columns:1fr}
+      .news-small-card img,.news-small-placeholder{width:100%;height:125px}
+    }
     @media(max-width:760px){
       .topbar{justify-content:center;text-align:center}.topbar span:last-child{display:none}
       header{padding:10px 5%}.brand img{width:52px;height:52px}.brand-name{font-size:17px}.brand small{font-size:9px}
@@ -127,12 +138,28 @@
       .about-image{min-height:280px}.cards{grid-template-columns:1fr 1fr;gap:12px}
       .card{padding:20px 15px}.card h3{font-size:15px}.card p{font-size:13px}
       .footer-grid{grid-template-columns:1fr;gap:25px}
-      .news-feature{min-height:390px}.news-feature-content{padding:24px 20px}.news-side{grid-template-columns:1fr;grid-template-rows:none}.news-small-card{grid-template-columns:112px 1fr}.news-small-card img{width:112px;height:100%;min-height:100px}
-      .news-gallery{grid-template-columns:1fr;margin-top:40px}
-      .home-slideshow{height:330px}
+      .news-feature{min-height:410px}.news-feature-content{padding:24px 20px}
+      .news-side{grid-template-columns:1fr;grid-template-rows:none}
+      .news-small-card{grid-template-columns:112px 1fr}
+      .news-small-card img,.news-small-placeholder{width:112px;height:100%;min-height:100px}
+      .home-gallery-section{margin-top:42px;padding:20px}
+      .home-gallery-heading{align-items:flex-start}
+      .home-slideshow{height:390px}
     }
-    @media(max-width:420px){.cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}.home-slideshow{height:260px}.news-feature{min-height:420px}.news-feature-content{padding:20px 16px}.news-small-card{grid-template-columns:95px 1fr}.news-small-card img{width:95px}}
-    @media(prefers-reduced-motion:reduce){.home-slide.active{animation:none}.news-small-card:hover,.news-feature:hover .news-feature-image{transform:none}}
+    @media(max-width:420px){
+      .cards{grid-template-columns:1fr}.hero h1{font-size:35px}.btn{width:100%;text-align:center}
+      .home-slideshow{height:290px}.news-feature{min-height:440px}
+      .news-feature-content{padding:20px 16px}
+      .news-small-card{grid-template-columns:95px 1fr}
+      .news-small-card img,.news-small-placeholder{width:95px}
+      .home-gallery-section{padding:14px}
+      .home-arrow{width:38px;height:38px;font-size:23px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .home-slide.active{animation:none}
+      .news-small-card:hover,.news-feature:hover .news-feature-image{transform:none}
+      html{scroll-behavior:auto}
+    }
   </style>
 </head>
 <body>
@@ -142,7 +169,7 @@
   </div>
   <header>
     <a href="index.html" class="brand">
-      <img src="logo-ajusp1.jpg" alt="Logo officiel de l'AJUSP">
+      <img src="logo-ajusp.jpeg" alt="Logo officiel de l'AJUSP">
       <div><div class="brand-name">AJUSP</div><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></div>
     </a>
     <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
@@ -195,23 +222,26 @@
         <a href="actualites.html" class="btn btn-yellow">Toutes les actualités</a>
       </div>
 
-      <div class="news-gallery">
-        <div class="info-panel"><h3>La mémoire de nos actions</h3><p>Retrouvez en images les rencontres, les réalisations et les moments de solidarité de notre communauté.</p><a href="galerie.html" class="btn btn-yellow">Voir toute la galerie</a></div>
-        <div class="info-panel home-gallery-panel">
-          <h3>Galerie de Pindikro</h3>
-          <p>Découvrez les photos des rencontres, des actions et des moments de solidarité de notre communauté.</p>
-          <div id="homeGalleryStatus" class="gallery-status">Chargement des dernières photos...</div>
-          <div class="home-slideshow" id="homeSlideshow" hidden>
-            <div id="homeSlides"></div>
-            <button class="home-arrow prev" id="homePrev" aria-label="Photo précédente">‹</button>
-            <button class="home-arrow next" id="homeNext" aria-label="Photo suivante">›</button>
+      <section class="home-gallery-section" aria-labelledby="homeGalleryTitle">
+        <div class="home-gallery-heading">
+          <div>
+            <span class="eyebrow">Souvenirs et réalisations</span>
+            <h3 id="homeGalleryTitle">La galerie de Pindikro</h3>
+            <p>Revivez en images les rencontres, les cérémonies, les projets et les moments de solidarité qui rassemblent notre communauté.</p>
           </div>
-          <div class="home-gallery-bottom">
-            <div class="home-dots" id="homeDots"></div>
-            <a href="galerie.html" class="btn btn-yellow">Voir toute la galerie</a>
-          </div>
+          <a href="galerie.html" class="btn btn-yellow">Voir toute la galerie</a>
         </div>
-      </div>
+        <div id="homeGalleryStatus" class="gallery-status">Chargement des dernières photos...</div>
+        <div class="home-slideshow" id="homeSlideshow" hidden>
+          <div id="homeSlides"></div>
+          <button class="home-arrow prev" id="homePrev" aria-label="Photo précédente">‹</button>
+          <button class="home-arrow next" id="homeNext" aria-label="Photo suivante">›</button>
+        </div>
+        <div class="home-gallery-bottom">
+          <div class="home-dots" id="homeDots" aria-label="Choisir une photo"></div>
+          <a href="galerie.html" class="btn btn-yellow">Explorer toutes les photos</a>
+        </div>
+      </section>
     </section>
     <section class="support"><h2>Ensemble, faisons avancer Pindikro !</h2><p>Votre engagement, vos cotisations, vos dons et vos idées peuvent contribuer à la réalisation de nos projets de développement.</p>
       <div class="buttons" style="justify-content:center"><a href="contact-adhesion.html" class="btn btn-yellow">Rejoindre l'AJUSP</a><a href="soutien.html" class="btn btn-outline">Faire un don</a></div>
@@ -247,7 +277,8 @@
         const {data,error}=await supabaseClient.from("news")
           .select("id,title,content,image_url,category,is_published,published_at,created_at")
           .eq("is_published",true)
-          .order("published_at",{ascending:false})
+          .order("published_at",{ascending:false,nullsFirst:false})
+          .order("created_at",{ascending:false})
           .limit(4);
         if(error)throw error;
         news=data||[];
@@ -256,9 +287,6 @@
           return;
         }
         const featured=news[0];
-        const imageMarkup=item=>item.image_url
-          ? `<img src="${escapeHTML(item.image_url)}" alt="${escapeHTML(item.title)}" loading="lazy">`
-          : "";
         area.innerHTML=`
           <article class="news-feature" id="newsFeature">
             <img class="news-feature-image" id="newsFeatureImage" src="${escapeHTML(featured.image_url||"banniere-ajusp.jpeg")}" alt="${escapeHTML(featured.title)}">
@@ -271,7 +299,7 @@
               <span class="news-tag" id="newsFeatureCategory">${escapeHTML(featured.category||"Actualité")}</span>
               <time class="news-date" id="newsFeatureDate">${formatNewsDate(featured.published_at||featured.created_at)}</time>
               <h3 id="newsFeatureTitle">${escapeHTML(featured.title)}</h3>
-              <p id="newsFeatureText">${escapeHTML((featured.content||"").replace(/\\s+/g," ").slice(0,210))}${(featured.content||"").length>210?"…":""}</p>
+              <p id="newsFeatureText"></p>
               <a class="news-read" id="newsFeatureLink" href="actualites.html">Lire l'actualité</a>
             </div>
           </article>
@@ -284,7 +312,7 @@
               <span class="news-tag">${escapeHTML(item.category||"Actualité")}</span>
               <time>${formatNewsDate(item.published_at||item.created_at)}</time>
               <h4>${escapeHTML(item.title)}</h4>
-              <p>${escapeHTML((item.content||"").replace(/\\s+/g," ").slice(0,105))}</p>
+              <p>${escapeHTML((item.content||"").replace(/\s+/g," ").slice(0,105))}</p>
             </div>
           </a>`).join("");
         const featureImage=document.getElementById("newsFeatureImage");
@@ -300,10 +328,11 @@
           featureCategory.textContent=item.category||"Actualité";
           featureDate.textContent=formatNewsDate(item.published_at||item.created_at);
           featureTitle.textContent=item.title||"Actualité de l'AJUSP";
-          const content=(item.content||"").replace(/\\s+/g," ");
+          const content=(item.content||"").replace(/\s+/g," ");
           featureText.textContent=content.slice(0,210)+(content.length>210?"…":"");
           dots.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("active",i===activeIndex));
         }
+        showNews(0);
         dots.innerHTML=news.map((item,i)=>`<button type="button" aria-label="Mettre en avant l'actualité ${i+1}" class="${i===0?"active":""}" data-index="${i}"></button>`).join("");
         dots.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{showNews(Number(b.dataset.index));restart();}));
         document.getElementById("newsPrev").addEventListener("click",()=>{showNews(activeIndex-1);restart();});
@@ -313,7 +342,7 @@
         const feature=document.getElementById("newsFeature");
         feature.addEventListener("mouseenter",()=>clearInterval(timer));
         feature.addEventListener("mouseleave",restart);
-        if(news.length===1){document.querySelector(".news-feature-controls").hidden=true;}
+        if(news.length===1)document.querySelector(".news-feature-controls").hidden=true;
       }catch(error){
         area.innerHTML='<div class="news-status">Impossible de charger les actualités pour le moment. Veuillez consulter la page Actualités.</div>';
         console.error("Erreur chargement actualités AJUSP:",error);
@@ -324,20 +353,42 @@
       const status=document.getElementById("homeGalleryStatus"),box=document.getElementById("homeSlideshow");
       const slides=document.getElementById("homeSlides"),dots=document.getElementById("homeDots");
       let index=0,timer=null;
-      function show(n){const all=slides.querySelectorAll(".home-slide"),buttons=dots.querySelectorAll("button");if(!all.length)return;index=(n+all.length)%all.length;all.forEach((el,i)=>el.classList.toggle("active",i===index));buttons.forEach((el,i)=>el.classList.toggle("active",i===index));}
+      function show(n){
+        const all=slides.querySelectorAll(".home-slide"),buttons=dots.querySelectorAll("button");
+        if(!all.length)return;
+        index=(n+all.length)%all.length;
+        all.forEach((el,i)=>el.classList.toggle("active",i===index));
+        buttons.forEach((el,i)=>el.classList.toggle("active",i===index));
+      }
       function start(){clearInterval(timer);if(slides.children.length>1)timer=setInterval(()=>show(index+1),4500);}
       try{
-        const {data,error}=await supabaseClient.from("gallery").select("id,title,description,media_url,media_type,created_at").eq("is_published",true).eq("media_type","image").order("created_at",{ascending:false}).limit(8);
+        const {data,error}=await supabaseClient.from("gallery")
+          .select("id,title,description,media_url,media_type,created_at")
+          .eq("is_published",true)
+          .eq("media_type","image")
+          .order("created_at",{ascending:false})
+          .limit(8);
         if(error)throw error;
-        if(!data||!data.length){status.textContent="Les photos des activités de l'AJUSP apparaîtront ici dès leur publication.";return;}
-        slides.innerHTML=data.map((item,i)=>`<div class="home-slide ${i===0?"active":""}"><img src="${escapeHTML(item.media_url)}" alt="${escapeHTML(item.title)}" ${i===0?'fetchpriority="high"':'loading="lazy"'}><div class="home-slide-caption"><strong>${escapeHTML(item.title)}</strong>${item.description?`<p>${escapeHTML(item.description)}</p>`:""}</div></div>`).join("");
+        if(!data||!data.length){
+          status.textContent="Les photos des activités de l'AJUSP apparaîtront ici dès leur publication.";
+          return;
+        }
+        slides.innerHTML=data.map((item,i)=>`<div class="home-slide ${i===0?"active":""}">
+          <img src="${escapeHTML(item.media_url)}" alt="${escapeHTML(item.title||"Photo de Pindikro")}" ${i===0?'fetchpriority="high"':'loading="lazy"'}>
+          <div class="home-slide-caption"><strong>${escapeHTML(item.title||"Souvenir de Pindikro")}</strong>${item.description?`<p>${escapeHTML(item.description)}</p>`:""}</div>
+        </div>`).join("");
         dots.innerHTML=data.map((item,i)=>`<button type="button" aria-label="Afficher la photo ${i+1}" class="${i===0?"active":""}" data-index="${i}"></button>`).join("");
         dots.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{show(Number(b.dataset.index));start();}));
         document.getElementById("homePrev").addEventListener("click",()=>{show(index-1);start();});
         document.getElementById("homeNext").addEventListener("click",()=>{show(index+1);start();});
         box.hidden=false;status.hidden=true;start();
-        box.addEventListener("mouseenter",()=>clearInterval(timer));box.addEventListener("mouseleave",start);
-      }catch(e){status.textContent="La galerie est momentanément indisponible. "+(e.message||"");}
+        box.addEventListener("mouseenter",()=>clearInterval(timer));
+        box.addEventListener("mouseleave",start);
+        if(data.length===1){document.getElementById("homePrev").hidden=true;document.getElementById("homeNext").hidden=true;}
+      }catch(e){
+        status.textContent="La galerie est momentanément indisponible. Veuillez réessayer plus tard.";
+        console.error("Erreur chargement galerie AJUSP:",e);
+      }
     })();
   </script>
 </body>
