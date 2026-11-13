@@ -102,13 +102,49 @@ input:focus,textarea:focus,select:focus{
 }
 #message.success{display:block;background:#e5f5e9;color:#17643D}
 #message.error{display:block;background:#fdecea;color:#a5281b}
+
+/* Sélecteur de photo */
+.image-picker{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  min-height:65px;
+  padding:15px;
+  border:2px dashed #a9bbae;
+  border-radius:9px;
+  background:#f7faf7;
+  color:var(--dark);
+  cursor:pointer;
+  text-align:center;
+  font-weight:bold;
+}
+.image-picker:hover{
+  border-color:var(--green);
+  background:#edf5ef;
+}
+.image-picker span{font-size:14px}
+#imageFile{display:none}
+.image-help{
+  font-size:12px;
+  color:#68756d;
+  line-height:1.5;
+}
 #imagePreview{
   display:none;
-  max-width:220px;
-  max-height:140px;
+  max-width:260px;
+  max-height:180px;
   object-fit:cover;
   border-radius:8px;
   margin-top:8px;
+  border:1px solid var(--border);
+}
+#imageFileName{
+  font-size:13px;
+  color:var(--green);
+  font-weight:bold;
+  overflow-wrap:anywhere;
 }
 .project-list{
   display:grid;
@@ -217,10 +253,31 @@ input:focus,textarea:focus,select:focus{
           </select>
         </div>
 
+        <!-- Sélection directe dans la galerie de l'appareil -->
         <div class="field full">
-          <label for="image_url">URL de l'image</label>
-          <input id="image_url" type="url"
-          placeholder="https://...">
+          <label>Image du projet</label>
+
+          <input
+            type="file"
+            id="imageFile"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+          >
+
+          <button
+            type="button"
+            class="image-picker"
+            onclick="document.getElementById('imageFile').click()"
+          >
+            <span>📷 Choisir une image dans ma galerie</span>
+          </button>
+
+          <span class="image-help">
+            Sélectionnez une photo depuis votre téléphone ou votre ordinateur.
+            Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.
+          </span>
+
+          <span id="imageFileName"></span>
+
           <img id="imagePreview" alt="Aperçu de l'image du projet">
         </div>
 
@@ -265,12 +322,19 @@ input:focus,textarea:focus,select:focus{
 const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
 
+/* Nom de l'espace de stockage Supabase */
+const STORAGE_BUCKET = "project-images";
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
 let currentUser = null;
+let currentImageUrl = null;
+let selectedImageFile = null;
+let previewObjectUrl = null;
 
 const statusLabels = {
   planned:"En préparation",
@@ -313,6 +377,7 @@ function formaterBudget(budget){
   return Number(budget).toLocaleString("fr-FR")+" FCFA";
 }
 
+/* Vérification de l'accès à la page */
 async function verifierAcces(){
 
   const {data:{session},error}=await supabaseClient.auth.getSession();
@@ -347,39 +412,144 @@ async function verifierAcces(){
   return true;
 }
 
+/* Gestion de l'aperçu de l'image */
+function afficherApercu(source){
+
+  const preview=document.getElementById("imagePreview");
+
+  if(previewObjectUrl){
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl=null;
+  }
+
+  if(source){
+    preview.src=source;
+    preview.style.display="block";
+  }else{
+    preview.removeAttribute("src");
+    preview.style.display="none";
+  }
+}
+
+/* Réinitialiser la sélection d'image */
+function reinitialiserImage(){
+
+  selectedImageFile=null;
+  currentImageUrl=null;
+
+  document.getElementById("imageFile").value="";
+  document.getElementById("imageFileName").textContent="";
+
+  afficherApercu(null);
+}
+
+/* Ouverture d'un nouveau formulaire */
 function nouveauProjet(){
+
   cacherMessage();
+
   document.getElementById("projectForm").reset();
   document.getElementById("projectId").value="";
   document.getElementById("status").value="planned";
+
+  reinitialiserImage();
+
   document.getElementById("formTitle").textContent="Ajouter un projet";
   document.getElementById("saveButton").textContent="Enregistrer le projet";
-  document.getElementById("imagePreview").style.display="none";
   document.getElementById("formPanel").style.display="block";
+
   document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
 }
 
 function annulerFormulaire(){
+
   document.getElementById("formPanel").style.display="none";
   document.getElementById("projectForm").reset();
+
+  reinitialiserImage();
 }
 
-document.getElementById("image_url").addEventListener("input",function(){
-  const preview=document.getElementById("imagePreview");
-  const url=this.value.trim();
+/* Sélection d'une photo depuis l'appareil */
+document.getElementById("imageFile").addEventListener("change",function(){
 
-  if(url){
-    preview.src=url;
-    preview.style.display="block";
-    preview.onerror=()=>preview.style.display="none";
-  }else{
-    preview.style.display="none";
+  const file=this.files[0];
+
+  if(!file)return;
+
+  const allowedTypes=[
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+    this.value="";
+    selectedImageFile=null;
+    afficherMessage("Format non accepté. Choisissez une image JPG, PNG, WEBP ou GIF.","error");
+    return;
   }
+
+  if(file.size>MAX_IMAGE_SIZE){
+    this.value="";
+    selectedImageFile=null;
+    afficherMessage("L'image est trop volumineuse. La taille maximale est de 5 Mo.","error");
+    return;
+  }
+
+  selectedImageFile=file;
+
+  document.getElementById("imageFileName").textContent=
+    "Image sélectionnée : "+file.name;
+
+  if(previewObjectUrl){
+    URL.revokeObjectURL(previewObjectUrl);
+  }
+
+  previewObjectUrl=URL.createObjectURL(file);
+  afficherApercu(previewObjectUrl);
+
 });
 
+/* Envoyer l'image dans Supabase Storage */
+async function envoyerImageDansSupabase(file){
+
+  const extension=file.name.includes(".")
+    ? file.name.split(".").pop().toLowerCase()
+    : "jpg";
+
+  const identifiant=crypto.randomUUID
+    ? crypto.randomUUID()
+    : Date.now()+"-"+Math.random().toString(36).substring(2);
+
+  const chemin=Date.now()+"-"+identifiant+"."+extension;
+
+  const {data,error}=await supabaseClient.storage
+    .from(STORAGE_BUCKET)
+    .upload(chemin,file,{
+      cacheControl:"3600",
+      upsert:false,
+      contentType:file.type
+    });
+
+  if(error)throw error;
+
+  const {data:publicData}=supabaseClient.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(data.path);
+
+  if(!publicData || !publicData.publicUrl){
+    throw new Error("Impossible de récupérer l'adresse de l'image.");
+  }
+
+  return publicData.publicUrl;
+}
+
+/* Charger la liste des projets */
 async function chargerProjets(){
 
   document.getElementById("loading").style.display="block";
+
   const list=document.getElementById("projectList");
   list.innerHTML="";
 
@@ -447,6 +617,7 @@ async function chargerProjets(){
   }).join("");
 }
 
+/* Modifier un projet existant */
 async function modifierProjet(id){
 
   cacherMessage();
@@ -462,32 +633,35 @@ async function modifierProjet(id){
     return;
   }
 
+  reinitialiserImage();
+
   document.getElementById("projectId").value=data.id;
   document.getElementById("title").value=data.title || "";
   document.getElementById("description").value=data.description || "";
   document.getElementById("objective").value=data.objective || "";
   document.getElementById("budget").value=data.budget ?? "";
   document.getElementById("status").value=data.status || "planned";
-  document.getElementById("image_url").value=data.image_url || "";
   document.getElementById("start_date").value=data.start_date || "";
   document.getElementById("end_date").value=data.end_date || "";
   document.getElementById("is_published").checked=data.is_published===true;
 
-  const preview=document.getElementById("imagePreview");
+  /* Conserver l'ancienne image si aucune nouvelle photo n'est choisie */
+  currentImageUrl=data.image_url || null;
 
-  if(data.image_url){
-    preview.src=data.image_url;
-    preview.style.display="block";
-  }else{
-    preview.style.display="none";
+  if(currentImageUrl){
+    afficherApercu(currentImageUrl);
+    document.getElementById("imageFileName").textContent=
+      "Image actuelle conservée si vous ne choisissez pas une autre photo.";
   }
 
   document.getElementById("formTitle").textContent="Modifier le projet";
   document.getElementById("saveButton").textContent="Enregistrer les modifications";
   document.getElementById("formPanel").style.display="block";
+
   document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
 }
 
+/* Enregistrement d'un projet */
 document.getElementById("projectForm").addEventListener("submit",async function(e){
 
   e.preventDefault();
@@ -496,13 +670,15 @@ document.getElementById("projectForm").addEventListener("submit",async function(
   const id=document.getElementById("projectId").value;
   const budgetValue=document.getElementById("budget").value;
 
+  let imageUrl=currentImageUrl;
+
   const project={
     title:document.getElementById("title").value.trim(),
     description:document.getElementById("description").value.trim() || null,
     objective:document.getElementById("objective").value.trim() || null,
     budget:budgetValue==="" ? null : Number(budgetValue),
     status:document.getElementById("status").value,
-    image_url:document.getElementById("image_url").value.trim() || null,
+    image_url:null,
     start_date:document.getElementById("start_date").value || null,
     end_date:document.getElementById("end_date").value || null,
     is_published:document.getElementById("is_published").checked
@@ -531,43 +707,70 @@ document.getElementById("projectForm").addEventListener("submit",async function(
   }
 
   const button=document.getElementById("saveButton");
+
   button.disabled=true;
   button.textContent="Enregistrement...";
 
-  let result;
+  try{
 
-  if(id){
-    result=await supabaseClient
-      .from("projects")
-      .update(project)
-      .eq("id",id);
-  }else{
-    result=await supabaseClient
-      .from("projects")
-      .insert(project);
+    /* Envoyer la nouvelle photo si l'utilisateur en a sélectionné une */
+    if(selectedImageFile){
+      button.textContent="Envoi de la photo...";
+
+      imageUrl=await envoyerImageDansSupabase(selectedImageFile);
+    }
+
+    /* Conserver l'image existante en cas de modification sans nouvelle photo */
+    project.image_url=imageUrl || null;
+
+    button.textContent="Enregistrement du projet...";
+
+    let result;
+
+    if(id){
+      result=await supabaseClient
+        .from("projects")
+        .update(project)
+        .eq("id",id);
+    }else{
+      result=await supabaseClient
+        .from("projects")
+        .insert(project);
+    }
+
+    if(result.error)throw result.error;
+
+    annulerFormulaire();
+
+    afficherMessage(
+      id
+        ? "Projet modifié avec succès."
+        : "Projet ajouté avec succès."
+    );
+
+    await chargerProjets();
+
+  }catch(error){
+
+    console.error("Erreur d'enregistrement :",error);
+
+    afficherMessage(
+      "Erreur lors de l'enregistrement : "+(error.message || "Une erreur est survenue."),
+      "error"
+    );
+
+  }finally{
+
+    button.disabled=false;
+
+    button.textContent=id
+      ? "Enregistrer les modifications"
+      : "Enregistrer le projet";
   }
 
-  button.disabled=false;
-  button.textContent=id
-    ? "Enregistrer les modifications"
-    : "Enregistrer le projet";
-
-  if(result.error){
-    afficherMessage("Erreur lors de l'enregistrement : "+result.error.message,"error");
-    return;
-  }
-
-  annulerFormulaire();
-
-  afficherMessage(
-    id
-      ? "Projet modifié avec succès."
-      : "Projet ajouté avec succès."
-  );
-
-  await chargerProjets();
 });
 
+/* Publier ou dépublier un projet */
 async function changerPublication(id,publier){
 
   const action=publier ? "publier" : "dépublier";
@@ -593,6 +796,7 @@ async function changerPublication(id,publier){
   await chargerProjets();
 }
 
+/* Supprimer un projet */
 async function supprimerProjet(id){
 
   if(!confirm("Attention : voulez-vous vraiment supprimer définitivement ce projet ?"))return;
@@ -611,8 +815,11 @@ async function supprimerProjet(id){
   await chargerProjets();
 }
 
+/* Démarrage de la page */
 async function demarrer(){
+
   const acces=await verifierAcces();
+
   if(acces){
     await chargerProjets();
   }
