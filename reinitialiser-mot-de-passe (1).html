@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Réinitialisation du mot de passe – AJUSP Pindikro">
+<title>Nouveau mot de passe | AJUSP</title>
+<style>
+:root{--green:#17643D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
+a{text-decoration:none;color:inherit}
+header{background:white;padding:12px 6%;display:flex;align-items:center;box-shadow:0 3px 14px #0001}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:56px;height:56px;object-fit:contain}
+.brand b{display:block;color:var(--green);font-size:20px}
+.brand small{display:block;color:var(--navy);font-size:9px;max-width:230px}
+.hero{padding:55px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
+.hero h1{font-size:clamp(28px,5vw,42px);line-height:1.2;margin-bottom:8px}
+main{max-width:680px;margin:45px auto;padding:0 20px}
+form{background:white;padding:28px;border-radius:10px;box-shadow:0 4px 20px #14263f0c}
+h2{color:var(--navy);margin-bottom:8px}
+p{color:var(--muted);margin-bottom:16px}
+label{display:block;font-weight:bold;color:var(--navy);margin:13px 0 5px}
+input{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}
+button{background:var(--green);color:white;border:0;border-radius:5px;padding:12px 18px;font:inherit;font-weight:bold;cursor:pointer;margin-top:18px}
+button:disabled{opacity:.6;cursor:wait}
+.status{display:none;margin-top:16px;padding:12px;border-radius:6px;font-size:14px;overflow-wrap:anywhere}
+.status.success{display:block;background:#e8f5ec;color:#17643D}
+.status.error{display:block;background:#fff0ee;color:#9b2820}
+.hidden{display:none!important}
+.back{display:inline-block;margin-top:18px;color:var(--green);font-weight:bold;text-decoration:underline}
+footer{background:var(--navy);color:#dce5e8;padding:25px 6%;text-align:center;font-size:13px;margin-top:45px}
+</style>
+</head>
+<body>
+<header>
+<a class="brand" href="index.html">
+<img src="logo-ajusp1.jpg" alt="Logo AJUSP">
+<span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span>
+</a>
+</header>
+<section class="hero">
+<div style="color:#F2C94C;font-weight:bold;font-size:12px;letter-spacing:1.5px">AJUSP · PINDIKRO</div>
+<h1>Créer un nouveau mot de passe</h1>
+<p style="color:#f0f4f0;margin:0">Choisissez un nouveau mot de passe pour accéder à votre espace membre.</p>
+</section>
+<main>
+<form id="resetForm" class="hidden">
+<h2>Nouveau mot de passe</h2>
+<p>Votre lien a été reconnu. Saisissez et confirmez votre nouveau mot de passe.</p>
+<label for="password">Nouveau mot de passe</label>
+<input id="password" type="password" minlength="8" autocomplete="new-password" required placeholder="8 caractères minimum">
+<label for="confirmPassword">Confirmer le mot de passe</label>
+<input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="Répétez le nouveau mot de passe">
+<button id="saveButton" type="submit">Enregistrer le nouveau mot de passe</button>
+<div id="formStatus" class="status" role="status" aria-live="polite"></div>
+</form>
+<div id="loading" class="status success" style="display:block">Vérification du lien de réinitialisation…</div>
+<div id="pageStatus" class="status" role="status" aria-live="polite"></div>
+<a class="back" href="espace-membre/connexion.html">Retour à la connexion</a>
+</main>
+<footer>© <span id="year"></span> AJUSP – « Ensemble pour un avenir meilleur »</footer>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { flowType: "pkce", detectSessionInUrl: false }
+});
+
+document.getElementById("year").textContent = new Date().getFullYear();
+const resetForm = document.getElementById("resetForm");
+const loading = document.getElementById("loading");
+const pageStatus = document.getElementById("pageStatus");
+const formStatus = document.getElementById("formStatus");
+const saveButton = document.getElementById("saveButton");
+
+function showStatus(element, message, type) {
+  element.textContent = message;
+  element.className = "status " + type;
+  element.style.display = "block";
+}
+function showError(message) {
+  loading.style.display = "none";
+  resetForm.classList.add("hidden");
+  showStatus(pageStatus, message, "error");
+}
+
+async function initializeRecovery() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    // Avec le flux PKCE, Supabase renvoie un code à échanger contre une session.
+    if (code) {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) throw error;
+      // Retire le code de l'adresse pour éviter de le réutiliser par erreur.
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+
+    if (!data.session) {
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const authError = hashParams.get("error_description") || hashParams.get("error");
+      if (authError) throw new Error(decodeURIComponent(authError.replace(/\+/g, " ")));
+      throw new Error("Aucune session de réinitialisation n'a été trouvée. Le lien a peut-être expiré, a déjà été utilisé, ou a été ouvert dans un autre navigateur. Retournez à la connexion et demandez un nouveau lien.");
+    }
+
+    loading.style.display = "none";
+    pageStatus.style.display = "none";
+    resetForm.classList.remove("hidden");
+  } catch (error) {
+    showError(error.message || "Impossible de vérifier le lien. Demandez un nouveau lien de réinitialisation.");
+  }
+}
+
+resetForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  formStatus.style.display = "none";
+
+  const password = document.getElementById("password").value;
+  const confirmation = document.getElementById("confirmPassword").value;
+
+  if (password.length < 8) {
+    showStatus(formStatus, "Le mot de passe doit contenir au moins 8 caractères.", "error");
+    return;
+  }
+  if (password !== confirmation) {
+    showStatus(formStatus, "Les deux mots de passe ne correspondent pas.", "error");
+    return;
+  }
+
+  saveButton.disabled = true;
+  saveButton.textContent = "Enregistrement…";
+  try {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) throw new Error("Votre session de réinitialisation n'est plus valide. Demandez un nouveau lien.");
+
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw error;
+
+    showStatus(formStatus, "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.", "success");
+    resetForm.querySelector("button").classList.add("hidden");
+    document.getElementById("password").value = "";
+    document.getElementById("confirmPassword").value = "";
+    const back = document.querySelector(".back");
+    back.textContent = "Se connecter à mon espace membre";
+  } catch (error) {
+    showStatus(formStatus, error.message || "Une erreur est survenue lors de la modification du mot de passe.", "error");
+    saveButton.disabled = false;
+    saveButton.textContent = "Enregistrer le nouveau mot de passe";
+  }
+});
+
+initializeRecovery();
+</script>
+</body>
+</html>
