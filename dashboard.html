@@ -62,11 +62,15 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .form-group input[type="checkbox"]{width:auto;margin-right:7px}
 .image-picker{display:inline-flex;align-items:center;gap:8px;background:#f0f5f1;color:var(--dark);border:2px dashed #9ab6a2;padding:12px 16px;border-radius:7px;margin-top:5px}
 .image-picker:hover{background:#e0eee4}
-#projectImageFile{display:none}
+#projectImageFile,#domainImageFiles{display:none}
 #projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
-#domainImageFile{display:none}
-#domainImagePreview{display:none;max-width:240px;max-height:160px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
 .domain-table-image{width:72px;height:52px;object-fit:cover;border-radius:6px}
+.domain-image-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:15px}
+.domain-image-item{border:1px solid #dce5de;border-radius:8px;padding:8px;background:#f8faf8}
+.domain-image-item img{width:100%;height:100px;object-fit:cover;border-radius:5px}
+.domain-image-item button{width:100%;margin-top:7px;padding:7px;font-size:12px}
+.domain-new-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:12px}
+.domain-new-preview img{width:100%;height:90px;object-fit:cover;border-radius:6px}
 .primary{background:var(--green);color:white}
 .secondary{background:#e8eee9;color:var(--dark)}
 .danger{background:var(--red);color:white}
@@ -81,7 +85,6 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 </head>
 
 <body>
-
 <header>
   <div>
     <h1>AJUSP PINDIKRO</h1>
@@ -165,13 +168,8 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
       <h2>Gestion des projets</h2>
       <button class="refresh" id="refreshProjectsBtn" type="button">Actualiser</button>
     </div>
-
     <p>Ajoute, modifie, publie, dépublie ou supprime les projets de développement de Pindikro.</p>
-
-    <div class="notice">
-      Les projets publiés peuvent être affichés sur le site public de l'AJUSP.
-    </div>
-
+    <div class="notice">Les projets publiés peuvent être affichés sur le site public de l'AJUSP.</div>
     <h3 id="projectFormTitle">Ajouter un nouveau projet</h3>
 
     <form id="projectForm">
@@ -180,12 +178,10 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
           <label for="projectTitle">Titre du projet *</label>
           <input id="projectTitle" type="text" maxlength="200" required placeholder="Ex. : Construction d'une bibliothèque">
         </div>
-
         <div class="form-group">
           <label for="projectBudget">Budget prévisionnel (FCFA)</label>
           <input id="projectBudget" type="number" min="0" step="1" placeholder="Ex. : 5000000">
         </div>
-
         <div class="form-group">
           <label for="projectStatus">État du projet *</label>
           <select id="projectStatus" required>
@@ -194,17 +190,14 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
             <option value="completed">Terminé</option>
           </select>
         </div>
-
         <div class="form-group">
           <label for="projectStartDate">Date de début</label>
           <input id="projectStartDate" type="date">
         </div>
-
         <div class="form-group">
           <label for="projectEndDate">Date de fin</label>
           <input id="projectEndDate" type="date">
         </div>
-
         <div class="form-group">
           <label>Image du projet</label>
           <input id="projectImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
@@ -214,51 +207,30 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
           <img id="projectImagePreview" alt="Aperçu de l'image du projet">
         </div>
       </div>
-
       <div class="form-group">
         <label for="projectDescription">Description du projet</label>
         <textarea id="projectDescription" maxlength="5000" placeholder="Présente le projet..."></textarea>
       </div>
-
       <div class="form-group">
         <label for="projectObjective">Objectif du projet</label>
         <textarea id="projectObjective" maxlength="3000" placeholder="Quel est l'objectif de ce projet ?"></textarea>
       </div>
-
       <div class="form-group">
-        <label>
-          <input id="projectPublished" type="checkbox" checked>
-          Publier ce projet sur le site public
-        </label>
+        <label><input id="projectPublished" type="checkbox" checked> Publier ce projet sur le site public</label>
       </div>
-
       <div class="action-buttons">
         <button type="submit" class="primary" id="saveProjectBtn">Enregistrer le projet</button>
         <button type="button" class="secondary" id="cancelProjectEditBtn" hidden>Annuler</button>
       </div>
-
       <p id="projectFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
     </form>
 
     <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
-
     <h3>Projets enregistrés</h3>
-
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Titre</th>
-            <th>Budget</th>
-            <th>État</th>
-            <th>Publication</th>
-            <th>Date de création</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="projectsTable">
-          <tr><td colspan="6" class="empty">Chargement des projets...</td></tr>
-        </tbody>
+        <thead><tr><th>Titre</th><th>Budget</th><th>État</th><th>Publication</th><th>Date de création</th><th>Actions</th></tr></thead>
+        <tbody id="projectsTable"><tr><td colspan="6" class="empty">Chargement des projets...</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -271,31 +243,67 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
     </div>
     <p>Gère les domaines présentés dans la rubrique « Nos domaines d'intervention » de la page d'accueil.</p>
     <div class="notice">Les domaines publiés apparaissent automatiquement sur le site public. Tu peux les modifier, les masquer ou les supprimer sans toucher au code.</div>
+
     <h3 id="domainFormTitle">Ajouter un domaine</h3>
     <form id="domainForm">
       <div class="form-grid">
-        <div class="form-group"><label for="domainTitle">Titre du domaine *</label><input id="domainTitle" type="text" maxlength="150" required placeholder="Ex. : Éducation et formation"></div>
-        <div class="form-group"><label for="domainIcon">Icône ou symbole</label><input id="domainIcon" type="text" maxlength="12" placeholder="Ex. : 🎓"></div>
-        <div class="form-group"><label for="domainOrder">Ordre d'affichage</label><input id="domainOrder" type="number" min="0" step="1" value="1"></div>
+        <div class="form-group">
+          <label for="domainTitle">Titre du domaine *</label>
+          <input id="domainTitle" type="text" maxlength="150" required placeholder="Ex. : Éducation et formation">
+        </div>
+        <div class="form-group">
+          <label for="domainIcon">Icône ou symbole</label>
+          <input id="domainIcon" type="text" maxlength="12" placeholder="Ex. : 🎓">
+        </div>
+        <div class="form-group">
+          <label for="domainOrder">Ordre d'affichage</label>
+          <input id="domainOrder" type="number" min="0" step="1" value="1">
+        </div>
       </div>
-      <div class="form-group"><label for="domainDescription">Description du domaine *</label><textarea id="domainDescription" maxlength="1200" required placeholder="Décris les actions que l'AJUSP souhaite mener dans ce domaine..."></textarea></div>
+
       <div class="form-group">
-        <label>Image illustrative (facultative)</label>
-        <input id="domainImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-        <button type="button" class="image-picker" id="chooseDomainImageBtn">📷 Choisir une image dans ma galerie</button>
-        <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.</div>
-        <div id="domainImageFileName" class="locked" aria-live="polite"></div>
-        <img id="domainImagePreview" alt="Aperçu de l'image du domaine">
-        <label style="display:block;margin-top:9px;font-size:13px"><input id="domainRemoveImage" type="checkbox" style="width:auto"> Retirer l'image actuelle</label>
+        <label for="domainDescription">Description du domaine *</label>
+        <textarea id="domainDescription" maxlength="1200" required placeholder="Décris les actions que l'AJUSP souhaite mener dans ce domaine..."></textarea>
       </div>
-      <div class="form-group"><label><input id="domainPublished" type="checkbox" checked> Publier ce domaine sur la page d'accueil</label></div>
-      <div class="action-buttons"><button type="submit" class="primary" id="saveDomainBtn">Enregistrer le domaine</button><button type="button" class="secondary" id="cancelDomainEditBtn" hidden>Annuler</button></div>
+
+      <div class="form-group">
+        <label>Photos illustratives du domaine</label>
+        <input id="domainImageFiles" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+        <button type="button" class="image-picker" id="chooseDomainImagesBtn">📷 Choisir plusieurs photos dans ma galerie</button>
+        <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo par photo.</div>
+        <div id="domainImageFileName" class="locked" aria-live="polite"></div>
+        <div id="domainNewImagePreviews" class="domain-new-preview"></div>
+
+        <h4>Photos déjà enregistrées</h4>
+        <div id="domainImageGallery" class="domain-image-gallery">
+          <p class="locked">Les photos apparaîtront ici lors de la modification.</p>
+        </div>
+
+        <label style="display:block;margin-top:12px;font-size:13px">
+          <input id="domainRemoveImage" type="checkbox" style="width:auto">
+          Retirer l'ancienne image principale
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label><input id="domainPublished" type="checkbox" checked> Publier ce domaine sur la page d'accueil</label>
+      </div>
+
+      <div class="action-buttons">
+        <button type="submit" class="primary" id="saveDomainBtn">Enregistrer le domaine</button>
+        <button type="button" class="secondary" id="cancelDomainEditBtn" hidden>Annuler</button>
+      </div>
       <p id="domainFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
     </form>
+
     <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
     <h3>Domaines enregistrés</h3>
-    <div class="table-wrap"><table><thead><tr><th>Image</th><th>Domaine</th><th>Description</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr></thead>
-      <tbody id="domainsTable"><tr><td colspan="6" class="empty">Chargement des domaines...</td></tr></tbody></table></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Image</th><th>Domaine</th><th>Description</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr></thead>
+        <tbody id="domainsTable"><tr><td colspan="6" class="empty">Chargement des domaines...</td></tr></tbody>
+      </table>
+    </div>
   </section>
 
   <!-- GESTION DES COTISATIONS -->
@@ -366,6 +374,7 @@ let editingCotisationId=null,cotisationRows=[];
 let editingProjectId=null,projectRows=[];
 let editingProjectImageUrl=null;
 let editingDomainId=null,domainRows=[],editingDomainImageUrl=null;
+let domainImageRows=[];
 
 const functions=[
  {value:"president",label:"Président"},
@@ -488,7 +497,6 @@ async function checkAccess(){
 async function loadMembersCount(){
  const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true})
   .eq("status","active").eq("role","member");
-
  $("membersCount").textContent=error?"—":(count??0);
  if(error)console.error(error);
 }
@@ -804,11 +812,7 @@ async function handleSupportAction(event){
 
 /* GESTION DES PROJETS */
 function projectStatusLabel(status){
- const labels={
-  planned:"Planifié",
-  ongoing:"En cours",
-  completed:"Terminé"
- };
+ const labels={planned:"Planifié",ongoing:"En cours",completed:"Terminé"};
  return labels[status]||status||"Inconnu";
 }
 
@@ -862,13 +866,11 @@ async function loadProjects(){
    <td>${safeText(projectStatusLabel(project.status))}</td>
    <td>${publication}</td>
    <td>${formatDate(project.created_at)}</td>
-   <td>
-    <div class="action-buttons">
-     <button type="button" class="secondary" data-project-action="edit" data-id="${safeText(project.id)}">Modifier</button>
-     <button type="button" class="approve" data-project-action="toggle" data-id="${safeText(project.id)}">${project.is_published?"Dépublier":"Publier"}</button>
-     <button type="button" class="danger" data-project-action="delete" data-id="${safeText(project.id)}">Supprimer</button>
-    </div>
-   </td>
+   <td><div class="action-buttons">
+    <button type="button" class="secondary" data-project-action="edit" data-id="${safeText(project.id)}">Modifier</button>
+    <button type="button" class="approve" data-project-action="toggle" data-id="${safeText(project.id)}">${project.is_published?"Dépublier":"Publier"}</button>
+    <button type="button" class="danger" data-project-action="delete" data-id="${safeText(project.id)}">Supprimer</button>
+   </div></td>
   </tr>`;
  }).join("");
 }
@@ -886,6 +888,7 @@ function editProject(id){
  editingProjectImageUrl=project.image_url||null;
  $("projectImageFile").value="";
  $("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
+
  if(editingProjectImageUrl){
   $("projectImagePreview").src=editingProjectImageUrl;
   $("projectImagePreview").style.display="block";
@@ -893,10 +896,10 @@ function editProject(id){
   $("projectImagePreview").removeAttribute("src");
   $("projectImagePreview").style.display="none";
  }
+
  $("projectDescription").value=project.description||"";
  $("projectObjective").value=project.objective||"";
  $("projectPublished").checked=Boolean(project.is_published);
-
  $("projectFormTitle").textContent="Modifier le projet";
  $("saveProjectBtn").textContent="Enregistrer les modifications";
  $("cancelProjectEditBtn").hidden=false;
@@ -966,9 +969,7 @@ async function saveProject(event){
    const extension=(imageFile.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
    const filePath="projets/"+Date.now()+"-"+crypto.randomUUID()+"."+extension;
    const {error:uploadError}=await client.storage.from("project-images").upload(filePath,imageFile,{
-    cacheControl:"3600",
-    upsert:false,
-    contentType:imageFile.type
+    cacheControl:"3600",upsert:false,contentType:imageFile.type
    });
    if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
    const {data:publicUrlData}=client.storage.from("project-images").getPublicUrl(filePath);
@@ -981,15 +982,10 @@ async function saveProject(event){
    :await client.from("projects").insert(payload).select("id");
 
   if(result.error)throw result.error;
-  if(!result.data||!result.data.length){
-   throw new Error("Aucun projet n'a été enregistré. Vérifiez les autorisations Supabase.");
-  }
+  if(!result.data||!result.data.length)throw new Error("Aucun projet n'a été enregistré. Vérifiez les autorisations Supabase.");
 
   resetProjectForm();
-  $("projectFormMessage").textContent=wasEditing
-   ?"Projet modifié avec succès."
-   :"Projet ajouté avec succès.";
-
+  $("projectFormMessage").textContent=wasEditing?"Projet modifié avec succès.":"Projet ajouté avec succès.";
   showMessage(wasEditing?"Projet modifié avec succès.":"Projet ajouté avec succès.","success");
   await loadProjects();
 
@@ -1007,25 +1003,13 @@ async function toggleProjectPublication(id){
  if(!project)return;
 
  const newValue=!project.is_published;
-
- if(!confirm(newValue
-  ?"Publier ce projet sur le site public ?"
-  :"Retirer ce projet du site public ?"))return;
+ if(!confirm(newValue?"Publier ce projet sur le site public ?":"Retirer ce projet du site public ?"))return;
 
  const {data,error}=await client.from("projects")
-  .update({is_published:newValue})
-  .eq("id",id)
-  .select("id");
+  .update({is_published:newValue}).eq("id",id).select("id");
 
- if(error){
-  showMessage("Modification impossible : "+error.message);
-  return;
- }
-
- if(!data||!data.length){
-  showMessage("Aucune modification effectuée. Vérifie les autorisations.");
-  return;
- }
+ if(error){showMessage("Modification impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
 
  showMessage(newValue?"Projet publié avec succès.":"Projet dépublié avec succès.","success");
  await loadProjects();
@@ -1037,149 +1021,332 @@ async function deleteProject(id){
 
  if(!confirm("Voulez-vous vraiment supprimer le projet « "+project.title+" » ? Cette opération est définitive."))return;
 
- const {data,error}=await client.from("projects")
-  .delete()
-  .eq("id",id)
-  .select("id");
-
- if(error){
-  showMessage("Suppression impossible : "+error.message);
-  return;
- }
-
- if(!data||!data.length){
-  showMessage("Aucun projet supprimé. Vérifiez les autorisations Supabase.");
-  return;
- }
+ const {data,error}=await client.from("projects").delete().eq("id",id).select("id");
+ if(error){showMessage("Suppression impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("Aucun projet supprimé. Vérifiez les autorisations Supabase.");return;}
 
  if(String(editingProjectId)===String(id))resetProjectForm();
-
  showMessage("Projet supprimé avec succès.","success");
  await loadProjects();
 }
 
 /* GESTION DES DOMAINES D'INTERVENTION */
+
+function renderDomainImageGallery(){
+ const gallery=$("domainImageGallery");
+ gallery.innerHTML="";
+
+ if(editingDomainImageUrl&&!$("domainRemoveImage").checked){
+  const legacy=document.createElement("div");
+  legacy.className="domain-image-item";
+  legacy.innerHTML=`
+   <img src="${safeText(editingDomainImageUrl)}" alt="Ancienne image principale">
+   <button type="button" class="danger" data-legacy-image-remove="true">
+    Retirer cette ancienne image
+   </button>`;
+  gallery.appendChild(legacy);
+ }
+
+ domainImageRows.forEach(image=>{
+  const item=document.createElement("div");
+  item.className="domain-image-item";
+  item.innerHTML=`
+   <img src="${safeText(image.image_url)}" alt="Photo du domaine">
+   <button type="button" class="danger" data-domain-image-remove="${safeText(image.id)}">
+    Supprimer cette photo
+   </button>`;
+  gallery.appendChild(item);
+ });
+
+ if(!gallery.children.length){
+  gallery.innerHTML='<p class="locked">Aucune photo enregistrée pour ce domaine.</p>';
+ }
+}
+
 function resetDomainForm(){
-  $("domainForm").reset();
-  editingDomainId=null;
-  editingDomainImageUrl=null;
-  $("domainImageFile").value="";
-  $("domainImageFileName").textContent="";
-  $("domainImagePreview").removeAttribute("src");
-  $("domainImagePreview").style.display="none";
-  $("domainRemoveImage").checked=false;
-  $("domainOrder").value=String(domainRows.length+1);
-  $("domainPublished").checked=true;
-  $("domainFormTitle").textContent="Ajouter un domaine";
-  $("saveDomainBtn").textContent="Enregistrer le domaine";
-  $("cancelDomainEditBtn").hidden=true;
-  $("domainFormMessage").textContent="";
+ $("domainForm").reset();
+ editingDomainId=null;
+ editingDomainImageUrl=null;
+ domainImageRows=[];
+ $("domainImageFiles").value="";
+ $("domainImageFileName").textContent="";
+ $("domainNewImagePreviews").innerHTML="";
+ $("domainImageGallery").innerHTML='<p class="locked">Les photos apparaîtront ici lors de la modification.</p>';
+ $("domainRemoveImage").checked=false;
+ $("domainOrder").value=String(domainRows.length+1);
+ $("domainPublished").checked=true;
+ $("domainFormTitle").textContent="Ajouter un domaine";
+ $("saveDomainBtn").textContent="Enregistrer le domaine";
+ $("cancelDomainEditBtn").hidden=true;
+ $("domainFormMessage").textContent="";
 }
 
 async function loadDomains(){
-  const table=$("domainsTable");
-  table.innerHTML='<tr><td colspan="6" class="empty">Chargement des domaines...</td></tr>';
-  const {data,error}=await client.from("intervention_domains")
-    .select("id,title,description,icon,image_url,display_order,is_published,created_at")
-    .order("display_order",{ascending:true}).order("created_at",{ascending:true});
-  if(error){
-    console.error(error);
-    table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
-    showMessage("Impossible de charger les domaines : "+error.message);
-    return;
+ const table=$("domainsTable");
+ table.innerHTML='<tr><td colspan="6" class="empty">Chargement des domaines...</td></tr>';
+
+ const {data,error}=await client.from("intervention_domains")
+  .select("id,title,description,icon,image_url,display_order,is_published,created_at")
+  .order("display_order",{ascending:true})
+  .order("created_at",{ascending:true});
+
+ if(error){
+  console.error(error);
+  table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
+  showMessage("Impossible de charger les domaines : "+error.message);
+  return;
+ }
+
+ domainRows=data||[];
+
+ if(domainRows.length){
+  const ids=domainRows.map(item=>item.id);
+  const {data:images,error:imageError}=await client
+   .from("intervention_domain_images")
+   .select("id,domain_id,image_url,display_order,created_at")
+   .in("domain_id",ids)
+   .order("display_order",{ascending:true})
+   .order("created_at",{ascending:true});
+
+  if(imageError){
+   console.error(imageError);
+   table.innerHTML='<tr><td colspan="6" class="empty">Erreur de chargement des photos.</td></tr>';
+   showMessage("Erreur de chargement des photos : "+imageError.message);
+   return;
   }
-  domainRows=data||[];
-  if(!domainRows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun domaine enregistré.</td></tr>';return;}
-  table.innerHTML=domainRows.map(item=>`<tr>
-    <td>${item.image_url?`<img class="domain-table-image" src="${safeText(item.image_url)}" alt="">`:"—"}</td>
-    <td><strong>${safeText(item.icon||"")} ${safeText(item.title)}</strong></td>
-    <td>${safeText(item.description)}</td>
-    <td>${safeText(item.display_order)}</td>
-    <td>${item.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td>
-    <td><div class="action-buttons">
-      <button type="button" class="secondary" data-domain-action="edit" data-id="${safeText(item.id)}">Modifier</button>
-      <button type="button" class="approve" data-domain-action="toggle" data-id="${safeText(item.id)}">${item.is_published?"Masquer":"Publier"}</button>
-      <button type="button" class="danger" data-domain-action="delete" data-id="${safeText(item.id)}">Supprimer</button>
-    </div></td></tr>`).join("");
+
+  const imageRows=images||[];
+  domainRows=domainRows.map(item=>({
+   ...item,
+   images:imageRows.filter(image=>String(image.domain_id)===String(item.id))
+  }));
+ }
+
+ if(!domainRows.length){
+  table.innerHTML='<tr><td colspan="6" class="empty">Aucun domaine enregistré.</td></tr>';
+  return;
+ }
+
+ table.innerHTML=domainRows.map(item=>{
+  const firstImage=item.images?.[0]?.image_url||item.image_url;
+  return `<tr>
+   <td>
+    ${firstImage?`<img class="domain-table-image" src="${safeText(firstImage)}" alt="">`:"—"}
+    ${item.images?.length?`<br><small>${item.images.length} photo(s)</small>`:""}
+   </td>
+   <td><strong>${safeText(item.icon||"")} ${safeText(item.title)}</strong></td>
+   <td>${safeText(item.description)}</td>
+   <td>${safeText(item.display_order)}</td>
+   <td>${item.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td>
+   <td><div class="action-buttons">
+    <button type="button" class="secondary" data-domain-action="edit" data-id="${safeText(item.id)}">Modifier</button>
+    <button type="button" class="approve" data-domain-action="toggle" data-id="${safeText(item.id)}">${item.is_published?"Masquer":"Publier"}</button>
+    <button type="button" class="danger" data-domain-action="delete" data-id="${safeText(item.id)}">Supprimer</button>
+   </div></td>
+  </tr>`;
+ }).join("");
 }
 
 function editDomain(id){
-  const item=domainRows.find(row=>String(row.id)===String(id));
-  if(!item)return;
-  editingDomainId=item.id;
-  editingDomainImageUrl=item.image_url||null;
-  $("domainTitle").value=item.title||"";
-  $("domainIcon").value=item.icon||"";
-  $("domainDescription").value=item.description||"";
-  $("domainOrder").value=item.display_order??1;
-  $("domainPublished").checked=Boolean(item.is_published);
-  $("domainImageFile").value="";
-  $("domainRemoveImage").checked=false;
-  $("domainImageFileName").textContent=editingDomainImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
-  if(editingDomainImageUrl){$("domainImagePreview").src=editingDomainImageUrl;$("domainImagePreview").style.display="block";}
-  else{$("domainImagePreview").removeAttribute("src");$("domainImagePreview").style.display="none";}
-  $("domainFormTitle").textContent="Modifier le domaine";
-  $("saveDomainBtn").textContent="Enregistrer les modifications";
-  $("cancelDomainEditBtn").hidden=false;
-  $("domainsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+ const item=domainRows.find(row=>String(row.id)===String(id));
+ if(!item)return;
+
+ editingDomainId=item.id;
+ editingDomainImageUrl=item.image_url||null;
+ domainImageRows=[...(item.images||[])];
+
+ $("domainTitle").value=item.title||"";
+ $("domainIcon").value=item.icon||"";
+ $("domainDescription").value=item.description||"";
+ $("domainOrder").value=item.display_order??1;
+ $("domainPublished").checked=Boolean(item.is_published);
+ $("domainImageFiles").value="";
+ $("domainNewImagePreviews").innerHTML="";
+ $("domainImageFileName").textContent="Tu peux ajouter d'autres photos sans supprimer les anciennes.";
+ $("domainRemoveImage").checked=false;
+
+ renderDomainImageGallery();
+
+ $("domainFormTitle").textContent="Modifier le domaine";
+ $("saveDomainBtn").textContent="Enregistrer les modifications";
+ $("cancelDomainEditBtn").hidden=false;
+ $("domainsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function removeDomainImage(imageId){
+ if(!isAdmin)return;
+ if(!confirm("Supprimer définitivement cette photo du domaine ?"))return;
+
+ const {data,error}=await client.from("intervention_domain_images")
+  .delete().eq("id",imageId).select("id");
+
+ if(error){
+  showMessage("Suppression de la photo impossible : "+error.message);
+  return;
+ }
+
+ if(!data||!data.length){
+  showMessage("La photo n'a pas été supprimée. Vérifie les autorisations Supabase.");
+  return;
+ }
+
+ domainImageRows=domainImageRows.filter(image=>String(image.id)!==String(imageId));
+ renderDomainImageGallery();
+ showMessage("Photo supprimée avec succès.","success");
+ await loadDomains();
 }
 
 async function saveDomain(event){
-  event.preventDefault();
-  if(!isAdmin){$("domainFormMessage").textContent="Accès réservé à l'administrateur.";return;}
-  const file=$("domainImageFile").files[0]||null;
-  const title=$("domainTitle").value.trim();
-  const description=$("domainDescription").value.trim();
-  const order=Number($("domainOrder").value);
-  if(!title||!description){$("domainFormMessage").textContent="Le titre et la description sont obligatoires.";return;}
-  if(!Number.isInteger(order)||order<0){$("domainFormMessage").textContent="L'ordre doit être un nombre entier positif ou nul.";return;}
-  if(file){
-    if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)){$("domainFormMessage").textContent="Format non accepté. Choisis JPG, PNG, WEBP ou GIF.";return;}
-    if(file.size>5*1024*1024){$("domainFormMessage").textContent="L'image ne doit pas dépasser 5 Mo.";return;}
+ event.preventDefault();
+
+ if(!isAdmin){
+  $("domainFormMessage").textContent="Accès réservé à l'administrateur.";
+  return;
+ }
+
+ const files=Array.from($("domainImageFiles").files||[]);
+ const title=$("domainTitle").value.trim();
+ const description=$("domainDescription").value.trim();
+ const order=Number($("domainOrder").value);
+
+ if(!title||!description){
+  $("domainFormMessage").textContent="Le titre et la description sont obligatoires.";
+  return;
+ }
+
+ if(!Number.isInteger(order)||order<0){
+  $("domainFormMessage").textContent="L'ordre doit être un nombre entier positif ou nul.";
+  return;
+ }
+
+ const allowedTypes=["image/jpeg","image/png","image/webp","image/gif"];
+
+ for(const file of files){
+  if(!allowedTypes.includes(file.type)){
+   $("domainFormMessage").textContent="Format non accepté pour "+file.name+". Choisis JPG, PNG, WEBP ou GIF.";
+   return;
   }
-  const button=$("saveDomainBtn"),wasEditing=Boolean(editingDomainId);
-  button.disabled=true;button.textContent="Enregistrement...";$("domainFormMessage").textContent="";
-  try{
-    let imageUrl=$("domainRemoveImage").checked?null:editingDomainImageUrl;
-    if(file){
-      $("domainFormMessage").textContent="Téléversement de l'image...";
-      const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
-      const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
-      const {error:uploadError}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
-      if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
-      imageUrl=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl||null;
-      if(!imageUrl)throw new Error("Impossible de récupérer l'adresse publique de l'image.");
-    }
-    const payload={title,description,icon:$("domainIcon").value.trim()||null,display_order:order,image_url:imageUrl,is_published:$("domainPublished").checked};
-    const result=wasEditing?await client.from("intervention_domains").update(payload).eq("id",editingDomainId).select("id"):await client.from("intervention_domains").insert(payload).select("id");
-    if(result.error)throw result.error;
-    if(!result.data||!result.data.length)throw new Error("Aucun domaine enregistré. Vérifie les autorisations Supabase.");
-    resetDomainForm();
-    $("domainFormMessage").textContent=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
-    showMessage(wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.","success");
-    await loadDomains();
-  }catch(error){console.error(error);$("domainFormMessage").textContent="Erreur : "+error.message;}
-  finally{button.disabled=false;button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";}
+  if(file.size>5*1024*1024){
+   $("domainFormMessage").textContent="La photo "+file.name+" dépasse la limite de 5 Mo.";
+   return;
+  }
+ }
+
+ const button=$("saveDomainBtn");
+ const wasEditing=Boolean(editingDomainId);
+ button.disabled=true;
+ button.textContent="Enregistrement...";
+ $("domainFormMessage").textContent="";
+
+ try{
+  const payload={
+   title,
+   description,
+   icon:$("domainIcon").value.trim()||null,
+   display_order:order,
+   image_url:$("domainRemoveImage").checked?null:editingDomainImageUrl,
+   is_published:$("domainPublished").checked
+  };
+
+  let domainId=editingDomainId;
+
+  if(wasEditing){
+   const {data,error}=await client.from("intervention_domains")
+    .update(payload).eq("id",editingDomainId).select("id");
+   if(error)throw error;
+   if(!data||!data.length)throw new Error("Le domaine n'a pas été modifié. Vérifie les autorisations.");
+  }else{
+   const {data,error}=await client.from("intervention_domains")
+    .insert(payload).select("id");
+   if(error)throw error;
+   if(!data||!data.length)throw new Error("Le domaine n'a pas été créé.");
+   domainId=data[0].id;
+  }
+
+  if(files.length){
+   const imagePayload=[];
+
+   for(let index=0;index<files.length;index++){
+    const file=files[index];
+    $("domainFormMessage").textContent="Envoi de la photo "+(index+1)+" sur "+files.length+"...";
+
+    const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+    const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+
+    const {error:uploadError}=await client.storage.from("project-images")
+     .upload(path,file,{
+      cacheControl:"3600",
+      upsert:false,
+      contentType:file.type
+     });
+
+    if(uploadError)throw new Error("Envoi de "+file.name+" impossible : "+uploadError.message);
+
+    const publicUrl=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+    if(!publicUrl)throw new Error("Impossible de récupérer l'adresse de "+file.name);
+
+    imagePayload.push({
+     domain_id:domainId,
+     image_url:publicUrl,
+     display_order:domainImageRows.length+index+1
+    });
+   }
+
+   const {error:imageInsertError}=await client
+    .from("intervention_domain_images").insert(imagePayload);
+
+   if(imageInsertError)throw imageInsertError;
+  }
+
+  const successMessage=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
+
+  resetDomainForm();
+  $("domainFormMessage").textContent=successMessage;
+  showMessage(successMessage,"success");
+  await loadDomains();
+
+ }catch(error){
+  console.error(error);
+  $("domainFormMessage").textContent="Erreur : "+error.message;
+ }finally{
+  button.disabled=false;
+  button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";
+ }
 }
 
 async function toggleDomain(id){
-  const item=domainRows.find(row=>String(row.id)===String(id));if(!item)return;
-  const next=!item.is_published;
-  if(!confirm(next?"Publier ce domaine sur la page d'accueil ?":"Masquer ce domaine de la page d'accueil ?"))return;
-  const {data,error}=await client.from("intervention_domains").update({is_published:next}).eq("id",id).select("id");
-  if(error){showMessage("Modification impossible : "+error.message);return;}
-  if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
-  showMessage(next?"Domaine publié avec succès.":"Domaine masqué avec succès.","success");await loadDomains();
+ const item=domainRows.find(row=>String(row.id)===String(id));
+ if(!item)return;
+
+ const next=!item.is_published;
+ if(!confirm(next?"Publier ce domaine sur la page d'accueil ?":"Masquer ce domaine de la page d'accueil ?"))return;
+
+ const {data,error}=await client.from("intervention_domains")
+  .update({is_published:next}).eq("id",id).select("id");
+
+ if(error){showMessage("Modification impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
+
+ showMessage(next?"Domaine publié avec succès.":"Domaine masqué avec succès.","success");
+ await loadDomains();
 }
 
 async function deleteDomain(id){
-  const item=domainRows.find(row=>String(row.id)===String(id));if(!item)return;
-  if(!confirm("Supprimer définitivement le domaine « "+item.title+" » ?"))return;
-  const {data,error}=await client.from("intervention_domains").delete().eq("id",id).select("id");
-  if(error){showMessage("Suppression impossible : "+error.message);return;}
-  if(!data||!data.length){showMessage("Aucun domaine supprimé. Vérifie les autorisations.");return;}
-  if(String(editingDomainId)===String(id))resetDomainForm();
-  showMessage("Domaine supprimé avec succès.","success");await loadDomains();
+ const item=domainRows.find(row=>String(row.id)===String(id));
+ if(!item)return;
+
+ if(!confirm("Supprimer définitivement le domaine « "+item.title+" » et toutes ses photos ?"))return;
+
+ const {data,error}=await client.from("intervention_domains")
+  .delete().eq("id",id).select("id");
+
+ if(error){showMessage("Suppression impossible : "+error.message);return;}
+ if(!data||!data.length){showMessage("Aucun domaine supprimé. Vérifie les autorisations.");return;}
+
+ if(String(editingDomainId)===String(id))resetDomainForm();
+
+ showMessage("Domaine et photos associés supprimés avec succès.","success");
+ await loadDomains();
 }
 
 /* COTISATIONS */
@@ -1399,6 +1566,7 @@ $("skillsTable").addEventListener("click",handleSupportAction);
 
 /* ÉVÉNEMENTS DES PROJETS */
 $("chooseProjectImageBtn").addEventListener("click",()=>$("projectImageFile").click());
+
 $("projectImageFile").addEventListener("change",()=>{
  const file=$("projectImageFile").files[0];
  if(!file){
@@ -1410,6 +1578,7 @@ $("projectImageFile").addEventListener("change",()=>{
  preview.src=URL.createObjectURL(file);
  preview.style.display="block";
 });
+
 $("projectForm").addEventListener("submit",saveProject);
 $("cancelProjectEditBtn").addEventListener("click",resetProjectForm);
 $("refreshProjectsBtn").addEventListener("click",loadProjects);
@@ -1420,7 +1589,6 @@ $("projectsTable").addEventListener("click",async event=>{
 
  const action=button.dataset.projectAction;
  const id=button.dataset.id;
-
  button.disabled=true;
 
  try{
@@ -1433,21 +1601,71 @@ $("projectsTable").addEventListener("click",async event=>{
 });
 
 /* ÉVÉNEMENTS DES DOMAINES */
-$("chooseDomainImageBtn").addEventListener("click",()=>$("domainImageFile").click());
-$("domainImageFile").addEventListener("change",()=>{
-  const file=$("domainImageFile").files[0];if(!file)return;
-  $("domainImageFileName").textContent="Image sélectionnée : "+file.name;
-  const preview=$("domainImagePreview");preview.src=URL.createObjectURL(file);preview.style.display="block";
-  $("domainRemoveImage").checked=false;
+$("chooseDomainImagesBtn").addEventListener("click",()=>{
+ $("domainImageFiles").click();
 });
+
+$("domainImageFiles").addEventListener("change",()=>{
+ const files=Array.from($("domainImageFiles").files||[]);
+ const preview=$("domainNewImagePreviews");
+ preview.innerHTML="";
+
+ if(!files.length){
+  $("domainImageFileName").textContent="";
+  return;
+ }
+
+ $("domainImageFileName").textContent=files.length+" photo(s) sélectionnée(s).";
+
+ files.forEach(file=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
+   const img=document.createElement("img");
+   img.src=reader.result;
+   img.alt=file.name;
+   img.title=file.name;
+   preview.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+ });
+});
+
+$("domainRemoveImage").addEventListener("change",renderDomainImageGallery);
+
+$("domainImageGallery").addEventListener("click",async event=>{
+ const removeButton=event.target.closest("[data-domain-image-remove]");
+ if(removeButton){
+  removeButton.disabled=true;
+  await removeDomainImage(removeButton.dataset.domainImageRemove);
+  return;
+ }
+
+ const legacyButton=event.target.closest("[data-legacy-image-remove]");
+ if(legacyButton){
+  $("domainRemoveImage").checked=true;
+  renderDomainImageGallery();
+ }
+});
+
 $("domainForm").addEventListener("submit",saveDomain);
 $("cancelDomainEditBtn").addEventListener("click",resetDomainForm);
 $("refreshDomainsBtn").addEventListener("click",loadDomains);
+
 $("domainsTable").addEventListener("click",async event=>{
-  const button=event.target.closest("button[data-domain-action]");if(!button)return;
-  const action=button.dataset.domainAction,id=button.dataset.id;button.disabled=true;
-  try{if(action==="edit")editDomain(id);if(action==="toggle")await toggleDomain(id);if(action==="delete")await deleteDomain(id);}
-  finally{button.disabled=false;}
+ const button=event.target.closest("button[data-domain-action]");
+ if(!button)return;
+
+ const action=button.dataset.domainAction;
+ const id=button.dataset.id;
+ button.disabled=true;
+
+ try{
+  if(action==="edit")editDomain(id);
+  if(action==="toggle")await toggleDomain(id);
+  if(action==="delete")await deleteDomain(id);
+ }finally{
+  button.disabled=false;
+ }
 });
 
 /* ÉVÉNEMENTS DES COTISATIONS */
