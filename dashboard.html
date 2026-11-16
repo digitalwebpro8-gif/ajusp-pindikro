@@ -64,17 +64,7 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .image-picker:hover{background:#e0eee4}
 #projectImageFile,#domainImageFiles,#bannerImageFile{display:none}
 #projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
-#bannerCurrentPreview,#bannerNewPreview{
- display:block;
- width:100%;
- max-width:850px;
- max-height:320px;
- object-fit:cover;
- border-radius:9px;
- margin-top:12px;
- border:1px solid #dce5de;
- background:#f0f5f1;
-}
+#bannerCurrentPreview,#bannerNewPreview{display:block;width:100%;max-width:850px;max-height:320px;object-fit:cover;border-radius:9px;margin-top:12px;border:1px solid #dce5de;background:#f0f5f1}
 #bannerNewPreview{display:none}
 .banner-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
 .banner-file-name{margin-top:8px;color:var(--gray);font-size:13px}
@@ -100,323 +90,204 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 
 <body>
 <header>
-  <div>
-    <h1>AJUSP PINDIKRO</h1>
-    <p>Administration – Ensemble pour un avenir meilleur</p>
-  </div>
-  <button class="logout" id="logoutBtn">Déconnexion</button>
+<div>
+<h1>AJUSP PINDIKRO</h1>
+<p>Administration – Ensemble pour un avenir meilleur</p>
+</div>
+<button class="logout" id="logoutBtn">Déconnexion</button>
 </header>
 
 <main>
-  <div class="welcome">
-    <h2>Tableau de bord</h2>
-    <p>Bienvenue, <strong id="adminName">Responsable</strong>.</p>
-  </div>
+<div class="welcome">
+<h2>Tableau de bord</h2>
+<p>Bienvenue, <strong id="adminName">Responsable</strong>.</p>
+</div>
+<div id="globalMessage" class="message"></div>
 
-  <div id="globalMessage" class="message"></div>
+<section class="panel admin-only" id="bannerPanel">
+<div class="panel-header"><h2>Gestion de la bannière d'accueil</h2></div>
+<p>Modifie l'image principale affichée sur la page d'accueil du site AJUSP.</p>
+<div class="notice">Cette rubrique permet uniquement de changer l'image de la bannière. Le titre, le slogan et les autres textes ne seront pas modifiés.</div>
+<h3>Image actuellement utilisée</h3>
+<img id="bannerCurrentPreview" src="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg" alt="Bannière actuelle de l'AJUSP">
+<hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+<h3>Choisir une nouvelle bannière</h3>
+<input id="bannerImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+<button type="button" class="image-picker" id="chooseBannerImageBtn">📷 Choisir une nouvelle image</button>
+<div class="locked">Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.</div>
+<div id="bannerImageFileName" class="banner-file-name" aria-live="polite"></div>
+<img id="bannerNewPreview" alt="Aperçu de la nouvelle bannière">
+<div class="banner-actions"><button type="button" class="primary" id="saveBannerBtn" disabled>Enregistrer la nouvelle bannière</button></div>
+<p id="bannerFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+</section>
 
-  <!-- GESTION DE LA BANNIÈRE D'ACCUEIL -->
-  <section class="panel admin-only" id="bannerPanel">
-    <div class="panel-header">
-      <h2>Gestion de la bannière d'accueil</h2>
-    </div>
+<section class="cards admin-only">
+<div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
+<div class="card"><p>Demandes d'adhésion en attente</p><span class="number" id="requestsCount">...</span></div>
+<div class="card"><p>Projets</p><span class="number" id="projectsCount">...</span></div>
+<div class="card"><p>Actualités</p><span class="number" id="newsCount">...</span></div>
+</section>
 
-    <p>Modifie l'image principale affichée sur la page d'accueil du site AJUSP.</p>
+<section class="panel admin-only" id="requestsPanel">
+<div class="panel-header"><h2>Demandes d'adhésion</h2><button class="refresh" id="refreshBtn">Actualiser</button></div>
+<p>Consulte les demandes reçues et traite les nouvelles adhésions.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Nom et prénoms</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+<tbody id="requestsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <div class="notice">
-      Cette rubrique permet uniquement de changer l'image de la bannière.
-      Le titre, le slogan et les autres textes du site ne seront pas modifiés.
-    </div>
+<section class="panel admin-only" id="responsablesPanel">
+<div class="panel-header"><h2>Gestion des responsables</h2><button class="refresh" id="refreshProfilesBtn">Actualiser</button></div>
+<div class="notice">Seul l'administrateur technique peut modifier les responsabilités et les droits associés.</div>
+<p id="responsablesInfo">Chargement des membres...</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Nom et prénoms</th><th>Rôle technique</th><th>Fonction associative</th><th>Statut</th><th>Gestion</th></tr></thead>
+<tbody id="profilesTable"><tr><td colspan="5" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <h3>Image actuellement utilisée</h3>
-    <img
-      id="bannerCurrentPreview"
-      src="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg"
-      alt="Bannière actuelle de l'AJUSP"
-    >
+<section class="panel admin-only" id="donationsPanel">
+<div class="panel-header"><h2>Propositions de dons</h2><button class="refresh" id="refreshDonationsBtn">Actualiser</button></div>
+<p>Un don ne doit être confirmé qu'après réception et vérification effective du versement.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Donateur</th><th>Montant</th><th>Téléphone</th><th>E-mail</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+<tbody id="donationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+<section class="panel admin-only" id="partnershipsPanel">
+<div class="panel-header"><h2>Demandes de partenariat</h2><button class="refresh" id="refreshPartnershipsBtn">Actualiser</button></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Organisation</th><th>Contact</th><th>Téléphone</th><th>E-mail</th><th>Type</th><th>Domaine</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+<tbody id="partnershipsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <h3>Choisir une nouvelle bannière</h3>
+<section class="panel admin-only" id="skillsPanel">
+<div class="panel-header"><h2>Compétences proposées</h2><button class="refresh" id="refreshSkillsBtn">Actualiser</button></div>
+<div class="table-wrap"><table>
+<thead><tr><th>Nom</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Compétence</th><th>Disponibilité</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+<tbody id="skillsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <input id="bannerImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+<section class="panel admin-only" id="projectsPanel">
+<div class="panel-header"><h2>Gestion des projets</h2><button class="refresh" id="refreshProjectsBtn" type="button">Actualiser</button></div>
+<p>Ajoute, modifie, publie, dépublie ou supprime les projets de développement de Pindikro.</p>
+<div class="notice">Les projets publiés peuvent être affichés sur le site public de l'AJUSP.</div>
+<h3 id="projectFormTitle">Ajouter un nouveau projet</h3>
+<form id="projectForm">
+<div class="form-grid">
+<div class="form-group"><label for="projectTitle">Titre du projet *</label><input id="projectTitle" type="text" maxlength="200" required placeholder="Ex. : Construction d'une bibliothèque"></div>
+<div class="form-group"><label for="projectBudget">Budget prévisionnel (FCFA)</label><input id="projectBudget" type="number" min="0" step="1" placeholder="Ex. : 5000000"></div>
+<div class="form-group"><label for="projectStatus">État du projet *</label><select id="projectStatus" required><option value="planned">Projet planifié</option><option value="ongoing">En cours</option><option value="completed">Terminé</option></select></div>
+<div class="form-group"><label for="projectStartDate">Date de début</label><input id="projectStartDate" type="date"></div>
+<div class="form-group"><label for="projectEndDate">Date de fin</label><input id="projectEndDate" type="date"></div>
+<div class="form-group">
+<label>Image du projet</label>
+<input id="projectImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+<button type="button" class="image-picker" id="chooseProjectImageBtn">📷 Choisir une image dans ma galerie</button>
+<div class="locked">Formats JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.</div>
+<div id="projectImageFileName" class="locked" aria-live="polite"></div>
+<img id="projectImagePreview" alt="Aperçu de l'image du projet">
+</div>
+</div>
+<div class="form-group"><label for="projectDescription">Description du projet</label><textarea id="projectDescription" maxlength="5000" placeholder="Présente le projet..."></textarea></div>
+<div class="form-group"><label for="projectObjective">Objectif du projet</label><textarea id="projectObjective" maxlength="3000" placeholder="Quel est l'objectif de ce projet ?"></textarea></div>
+<div class="form-group"><label><input id="projectPublished" type="checkbox" checked> Publier ce projet sur le site public</label></div>
+<div class="action-buttons"><button type="submit" class="primary" id="saveProjectBtn">Enregistrer le projet</button><button type="button" class="secondary" id="cancelProjectEditBtn" hidden>Annuler</button></div>
+<p id="projectFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+</form>
+<hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+<h3>Projets enregistrés</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Titre</th><th>Budget</th><th>État</th><th>Publication</th><th>Date de création</th><th>Actions</th></tr></thead>
+<tbody id="projectsTable"><tr><td colspan="6" class="empty">Chargement des projets...</td></tr></tbody>
+</table></div>
+</section>
 
-    <button type="button" class="image-picker" id="chooseBannerImageBtn">
-      📷 Choisir une nouvelle image
-    </button>
+<section class="panel admin-only" id="domainsPanel">
+<div class="panel-header"><h2>Gestion des domaines d'intervention</h2><button class="refresh" id="refreshDomainsBtn" type="button">Actualiser</button></div>
+<p>Gère les domaines présentés dans la rubrique « Nos domaines d'intervention » de la page d'accueil.</p>
+<div class="notice">Les domaines publiés apparaissent automatiquement sur le site public. Tu peux les modifier, les masquer ou les supprimer sans toucher au code.</div>
+<h3 id="domainFormTitle">Ajouter un domaine</h3>
+<form id="domainForm">
+<div class="form-grid">
+<div class="form-group"><label for="domainTitle">Titre du domaine *</label><input id="domainTitle" type="text" maxlength="150" required placeholder="Ex. : Éducation et formation"></div>
+<div class="form-group"><label for="domainIcon">Icône ou symbole</label><input id="domainIcon" type="text" maxlength="12" placeholder="Ex. : 🎓"></div>
+<div class="form-group"><label for="domainOrder">Ordre d'affichage</label><input id="domainOrder" type="number" min="0" step="1" value="1"></div>
+</div>
+<div class="form-group"><label for="domainDescription">Description du domaine *</label><textarea id="domainDescription" maxlength="1200" required placeholder="Décris les actions que l'AJUSP souhaite mener dans ce domaine..."></textarea></div>
+<div class="form-group">
+<label>Photos illustratives du domaine</label>
+<input id="domainImageFiles" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+<button type="button" class="image-picker" id="chooseDomainImagesBtn">📷 Choisir plusieurs photos dans ma galerie</button>
+<div class="locked">Formats JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo par photo.</div>
+<div id="domainImageFileName" class="locked" aria-live="polite"></div>
+<div id="domainNewImagePreviews" class="domain-new-preview"></div>
+<h4>Photos déjà enregistrées</h4>
+<div id="domainImageGallery" class="domain-image-gallery"><p class="locked">Les photos apparaîtront ici lors de la modification.</p></div>
+<label style="display:block;margin-top:12px;font-size:13px"><input id="domainRemoveImage" type="checkbox" style="width:auto"> Retirer l'ancienne image principale</label>
+</div>
+<div class="form-group"><label><input id="domainPublished" type="checkbox" checked> Publier ce domaine sur la page d'accueil</label></div>
+<div class="action-buttons"><button type="submit" class="primary" id="saveDomainBtn">Enregistrer le domaine</button><button type="button" class="secondary" id="cancelDomainEditBtn" hidden>Annuler</button></div>
+<p id="domainFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+</form>
+<hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+<h3>Domaines enregistrés</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Image</th><th>Domaine</th><th>Description</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr></thead>
+<tbody id="domainsTable"><tr><td colspan="6" class="empty">Chargement des domaines...</td></tr></tbody>
+</table></div>
+</section>
 
-    <div class="locked">Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.</div>
+<section class="panel" id="cotisationsPanel">
+<div class="panel-header"><h2>Gestion des cotisations</h2><button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button></div>
+<p id="cotisationsAccessInfo">Suivi des cotisations enregistrées pour les membres de l'AJUSP.</p>
+<div class="cotisation-summary">
+<div class="cotisation-stat">Montant confirmé<strong id="cotTotalConfirme">0 FCFA</strong></div>
+<div class="cotisation-stat">Montant en attente<strong id="cotTotalAttente">0 FCFA</strong></div>
+<div class="cotisation-stat">Paiements enregistrés<strong id="cotNombre">0</strong></div>
+</div>
+<div id="cotisationFormPanel" hidden>
+<h3 id="cotisationFormTitle">Enregistrer une cotisation</h3>
+<form id="cotisationForm">
+<div class="form-grid">
+<div class="form-group"><label for="cotMember">Membre concerné *</label><select id="cotMember" required><option value="">Chargement des membres...</option></select></div>
+<div class="form-group"><label for="cotAmount">Montant (FCFA) *</label><input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000"></div>
+<div class="form-group"><label for="cotPeriod">Période concernée *</label><input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026"></div>
+<div class="form-group"><label for="cotDate">Date de paiement *</label><input id="cotDate" type="date" required></div>
+<div class="form-group"><label for="cotMode">Mode de paiement</label><select id="cotMode"><option value="Espèces">Espèces</option><option value="Mobile Money">Mobile Money</option><option value="Virement bancaire">Virement bancaire</option><option value="Chèque">Chèque</option><option value="Autre">Autre</option></select></div>
+<div class="form-group"><label for="cotStatus">Statut *</label><select id="cotStatus" required><option value="confirmee">Paiement confirmé</option><option value="en_attente">En attente</option></select></div>
+</div>
+<div class="form-group"><label for="cotDescription">Observation (facultatif)</label><textarea id="cotDescription" maxlength="1000" placeholder="Précision sur le paiement..."></textarea></div>
+<div class="action-buttons"><button type="submit" class="primary" id="saveCotisationBtn">Enregistrer la cotisation</button><button type="button" class="secondary" id="cancelCotisationEditBtn" hidden>Annuler</button></div>
+<p id="cotisationFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+</form>
+</div>
+<h3>Historique des cotisations</h3>
+<div id="cotisationsMessage" class="empty">Chargement des cotisations...</div>
+<div class="table-wrap"><table>
+<thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th></tr></thead>
+<tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+</table></div>
+</section>
 
-    <div id="bannerImageFileName" class="banner-file-name" aria-live="polite"></div>
-
-    <img id="bannerNewPreview" alt="Aperçu de la nouvelle bannière">
-
-    <div class="banner-actions">
-      <button type="button" class="primary" id="saveBannerBtn" disabled>
-        Enregistrer la nouvelle bannière
-      </button>
-    </div>
-
-    <p id="bannerFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
-  </section>
-
-  <section class="cards admin-only">
-    <div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
-    <div class="card"><p>Demandes d'adhésion en attente</p><span class="number" id="requestsCount">...</span></div>
-    <div class="card"><p>Projets</p><span class="number" id="projectsCount">...</span></div>
-    <div class="card"><p>Actualités</p><span class="number" id="newsCount">...</span></div>
-  </section>
-
-  <section class="panel admin-only" id="requestsPanel">
-    <div class="panel-header">
-      <h2>Demandes d'adhésion</h2>
-      <button class="refresh" id="refreshBtn">Actualiser</button>
-    </div>
-    <p>Consulte les demandes reçues et traite les nouvelles adhésions.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Nom et prénoms</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-        <tbody id="requestsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="panel admin-only" id="responsablesPanel">
-    <div class="panel-header">
-      <h2>Gestion des responsables</h2>
-      <button class="refresh" id="refreshProfilesBtn">Actualiser</button>
-    </div>
-    <div class="notice">Seul l'administrateur technique peut modifier les responsabilités et les droits associés.</div>
-    <p id="responsablesInfo">Chargement des membres...</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Nom et prénoms</th><th>Rôle technique</th><th>Fonction associative</th><th>Statut</th><th>Gestion</th></tr></thead>
-        <tbody id="profilesTable"><tr><td colspan="5" class="empty">Chargement...</td></tr></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="panel admin-only" id="donationsPanel">
-    <div class="panel-header"><h2>Propositions de dons</h2><button class="refresh" id="refreshDonationsBtn">Actualiser</button></div>
-    <p>Un don ne doit être confirmé qu'après réception et vérification effective du versement.</p>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Donateur</th><th>Montant</th><th>Téléphone</th><th>E-mail</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-      <tbody id="donationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
-    </table></div>
-  </section>
-
-  <section class="panel admin-only" id="partnershipsPanel">
-    <div class="panel-header"><h2>Demandes de partenariat</h2><button class="refresh" id="refreshPartnershipsBtn">Actualiser</button></div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Organisation</th><th>Contact</th><th>Téléphone</th><th>E-mail</th><th>Type</th><th>Domaine</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-      <tbody id="partnershipsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
-    </table></div>
-  </section>
-
-  <section class="panel admin-only" id="skillsPanel">
-    <div class="panel-header"><h2>Compétences proposées</h2><button class="refresh" id="refreshSkillsBtn">Actualiser</button></div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Nom</th><th>Téléphone</th><th>E-mail</th><th>Résidence</th><th>Compétence</th><th>Disponibilité</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-      <tbody id="skillsTable"><tr><td colspan="10" class="empty">Chargement...</td></tr></tbody>
-    </table></div>
-  </section>
-
-  <!-- GESTION DES PROJETS -->
-  <section class="panel admin-only" id="projectsPanel">
-    <div class="panel-header">
-      <h2>Gestion des projets</h2>
-      <button class="refresh" id="refreshProjectsBtn" type="button">Actualiser</button>
-    </div>
-    <p>Ajoute, modifie, publie, dépublie ou supprime les projets de développement de Pindikro.</p>
-    <div class="notice">Les projets publiés peuvent être affichés sur le site public de l'AJUSP.</div>
-    <h3 id="projectFormTitle">Ajouter un nouveau projet</h3>
-
-    <form id="projectForm">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="projectTitle">Titre du projet *</label>
-          <input id="projectTitle" type="text" maxlength="200" required placeholder="Ex. : Construction d'une bibliothèque">
-        </div>
-        <div class="form-group">
-          <label for="projectBudget">Budget prévisionnel (FCFA)</label>
-          <input id="projectBudget" type="number" min="0" step="1" placeholder="Ex. : 5000000">
-        </div>
-        <div class="form-group">
-          <label for="projectStatus">État du projet *</label>
-          <select id="projectStatus" required>
-            <option value="planned">Projet planifié</option>
-            <option value="ongoing">En cours</option>
-            <option value="completed">Terminé</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="projectStartDate">Date de début</label>
-          <input id="projectStartDate" type="date">
-        </div>
-        <div class="form-group">
-          <label for="projectEndDate">Date de fin</label>
-          <input id="projectEndDate" type="date">
-        </div>
-        <div class="form-group">
-          <label>Image du projet</label>
-          <input id="projectImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-          <button type="button" class="image-picker" id="chooseProjectImageBtn">📷 Choisir une image dans ma galerie</button>
-          <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.</div>
-          <div id="projectImageFileName" class="locked" aria-live="polite"></div>
-          <img id="projectImagePreview" alt="Aperçu de l'image du projet">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="projectDescription">Description du projet</label>
-        <textarea id="projectDescription" maxlength="5000" placeholder="Présente le projet..."></textarea>
-      </div>
-      <div class="form-group">
-        <label for="projectObjective">Objectif du projet</label>
-        <textarea id="projectObjective" maxlength="3000" placeholder="Quel est l'objectif de ce projet ?"></textarea>
-      </div>
-      <div class="form-group">
-        <label><input id="projectPublished" type="checkbox" checked> Publier ce projet sur le site public</label>
-      </div>
-      <div class="action-buttons">
-        <button type="submit" class="primary" id="saveProjectBtn">Enregistrer le projet</button>
-        <button type="button" class="secondary" id="cancelProjectEditBtn" hidden>Annuler</button>
-      </div>
-      <p id="projectFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
-    </form>
-
-    <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
-    <h3>Projets enregistrés</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Titre</th><th>Budget</th><th>État</th><th>Publication</th><th>Date de création</th><th>Actions</th></tr></thead>
-        <tbody id="projectsTable"><tr><td colspan="6" class="empty">Chargement des projets...</td></tr></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- GESTION DES DOMAINES D'INTERVENTION -->
-  <section class="panel admin-only" id="domainsPanel">
-    <div class="panel-header">
-      <h2>Gestion des domaines d'intervention</h2>
-      <button class="refresh" id="refreshDomainsBtn" type="button">Actualiser</button>
-    </div>
-    <p>Gère les domaines présentés dans la rubrique « Nos domaines d'intervention » de la page d'accueil.</p>
-    <div class="notice">Les domaines publiés apparaissent automatiquement sur le site public. Tu peux les modifier, les masquer ou les supprimer sans toucher au code.</div>
-
-    <h3 id="domainFormTitle">Ajouter un domaine</h3>
-    <form id="domainForm">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="domainTitle">Titre du domaine *</label>
-          <input id="domainTitle" type="text" maxlength="150" required placeholder="Ex. : Éducation et formation">
-        </div>
-        <div class="form-group">
-          <label for="domainIcon">Icône ou symbole</label>
-          <input id="domainIcon" type="text" maxlength="12" placeholder="Ex. : 🎓">
-        </div>
-        <div class="form-group">
-          <label for="domainOrder">Ordre d'affichage</label>
-          <input id="domainOrder" type="number" min="0" step="1" value="1">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="domainDescription">Description du domaine *</label>
-        <textarea id="domainDescription" maxlength="1200" required placeholder="Décris les actions que l'AJUSP souhaite mener dans ce domaine..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Photos illustratives du domaine</label>
-        <input id="domainImageFiles" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
-        <button type="button" class="image-picker" id="chooseDomainImagesBtn">📷 Choisir plusieurs photos dans ma galerie</button>
-        <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo par photo.</div>
-        <div id="domainImageFileName" class="locked" aria-live="polite"></div>
-        <div id="domainNewImagePreviews" class="domain-new-preview"></div>
-
-        <h4>Photos déjà enregistrées</h4>
-        <div id="domainImageGallery" class="domain-image-gallery">
-          <p class="locked">Les photos apparaîtront ici lors de la modification.</p>
-        </div>
-
-        <label style="display:block;margin-top:12px;font-size:13px">
-          <input id="domainRemoveImage" type="checkbox" style="width:auto">
-          Retirer l'ancienne image principale
-        </label>
-      </div>
-
-      <div class="form-group">
-        <label><input id="domainPublished" type="checkbox" checked> Publier ce domaine sur la page d'accueil</label>
-      </div>
-
-      <div class="action-buttons">
-        <button type="submit" class="primary" id="saveDomainBtn">Enregistrer le domaine</button>
-        <button type="button" class="secondary" id="cancelDomainEditBtn" hidden>Annuler</button>
-      </div>
-      <p id="domainFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
-    </form>
-
-    <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
-    <h3>Domaines enregistrés</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Image</th><th>Domaine</th><th>Description</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr></thead>
-        <tbody id="domainsTable"><tr><td colspan="6" class="empty">Chargement des domaines...</td></tr></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- GESTION DES COTISATIONS -->
-  <section class="panel" id="cotisationsPanel">
-    <div class="panel-header"><h2>Gestion des cotisations</h2><button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button></div>
-    <p id="cotisationsAccessInfo">Suivi des cotisations enregistrées pour les membres de l'AJUSP.</p>
-    <div class="cotisation-summary">
-      <div class="cotisation-stat">Montant confirmé<strong id="cotTotalConfirme">0 FCFA</strong></div>
-      <div class="cotisation-stat">Montant en attente<strong id="cotTotalAttente">0 FCFA</strong></div>
-      <div class="cotisation-stat">Paiements enregistrés<strong id="cotNombre">0</strong></div>
-    </div>
-
-    <div id="cotisationFormPanel" hidden>
-      <h3 id="cotisationFormTitle">Enregistrer une cotisation</h3>
-      <form id="cotisationForm">
-        <div class="form-grid">
-          <div class="form-group"><label for="cotMember">Membre concerné *</label><select id="cotMember" required><option value="">Chargement des membres...</option></select></div>
-          <div class="form-group"><label for="cotAmount">Montant (FCFA) *</label><input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000"></div>
-          <div class="form-group"><label for="cotPeriod">Période concernée *</label><input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026"></div>
-          <div class="form-group"><label for="cotDate">Date de paiement *</label><input id="cotDate" type="date" required></div>
-          <div class="form-group"><label for="cotMode">Mode de paiement</label><select id="cotMode"><option value="Espèces">Espèces</option><option value="Mobile Money">Mobile Money</option><option value="Virement bancaire">Virement bancaire</option><option value="Chèque">Chèque</option><option value="Autre">Autre</option></select></div>
-          <div class="form-group"><label for="cotStatus">Statut *</label><select id="cotStatus" required><option value="confirmee">Paiement confirmé</option><option value="en_attente">En attente</option></select></div>
-        </div>
-        <div class="form-group"><label for="cotDescription">Observation (facultatif)</label><textarea id="cotDescription" maxlength="1000" placeholder="Précision sur le paiement..."></textarea></div>
-        <div class="action-buttons"><button type="submit" class="primary" id="saveCotisationBtn">Enregistrer la cotisation</button><button type="button" class="secondary" id="cancelCotisationEditBtn" hidden>Annuler</button></div>
-        <p id="cotisationFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
-      </form>
-    </div>
-
-    <h3>Historique des cotisations</h3>
-    <div id="cotisationsMessage" class="empty">Chargement des cotisations...</div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th></tr></thead>
-      <tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
-    </table></div>
-  </section>
-
-  <section class="panel admin-only">
-    <h2>Accès rapides</h2>
-    <div class="quick-links">
-      <a href="index.html">Voir le site public</a>
-      <a href="membres.html">Gestion des membres</a>
-      <a href="actualites.html">Gestion des actualités</a>
-      <a href="gestion-projets.html">Gestion des projets</a>
-      <a href="cotisations.html">Cotisations et dons</a>
-      <a href="depenses.html">Recettes et dépenses</a>
-    </div>
-  </section>
+<section class="panel admin-only">
+<h2>Accès rapides</h2>
+<div class="quick-links">
+<a href="index.html">Voir le site public</a>
+<a href="membres.html">Gestion des membres</a>
+<a href="actualites.html">Gestion des actualités</a>
+<a href="gestion-projets.html">Gestion des projets</a>
+<a href="cotisations.html">Cotisations et dons</a>
+<a href="depenses.html">Recettes et dépenses</a>
+</div>
+</section>
 </main>
 
-<footer>
-Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>
-Ensemble pour un avenir meilleur
-</footer>
+<footer>Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>Ensemble pour un avenir meilleur</footer>
 
 <script>
 (async function(){
@@ -430,1380 +301,470 @@ const $=id=>document.getElementById(id);
 
 let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false,canManageSupport=false;
 let editingCotisationId=null,cotisationRows=[];
-let editingProjectId=null,projectRows=[];
-let editingProjectImageUrl=null;
-let editingDomainId=null,domainRows=[],editingDomainImageUrl=null;
-let domainImageRows=[];
-
-/* VARIABLES DE LA BANNIÈRE */
-const DEFAULT_BANNER_URL="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg";
-let currentBannerUrl=DEFAULT_BANNER_URL;
-let selectedBannerFile=null;
-let bannerPreviewObjectUrl=null;
+let editingProjectId=null,projectRows=[],editingProjectImageUrl=null,projectPreviewObjectUrl=null;
+let editingDomainId=null,domainRows=[],editingDomainImageUrl=null,domainImageRows=[];
+let currentBannerUrl="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg";
+let selectedBannerFile=null,bannerPreviewObjectUrl=null;
 
 const functions=[
- {value:"president",label:"Président"},
- {value:"vice_president_1",label:"Premier vice-président"},
- {value:"vice_president_2",label:"Deuxième vice-président"},
- {value:"secretaire_general",label:"Secrétaire général"},
- {value:"secretaire_general_adjoint",label:"Secrétaire général adjoint"},
- {value:"tresorier",label:"Trésorier général"},
- {value:"adjoint_tresorier",label:"Trésorier général adjoint"},
- {value:"responsable_communication",label:"Responsable communication"},
- {value:"membre_communication",label:"Membre communication"}
+{value:"president",label:"Président"},
+{value:"vice_president_1",label:"Premier vice-président"},
+{value:"vice_president_2",label:"Deuxième vice-président"},
+{value:"secretaire_general",label:"Secrétaire général"},
+{value:"secretaire_general_adjoint",label:"Secrétaire général adjoint"},
+{value:"tresorier",label:"Trésorier général"},
+{value:"adjoint_tresorier",label:"Trésorier général adjoint"},
+{value:"responsable_communication",label:"Responsable communication"},
+{value:"membre_communication",label:"Membre communication"}
 ];
-
 const executiveFunctions=["president","vice_president_1","vice_president_2","secretaire_general"];
 
 function showMessage(message,type="error"){
- const box=$("globalMessage");
- box.textContent=message;
- box.className="message "+type;
+const box=$("globalMessage");box.textContent=message;box.className="message "+type;
 }
-function hideMessage(){
- $("globalMessage").textContent="";
- $("globalMessage").className="message";
-}
-function safeText(value){
- return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
-}
-function formatDate(value){
- if(!value)return "—";
- const date=new Date(value);
- return Number.isNaN(date.getTime())?"—":date.toLocaleDateString("fr-FR");
-}
-function functionLabel(value){
- const found=functions.find(item=>item.value===value);
- return found?found.label:(value||"Aucune fonction");
-}
+function hideMessage(){$("globalMessage").textContent="";$("globalMessage").className="message";}
+function safeText(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));}
+function formatDate(value){if(!value)return "—";const date=new Date(value);return Number.isNaN(date.getTime())?"—":date.toLocaleDateString("fr-FR");}
+function getLocalDate(){const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;}
+function functionLabel(value){const found=functions.find(item=>item.value===value);return found?found.label:(value||"Aucune fonction");}
 function statusLabel(status){
- if(status==="pending")return '<span class="status pending">En attente</span>';
- if(status==="approved"||status==="confirmed")return '<span class="status approved">'+(status==="confirmed"?"Confirmé":"Approuvée")+'</span>';
- if(status==="rejected")return '<span class="status rejected">Rejetée</span>';
- return safeText(status||"Inconnu");
+if(status==="pending")return '<span class="status pending">En attente</span>';
+if(status==="approved"||status==="confirmed")return '<span class="status approved">'+(status==="confirmed"?"Confirmé":"Approuvée")+'</span>';
+if(status==="rejected")return '<span class="status rejected">Rejetée</span>';
+return safeText(status||"Inconnu");
 }
-function formatFCFA(value){
- return Number(value||0).toLocaleString("fr-FR")+" FCFA";
-}
+function formatFCFA(value){return Number(value||0).toLocaleString("fr-FR")+" FCFA";}
 function cotStatusLabel(status){
- if(status==="confirmee")return '<span class="status approved">Confirmée</span>';
- if(status==="en_attente")return '<span class="status pending">En attente</span>';
- if(status==="annulee")return '<span class="status rejected">Annulée</span>';
- return safeText(status||"Inconnu");
+if(status==="confirmee")return '<span class="status approved">Confirmée</span>';
+if(status==="en_attente")return '<span class="status pending">En attente</span>';
+if(status==="annulee")return '<span class="status rejected">Annulée</span>';
+return safeText(status||"Inconnu");
 }
+function revokePreview(url){if(url)URL.revokeObjectURL(url);}
 
-/* GESTION DE LA BANNIÈRE D'ACCUEIL */
-
+/* BANNIÈRE */
 async function loadBanner(){
- if(!isAdmin)return;
-
- const preview=$("bannerCurrentPreview");
- const message=$("bannerFormMessage");
-
- const {data,error}=await client
-  .from("site_settings")
-  .select("value")
-  .eq("key","home_banner")
-  .maybeSingle();
-
- if(error){
-  console.error("Erreur de chargement de la bannière :",error);
-  message.textContent="Impossible de charger la bannière : "+error.message;
-  return;
- }
-
- currentBannerUrl=data?.value||DEFAULT_BANNER_URL;
- preview.src=currentBannerUrl;
+if(!isAdmin)return;
+const {data,error}=await client.from("site_settings").select("value").eq("key","home_banner").maybeSingle();
+if(error){console.error(error);$("bannerFormMessage").textContent="Impossible de charger la bannière : "+error.message;return;}
+currentBannerUrl=data?.value||"https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg";
+$("bannerCurrentPreview").src=currentBannerUrl;
 }
-
 function handleBannerFileChange(){
- const file=$("bannerImageFile").files[0]||null;
- const preview=$("bannerNewPreview");
- const message=$("bannerFormMessage");
- const saveButton=$("saveBannerBtn");
-
- selectedBannerFile=null;
- saveButton.disabled=true;
- message.textContent="";
-
- if(bannerPreviewObjectUrl){
-  URL.revokeObjectURL(bannerPreviewObjectUrl);
-  bannerPreviewObjectUrl=null;
- }
-
- if(!file){
-  $("bannerImageFileName").textContent="";
-  preview.removeAttribute("src");
-  preview.style.display="none";
-  return;
- }
-
- const allowedTypes=["image/jpeg","image/png","image/webp"];
-
- if(!allowedTypes.includes(file.type)){
-  $("bannerImageFileName").textContent="";
-  preview.removeAttribute("src");
-  preview.style.display="none";
-  message.textContent="Format non accepté. Choisissez une image JPG, PNG ou WEBP.";
-  $("bannerImageFile").value="";
-  return;
- }
-
- if(file.size>5*1024*1024){
-  $("bannerImageFileName").textContent="";
-  preview.removeAttribute("src");
-  preview.style.display="none";
-  message.textContent="L'image dépasse la taille maximale autorisée de 5 Mo.";
-  $("bannerImageFile").value="";
-  return;
- }
-
- selectedBannerFile=file;
- bannerPreviewObjectUrl=URL.createObjectURL(file);
-
- preview.src=bannerPreviewObjectUrl;
- preview.style.display="block";
- $("bannerImageFileName").textContent="Image sélectionnée : "+file.name;
- saveButton.disabled=false;
+const file=$("bannerImageFile").files[0]||null;
+const preview=$("bannerNewPreview");
+const message=$("bannerFormMessage");
+selectedBannerFile=null;$("saveBannerBtn").disabled=true;message.textContent="";
+revokePreview(bannerPreviewObjectUrl);bannerPreviewObjectUrl=null;
+if(!file){$("bannerImageFileName").textContent="";preview.removeAttribute("src");preview.style.display="none";return;}
+if(!["image/jpeg","image/png","image/webp"].includes(file.type)){message.textContent="Format non accepté. Choisissez JPG, PNG ou WEBP.";$("bannerImageFile").value="";return;}
+if(file.size>5*1024*1024){message.textContent="L'image dépasse 5 Mo.";$("bannerImageFile").value="";return;}
+selectedBannerFile=file;bannerPreviewObjectUrl=URL.createObjectURL(file);
+preview.src=bannerPreviewObjectUrl;preview.style.display="block";
+$("bannerImageFileName").textContent="Image sélectionnée : "+file.name;$("saveBannerBtn").disabled=false;
 }
-
 async function saveBanner(){
- if(!isAdmin){
-  showMessage("Seul l'administrateur peut modifier la bannière.");
-  return;
- }
-
- const message=$("bannerFormMessage");
- const button=$("saveBannerBtn");
- const file=selectedBannerFile;
-
- if(!file){
-  message.textContent="Veuillez d'abord choisir une image.";
-  return;
- }
-
- if(file.size>5*1024*1024){
-  message.textContent="L'image dépasse la taille maximale autorisée de 5 Mo.";
-  return;
- }
-
- button.disabled=true;
- button.textContent="Enregistrement...";
- message.textContent="Téléversement de la nouvelle bannière...";
-
- let saved=false;
-
- try{
-  const extensions={
-   "image/jpeg":"jpg",
-   "image/png":"png",
-   "image/webp":"webp"
-  };
-
-  const extension=extensions[file.type];
-
-  if(!extension)throw new Error("Format d'image non accepté.");
-
-  const filePath="banniere/"+Date.now()+"-"+crypto.randomUUID()+"."+extension;
-
-  const {error:uploadError}=await client
-   .storage
-   .from("project-images")
-   .upload(filePath,file,{
-    cacheControl:"3600",
-    upsert:false,
-    contentType:file.type
-   });
-
-  if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
-
-  const {data:publicData}=client
-   .storage
-   .from("project-images")
-   .getPublicUrl(filePath);
-
-  const newBannerUrl=publicData?.publicUrl;
-
-  if(!newBannerUrl)throw new Error("Impossible de récupérer l'adresse publique de l'image.");
-
-  message.textContent="Enregistrement du nouveau réglage...";
-
-  const {error:saveError}=await client
-   .from("site_settings")
-   .upsert({
-    key:"home_banner",
-    value:newBannerUrl,
-    updated_at:new Date().toISOString()
-   },{
-    onConflict:"key"
-   });
-
-  if(saveError)throw new Error("Impossible d'enregistrer la bannière : "+saveError.message);
-
-  currentBannerUrl=newBannerUrl;
-  $("bannerCurrentPreview").src=newBannerUrl;
-
-  selectedBannerFile=null;
-  $("bannerImageFile").value="";
-  $("bannerImageFileName").textContent="";
-  $("bannerNewPreview").removeAttribute("src");
-  $("bannerNewPreview").style.display="none";
-
-  if(bannerPreviewObjectUrl){
-   URL.revokeObjectURL(bannerPreviewObjectUrl);
-   bannerPreviewObjectUrl=null;
-  }
-
-  saved=true;
-  message.textContent="La nouvelle bannière a été enregistrée avec succès.";
-  showMessage("La bannière d'accueil a été mise à jour avec succès.","success");
-
- }catch(error){
-  console.error("Erreur de sauvegarde de la bannière :",error);
-  message.textContent="Erreur : "+error.message;
- }finally{
-  button.disabled=!selectedBannerFile;
-  button.textContent="Enregistrer la nouvelle bannière";
- }
+if(!isAdmin){showMessage("Seul l'administrateur peut modifier la bannière.");return;}
+const file=selectedBannerFile,message=$("bannerFormMessage"),button=$("saveBannerBtn");
+if(!file){message.textContent="Veuillez choisir une image.";return;}
+button.disabled=true;button.textContent="Enregistrement...";
+try{
+const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
+if(!ext)throw new Error("Format non accepté.");
+const path="banniere/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+const {error:uploadError}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+if(uploadError)throw uploadError;
+const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+if(!url)throw new Error("Adresse publique de l'image indisponible.");
+const {error}=await client.from("site_settings").upsert({key:"home_banner",value:url,updated_at:new Date().toISOString()},{onConflict:"key"});
+if(error)throw error;
+currentBannerUrl=url;$("bannerCurrentPreview").src=url;
+selectedBannerFile=null;$("bannerImageFile").value="";$("bannerImageFileName").textContent="";
+$("bannerNewPreview").removeAttribute("src");$("bannerNewPreview").style.display="none";
+revokePreview(bannerPreviewObjectUrl);bannerPreviewObjectUrl=null;
+message.textContent="Nouvelle bannière enregistrée avec succès.";showMessage(message.textContent,"success");
+}catch(error){console.error(error);message.textContent="Erreur : "+error.message;}
+finally{button.disabled=!selectedBannerFile;button.textContent="Enregistrer la nouvelle bannière";}
 }
 
-/* CONTRÔLE DES ACCÈS */
+/* ACCÈS */
 async function checkAccess(){
- const {data:sessionData,error:sessionError}=await client.auth.getSession();
-
- if(sessionError||!sessionData.session){
-  window.location.href="connexion.html";
-  return false;
- }
-
- currentUser=sessionData.session.user;
-
- const {data:profile,error}=await client.from("profiles")
-  .select("full_name,role,status,fonction")
-  .eq("id",currentUser.id).single();
-
- if(error||!profile||profile.status!=="active"){
-  showMessage("Accès refusé : votre compte n'est pas actif ou votre profil est introuvable.");
-  await client.auth.signOut();
-  setTimeout(()=>window.location.href="connexion.html",2500);
-  return false;
- }
-
- isAdmin=profile.role==="admin";
- canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
- canManageSupport=isAdmin||canManageCotisations;
- isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
-
- if(!isAdmin&&!canManageCotisations){
-  showMessage("Accès refusé : cette page est réservée aux administrateurs et aux responsables de la trésorerie.");
-  await client.auth.signOut();
-  setTimeout(()=>window.location.href="connexion.html",2500);
-  return false;
- }
-
- $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
-
- if(!isAdmin){
-  document.querySelectorAll(".admin-only").forEach(section=>{
-   section.hidden=true;
-   section.style.display="none";
-  });
-
-  if(canManageSupport){
-   ["donationsPanel","partnershipsPanel","skillsPanel"].forEach(id=>{
-    const panel=$(id);
-    if(panel){
-     panel.hidden=false;
-     panel.style.display="block";
-    }
-   });
-  }
-
-  $("cotisationsAccessInfo").textContent=
-   "Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
- }
-
- if(canManageCotisations){
-  $("cotisationFormPanel").hidden=false;
-  $("cotActionsHeader").hidden=false;
- }else{
-  $("cotisationsAccessInfo").textContent="Consultation des cotisations. Seuls le trésorier et son adjoint peuvent enregistrer ou modifier les paiements.";
- }
-
- return true;
+const {data:sessionData,error:sessionError}=await client.auth.getSession();
+if(sessionError||!sessionData.session){window.location.href="connexion.html";return false;}
+currentUser=sessionData.session.user;
+const {data:profile,error}=await client.from("profiles").select("full_name,role,status,fonction").eq("id",currentUser.id).single();
+if(error||!profile||profile.status!=="active"){
+showMessage("Accès refusé : compte inactif ou profil introuvable.");await client.auth.signOut();setTimeout(()=>window.location.href="connexion.html",2500);return false;
+}
+isAdmin=profile.role==="admin";
+canManageCotisations=["tresorier","adjoint_tresorier"].includes(profile.fonction);
+canManageSupport=isAdmin||canManageCotisations;
+isTechnicalAdmin=currentUser.id===TECHNICAL_ADMIN_ID;
+if(!isAdmin&&!canManageCotisations){
+showMessage("Accès réservé aux administrateurs et responsables de la trésorerie.");await client.auth.signOut();setTimeout(()=>window.location.href="connexion.html",2500);return false;
+}
+$("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
+if(!isAdmin){
+document.querySelectorAll(".admin-only").forEach(section=>{section.hidden=true;section.style.display="none";});
+["donationsPanel","partnershipsPanel","skillsPanel"].forEach(id=>{const panel=$(id);if(panel){panel.hidden=false;panel.style.display="block";}});
+$("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
+}
+if(canManageCotisations){$("cotisationFormPanel").hidden=false;$("cotActionsHeader").hidden=false;}
+else $("cotisationsAccessInfo").textContent="Consultation des cotisations. Seuls le trésorier et son adjoint peuvent enregistrer ou modifier les paiements.";
+return true;
 }
 
-/* CHARGEMENT ADMINISTRATEUR */
+/* TABLEAU DE BORD ET ADHÉSIONS */
 async function loadMembersCount(){
- const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true})
-  .eq("status","active").eq("role","member");
- $("membersCount").textContent=error?"—":(count??0);
- if(error)console.error(error);
+const {count,error}=await client.from("profiles").select("id",{count:"exact",head:true}).eq("status","active").eq("role","member");
+$("membersCount").textContent=error?"—":(count??0);if(error)console.error(error);
 }
-
 async function loadRequests(){
- const table=$("requestsTable");
- table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("membership_requests")
-  .select("id,full_name,phone,email,residence,message,status,created_at,user_id")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  $("requestsCount").textContent="—";
-  table.innerHTML='<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';
-  showMessage("Erreur de lecture des demandes : "+error.message);
-  return;
- }
-
- const requests=data||[];
- $("requestsCount").textContent=requests.filter(r=>r.status==="pending").length;
-
- if(!requests.length){
-  table.innerHTML="<tr><td colspan='7' class='empty'>Aucune demande d'adhésion pour le moment.</td></tr>";
-  return;
- }
-
- table.innerHTML=requests.map(request=>{
-  const canProcess=request.status==="pending"&&!request.user_id;
-  const actions=canProcess
-   ?`<button class="approve" data-action="approve" data-id="${safeText(request.id)}">Approuver</button><button class="reject" data-action="reject" data-id="${safeText(request.id)}">Rejeter</button>`
-   :"—";
-
-  return `<tr>
-   <td><strong>${safeText(request.full_name)}</strong>${request.message?`<br><small>${safeText(request.message)}</small>`:""}</td>
-   <td>${safeText(request.phone||"—")}</td>
-   <td>${safeText(request.email||"—")}</td>
-   <td>${safeText(request.residence||"—")}</td>
-   <td>${formatDate(request.created_at)}</td>
-   <td>${statusLabel(request.status)}</td>
-   <td>${actions}</td>
-  </tr>`;
- }).join("");
+const table=$("requestsTable");table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
+const {data,error}=await client.from("membership_requests").select("id,full_name,phone,email,residence,message,status,created_at").order("created_at",{ascending:false});
+if(error){console.error(error);$("requestsCount").textContent="—";table.innerHTML='<tr><td colspan="7" class="empty">Impossible de charger les demandes.</td></tr>';showMessage("Erreur de lecture des demandes : "+error.message);return;}
+const rows=data||[];$("requestsCount").textContent=rows.filter(r=>r.status==="pending").length;
+if(!rows.length){table.innerHTML='<tr><td colspan="7" class="empty">Aucune demande d’adhésion.</td></tr>';return;}
+table.innerHTML=rows.map(r=>{
+const actions=r.status==="pending"?`<button class="approve" data-action="approve" data-id="${safeText(r.id)}">Approuver</button><button class="reject" data-action="reject" data-id="${safeText(r.id)}">Rejeter</button>`:"—";
+return `<tr><td><strong>${safeText(r.full_name)}</strong>${r.message?`<br><small>${safeText(r.message)}</small>`:""}</td><td>${safeText(r.phone||"—")}</td><td>${safeText(r.email||"—")}</td><td>${safeText(r.residence||"—")}</td><td>${formatDate(r.created_at)}</td><td>${statusLabel(r.status)}</td><td>${actions}</td></tr>`;
+}).join("");
 }
-
-async function loadOptionalCount(tableName,elementId){
- const {count,error}=await client.from(tableName).select("*",{count:"exact",head:true});
- $(elementId).textContent=error?"—":(count??0);
- if(error)console.warn(error);
+async function loadOptionalCount(name,id){
+const {count,error}=await client.from(name).select("*",{count:"exact",head:true});$(id).textContent=error?"—":(count??0);if(error)console.warn(error);
 }
-
 async function loadProfiles(){
- const table=$("profilesTable");
- table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("profiles")
-  .select("id,full_name,role,fonction,status,created_at")
-  .order("created_at",{ascending:true});
-
- if(error){
-  console.error(error);
-  table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';
-  $("responsablesInfo").textContent="Erreur : "+error.message;
-  return;
- }
-
- const profiles=data||[];
- $("responsablesInfo").textContent=profiles.length+" profil(s) enregistré(s).";
-
- if(!profiles.length){
-  table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';
-  return;
- }
-
- table.innerHTML=profiles.map(profile=>{
-  const isProtected=profile.id===TECHNICAL_ADMIN_ID;
-  const options=functions.map(item=>`<option value="${item.value}" ${profile.fonction===item.value?"selected":""}>${item.label}</option>`).join("");
-
-  const management=isTechnicalAdmin&&!isProtected
-   ?`<select id="fonction-${safeText(profile.id)}"><option value="" ${!profile.fonction?"selected":""}>Aucune fonction</option>${options}</select><br><button class="save-function" data-action="save-function" data-id="${safeText(profile.id)}">Enregistrer</button>`
-   :isProtected?'<span class="locked">Compte technique protégé</span>':'<span class="locked">Consultation uniquement</span>';
-
-  return `<tr>
-   <td><strong>${safeText(profile.full_name||"Sans nom")}</strong></td>
-   <td>${safeText(profile.role)}</td>
-   <td>${safeText(functionLabel(profile.fonction))}</td>
-   <td>${safeText(profile.status)}</td>
-   <td>${management}</td>
-  </tr>`;
- }).join("");
+const table=$("profilesTable");table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
+const {data,error}=await client.from("profiles").select("id,full_name,role,fonction,status,created_at").order("created_at",{ascending:true});
+if(error){console.error(error);table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';$("responsablesInfo").textContent="Erreur : "+error.message;return;}
+const rows=data||[];$("responsablesInfo").textContent=rows.length+" profil(s) enregistré(s).";
+if(!rows.length){table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';return;}
+table.innerHTML=rows.map(p=>{
+const protectedUser=p.id===TECHNICAL_ADMIN_ID;
+const opts=functions.map(f=>`<option value="${f.value}" ${p.fonction===f.value?"selected":""}>${f.label}</option>`).join("");
+const management=isTechnicalAdmin&&!protectedUser?`<select id="fonction-${safeText(p.id)}"><option value="">Aucune fonction</option>${opts}</select><br><button class="save-function" data-action="save-function" data-id="${safeText(p.id)}">Enregistrer</button>`:protectedUser?'<span class="locked">Compte technique protégé</span>':'<span class="locked">Consultation uniquement</span>';
+return `<tr><td><strong>${safeText(p.full_name||"Sans nom")}</strong></td><td>${safeText(p.role)}</td><td>${safeText(functionLabel(p.fonction))}</td><td>${safeText(p.status)}</td><td>${management}</td></tr>`;
+}).join("");
+}
+async function saveFunction(id){
+if(!isTechnicalAdmin||id===TECHNICAL_ADMIN_ID)return;
+const select=$("fonction-"+id);if(!select)return;
+const func=select.value||null,role=executiveFunctions.includes(func)?"admin":"member";
+if(!confirm(func?`Confirmer l'attribution de « ${functionLabel(func)} » ?\nRôle technique : ${role}.`:"Confirmer le retrait de la fonction ?"))return;
+const button=document.querySelector(`button[data-action="save-function"][data-id="${id}"]`);if(button)button.disabled=true;
+const {data,error}=await client.from("profiles").update({fonction:func,role}).eq("id",id).select("id,full_name,role,fonction");
+if(button)button.disabled=false;
+if(error){showMessage("Modification impossible : "+error.message);return;}
+if(!data?.length){showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");return;}
+showMessage("Fonction mise à jour pour "+(data[0].full_name||"ce membre")+".","success");await loadProfiles();await loadMembersCount();
+}
+async function approveRequest(id){
+if(!confirm("Confirmer l'approbation de cette demande ?"))return;
+const {data,error}=await client.functions.invoke("approve-membership",{body:{request_id:id}});
+if(error){showMessage("Échec de l'approbation : "+error.message);return;}
+if(!data?.success){showMessage(data?.error||"Approbation impossible.");return;}
+showMessage(data.message||"Demande approuvée.","success");await loadDashboard();
+}
+async function rejectRequest(id){
+if(!confirm("Confirmer le rejet de cette demande ?"))return;
+const {data,error}=await client.from("membership_requests").update({status:"rejected"}).eq("id",id).eq("status","pending").select("id");
+if(error){showMessage("Rejet impossible : "+error.message);return;}
+if(!data?.length){showMessage("Demande non modifiée. Vérifie son statut et les autorisations.");return;}
+showMessage("Demande rejetée.","success");await loadDashboard();
 }
 
-async function saveFunction(memberId){
- if(!isTechnicalAdmin){showMessage("Seul l'administrateur technique peut modifier les fonctions.");return;}
- if(memberId===TECHNICAL_ADMIN_ID){showMessage("Le compte technique est protégé.");return;}
-
- const select=$("fonction-"+memberId);
- if(!select)return;
-
- const newFunction=select.value||null;
- const newRole=executiveFunctions.includes(newFunction)?"admin":"member";
- const message=newFunction
-  ?`Confirmer l'attribution de la fonction « ${functionLabel(newFunction)} » ?\nRôle technique attribué : ${newRole}.`
-  :"Confirmer le retrait de la fonction associative ?\nLe rôle technique deviendra member.";
-
- if(!confirm(message))return;
-
- hideMessage();
- const button=document.querySelector(`button[data-action="save-function"][data-id="${memberId}"]`);
- if(button)button.disabled=true;
-
- const {data,error}=await client.from("profiles")
-  .update({fonction:newFunction,role:newRole})
-  .eq("id",memberId).select("id,full_name,role,fonction");
-
- if(button)button.disabled=false;
-
- if(error){console.error(error);showMessage("Modification impossible : "+error.message);return;}
- if(!data||data.length===0){showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");return;}
-
- showMessage("La fonction de "+(data[0].full_name||"ce membre")+" a été mise à jour.","success");
- await loadProfiles();
- await loadMembersCount();
+/* DONS, PARTENARIATS, COMPÉTENCES */
+async function loadSupportTable(tableId,tableName,columns,renderRow,colspan,emptyText){
+const table=$(tableId);table.innerHTML=`<tr><td colspan="${colspan}" class="empty">Chargement...</td></tr>`;
+const {data,error}=await client.from(tableName).select(columns).order("created_at",{ascending:false});
+if(error){console.error(error);table.innerHTML=`<tr><td colspan="${colspan}" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;return;}
+if(!data?.length){table.innerHTML=`<tr><td colspan="${colspan}" class="empty">${emptyText}</td></tr>`;return;}
+table.innerHTML=data.map(renderRow).join("");
 }
-
-async function approveRequest(requestId){
- if(!confirm("Confirmer l'approbation de cette demande ?"))return;
- hideMessage();
-
- const {data,error}=await client.functions.invoke("approve-membership",{body:{request_id:requestId}});
-
- if(error){console.error(error);showMessage("Échec de l'approbation : "+error.message);return;}
- if(!data||!data.success){showMessage(data?.error||"L'approbation n'a pas pu être effectuée.");return;}
-
- showMessage(data.message||"Demande approuvée avec succès.","success");
- await loadDashboard();
-}
-
-async function rejectRequest(requestId){
- if(!confirm("Confirmer le rejet de cette demande ?"))return;
- hideMessage();
-
- const {data,error}=await client.from("membership_requests")
-  .update({status:"rejected"}).eq("id",requestId)
-  .eq("status","pending").is("user_id",null).select("id");
-
- if(error){showMessage("Impossible de rejeter la demande : "+error.message);return;}
- if(!data||!data.length){showMessage("La demande n'a pas été modifiée. Vérifie son statut ou tes autorisations.");return;}
-
- showMessage("La demande a été rejetée.","success");
- await loadDashboard();
-}
-
-/* DONS, PARTENARIATS ET COMPÉTENCES */
 async function loadDonations(){
- const table=$("donationsTable");
- table.innerHTML='<tr><td colspan="7" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("donations")
-  .select("id,donor_name,amount,currency,phone,email,message,status,created_at")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  table.innerHTML=`<tr><td colspan="7" class="empty">Erreur de chargement : ${safeText(error.message)}</td></tr>`;
-  return;
- }
-
- if(!data||!data.length){
-  table.innerHTML='<tr><td colspan="7" class="empty">Aucune proposition de don.</td></tr>';
-  return;
- }
-
- table.innerHTML=data.map(row=>{
-  const actions=row.status==="pending"
-   ?`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(row.id)}">Confirmer reçu</button><button class="reject" data-support-action="donation-reject" data-id="${safeText(row.id)}">Rejeter</button>`
-   :"—";
-
-  const amount=formatFCFA(row.amount)+(row.currency&&row.currency!=="FCFA"?" ("+safeText(row.currency)+")":"");
-
-  return `<tr>
-   <td><strong>${safeText(row.donor_name)}</strong>${row.message?`<br><small>${safeText(row.message)}</small>`:""}</td>
-   <td>${amount}</td>
-   <td>${safeText(row.phone||"—")}</td>
-   <td>${safeText(row.email||"—")}</td>
-   <td>${formatDate(row.created_at)}</td>
-   <td>${statusLabel(row.status)}</td>
-   <td>${actions}</td>
-  </tr>`;
- }).join("");
+await loadSupportTable("donationsTable","donations","id,donor_name,amount,currency,phone,email,message,status,created_at",r=>{
+const actions=r.status==="pending"?`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(r.id)}">Confirmer reçu</button><button class="reject" data-support-action="donation-reject" data-id="${safeText(r.id)}">Rejeter</button>`:"—";
+return `<tr><td><strong>${safeText(r.donor_name)}</strong>${r.message?`<br><small>${safeText(r.message)}</small>`:""}</td><td>${formatFCFA(r.amount)}${r.currency&&r.currency!=="FCFA"?" ("+safeText(r.currency)+")":""}</td><td>${safeText(r.phone||"—")}</td><td>${safeText(r.email||"—")}</td><td>${formatDate(r.created_at)}</td><td>${statusLabel(r.status)}</td><td>${actions}</td></tr>`;
+},7,"Aucune proposition de don.");
 }
-
 async function loadPartnerships(){
- const table=$("partnershipsTable");
- table.innerHTML='<tr><td colspan="10" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("partnership_requests")
-  .select("id,organization,contact_name,phone,email,partnership_type,domain,message,status,created_at")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  table.innerHTML=`<tr><td colspan="10" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
-  return;
- }
-
- if(!data||!data.length){
-  table.innerHTML='<tr><td colspan="10" class="empty">Aucune demande de partenariat.</td></tr>';
-  return;
- }
-
- table.innerHTML=data.map(row=>{
-  const actions=row.status==="pending"
-   ?`<button class="approve" data-support-action="partnership-approve" data-id="${safeText(row.id)}">Approuver</button><button class="reject" data-support-action="partnership-reject" data-id="${safeText(row.id)}">Rejeter</button>`
-   :"—";
-
-  return `<tr>
-   <td><strong>${safeText(row.organization)}</strong></td>
-   <td>${safeText(row.contact_name)}</td>
-   <td>${safeText(row.phone)}</td>
-   <td>${safeText(row.email||"—")}</td>
-   <td>${safeText(row.partnership_type)}</td>
-   <td>${safeText(row.domain||"—")}</td>
-   <td>${safeText(row.message)}</td>
-   <td>${formatDate(row.created_at)}</td>
-   <td>${statusLabel(row.status)}</td>
-   <td>${actions}</td>
-  </tr>`;
- }).join("");
+await loadSupportTable("partnershipsTable","partnership_requests","id,organization,contact_name,phone,email,partnership_type,domain,message,status,created_at",r=>{
+const actions=r.status==="pending"?`<button class="approve" data-support-action="partnership-approve" data-id="${safeText(r.id)}">Approuver</button><button class="reject" data-support-action="partnership-reject" data-id="${safeText(r.id)}">Rejeter</button>`:"—";
+return `<tr><td><strong>${safeText(r.organization)}</strong></td><td>${safeText(r.contact_name)}</td><td>${safeText(r.phone)}</td><td>${safeText(r.email||"—")}</td><td>${safeText(r.partnership_type)}</td><td>${safeText(r.domain||"—")}</td><td>${safeText(r.message)}</td><td>${formatDate(r.created_at)}</td><td>${statusLabel(r.status)}</td><td>${actions}</td></tr>`;
+},10,"Aucune demande de partenariat.");
 }
-
 async function loadSkills(){
- const table=$("skillsTable");
- table.innerHTML='<tr><td colspan="10" class="empty">Chargement...</td></tr>';
-
- const {data,error}=await client.from("skill_offers")
-  .select("id,full_name,phone,email,residence,skill,availability,message,status,created_at")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  table.innerHTML=`<tr><td colspan="10" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
-  return;
- }
-
- if(!data||!data.length){
-  table.innerHTML='<tr><td colspan="10" class="empty">Aucune compétence proposée.</td></tr>';
-  return;
- }
-
- table.innerHTML=data.map(row=>{
-  const actions=row.status==="pending"
-   ?`<button class="approve" data-support-action="skill-approve" data-id="${safeText(row.id)}">Approuver</button><button class="reject" data-support-action="skill-reject" data-id="${safeText(row.id)}">Rejeter</button>`
-   :"—";
-
-  return `<tr>
-   <td><strong>${safeText(row.full_name)}</strong></td>
-   <td>${safeText(row.phone)}</td>
-   <td>${safeText(row.email||"—")}</td>
-   <td>${safeText(row.residence||"—")}</td>
-   <td>${safeText(row.skill)}</td>
-   <td>${safeText(row.availability)}</td>
-   <td>${safeText(row.message)}</td>
-   <td>${formatDate(row.created_at)}</td>
-   <td>${statusLabel(row.status)}</td>
-   <td>${actions}</td>
-  </tr>`;
- }).join("");
+await loadSupportTable("skillsTable","skill_offers","id,full_name,phone,email,residence,skill,availability,message,status,created_at",r=>{
+const actions=r.status==="pending"?`<button class="approve" data-support-action="skill-approve" data-id="${safeText(r.id)}">Approuver</button><button class="reject" data-support-action="skill-reject" data-id="${safeText(r.id)}">Rejeter</button>`:"—";
+return `<tr><td><strong>${safeText(r.full_name)}</strong></td><td>${safeText(r.phone)}</td><td>${safeText(r.email||"—")}</td><td>${safeText(r.residence||"—")}</td><td>${safeText(r.skill)}</td><td>${safeText(r.availability)}</td><td>${safeText(r.message)}</td><td>${formatDate(r.created_at)}</td><td>${statusLabel(r.status)}</td><td>${actions}</td></tr>`;
+},10,"Aucune compétence proposée.");
 }
-
 async function updateSupportRequest(tableName,id,newStatus,label){
- if(!canManageSupport){showMessage("Vous n'êtes pas autorisé à traiter ces demandes.");return;}
-
- const confirmation=tableName==="donations"&&newStatus==="confirmed"
-  ?"Confirmer que le versement du don a réellement été reçu ?"
-  :newStatus==="approved"?"Confirmer l'approbation de cette demande ?":"Confirmer le rejet de cette demande ?";
-
- if(!confirm(confirmation))return;
- hideMessage();
-
- const {data,error}=await client.from(tableName)
-  .update({status:newStatus}).eq("id",id).eq("status","pending").select("id");
-
- if(error){console.error(error);showMessage("Modification impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("La demande n'a pas été modifiée. Elle a peut-être déjà été traitée.");return;}
-
- showMessage(label+" : opération effectuée avec succès.","success");
-
- if(tableName==="donations")await loadDonations();
- if(tableName==="partnership_requests")await loadPartnerships();
- if(tableName==="skill_offers")await loadSkills();
+if(!canManageSupport){showMessage("Vous n'êtes pas autorisé.");return;}
+const confirmation=tableName==="donations"&&newStatus==="confirmed"?"Confirmer que le versement a réellement été reçu ?":newStatus==="approved"?"Confirmer l'approbation ?":"Confirmer le rejet ?";
+if(!confirm(confirmation))return;
+const {data,error}=await client.from(tableName).update({status:newStatus}).eq("id",id).eq("status","pending").select("id");
+if(error){showMessage("Modification impossible : "+error.message);return;}
+if(!data?.length){showMessage("Demande déjà traitée ou non modifiée.");return;}
+showMessage(label+" : opération effectuée.","success");
+if(tableName==="donations")await loadDonations();
+if(tableName==="partnership_requests")await loadPartnerships();
+if(tableName==="skill_offers")await loadSkills();
 }
-
 async function handleSupportAction(event){
- const button=event.target.closest("button[data-support-action]");
- if(!button)return;
-
- const action=button.dataset.supportAction,id=button.dataset.id;
- button.disabled=true;
-
- try{
-  if(action==="donation-confirm")await updateSupportRequest("donations",id,"confirmed","Don");
-  if(action==="donation-reject")await updateSupportRequest("donations",id,"rejected","Don");
-  if(action==="partnership-approve")await updateSupportRequest("partnership_requests",id,"approved","Partenariat");
-  if(action==="partnership-reject")await updateSupportRequest("partnership_requests",id,"rejected","Partenariat");
-  if(action==="skill-approve")await updateSupportRequest("skill_offers",id,"approved","Offre de compétence");
-  if(action==="skill-reject")await updateSupportRequest("skill_offers",id,"rejected","Offre de compétence");
- }finally{
-  button.disabled=false;
- }
+const button=event.target.closest("button[data-support-action]");if(!button)return;
+button.disabled=true;
+try{
+const a=button.dataset.supportAction,id=button.dataset.id;
+if(a==="donation-confirm")await updateSupportRequest("donations",id,"confirmed","Don");
+if(a==="donation-reject")await updateSupportRequest("donations",id,"rejected","Don");
+if(a==="partnership-approve")await updateSupportRequest("partnership_requests",id,"approved","Partenariat");
+if(a==="partnership-reject")await updateSupportRequest("partnership_requests",id,"rejected","Partenariat");
+if(a==="skill-approve")await updateSupportRequest("skill_offers",id,"approved","Compétence");
+if(a==="skill-reject")await updateSupportRequest("skill_offers",id,"rejected","Compétence");
+}finally{button.disabled=false;}
 }
 
-/* GESTION DES PROJETS */
-function projectStatusLabel(status){
- const labels={planned:"Planifié",ongoing:"En cours",completed:"Terminé"};
- return labels[status]||status||"Inconnu";
-}
-
+/* PROJETS */
+function projectStatusLabel(s){return ({planned:"Planifié",ongoing:"En cours",completed:"Terminé"})[s]||s||"Inconnu";}
 function resetProjectForm(){
- $("projectForm").reset();
- editingProjectId=null;
- editingProjectImageUrl=null;
- $("projectImageFile").value="";
- $("projectImageFileName").textContent="";
- $("projectImagePreview").removeAttribute("src");
- $("projectImagePreview").style.display="none";
- $("projectFormTitle").textContent="Ajouter un nouveau projet";
- $("saveProjectBtn").textContent="Enregistrer le projet";
- $("cancelProjectEditBtn").hidden=true;
- $("projectPublished").checked=true;
- $("projectFormMessage").textContent="";
+$("projectForm").reset();editingProjectId=null;editingProjectImageUrl=null;
+$("projectImageFile").value="";$("projectImageFileName").textContent="";
+$("projectImagePreview").removeAttribute("src");$("projectImagePreview").style.display="none";
+revokePreview(projectPreviewObjectUrl);projectPreviewObjectUrl=null;
+$("projectFormTitle").textContent="Ajouter un nouveau projet";$("saveProjectBtn").textContent="Enregistrer le projet";
+$("cancelProjectEditBtn").hidden=true;$("projectPublished").checked=true;$("projectFormMessage").textContent="";
 }
-
 async function loadProjects(){
- const table=$("projectsTable");
- table.innerHTML='<tr><td colspan="6" class="empty">Chargement des projets...</td></tr>';
-
- const {data,error}=await client.from("projects")
-  .select("id,title,description,objective,budget,status,image_url,start_date,end_date,is_published,created_at")
-  .order("created_at",{ascending:false});
-
- if(error){
-  console.error(error);
-  table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
-  $("projectsCount").textContent="—";
-  showMessage("Impossible de charger les projets : "+error.message);
-  return;
- }
-
- projectRows=data||[];
- $("projectsCount").textContent=String(projectRows.length);
-
- if(!projectRows.length){
-  table.innerHTML='<tr><td colspan="6" class="empty">Aucun projet enregistré.</td></tr>';
-  return;
- }
-
- table.innerHTML=projectRows.map(project=>{
-  const publication=project.is_published
-   ?'<span class="status approved">Publié</span>'
-   :'<span class="status pending">Non publié</span>';
-
-  return `<tr>
-   <td><strong>${safeText(project.title)}</strong></td>
-   <td>${project.budget!==null&&project.budget!==""?formatFCFA(project.budget):"—"}</td>
-   <td>${safeText(projectStatusLabel(project.status))}</td>
-   <td>${publication}</td>
-   <td>${formatDate(project.created_at)}</td>
-   <td><div class="action-buttons">
-    <button type="button" class="secondary" data-project-action="edit" data-id="${safeText(project.id)}">Modifier</button>
-    <button type="button" class="approve" data-project-action="toggle" data-id="${safeText(project.id)}">${project.is_published?"Dépublier":"Publier"}</button>
-    <button type="button" class="danger" data-project-action="delete" data-id="${safeText(project.id)}">Supprimer</button>
-   </div></td>
-  </tr>`;
- }).join("");
+const table=$("projectsTable");table.innerHTML='<tr><td colspan="6" class="empty">Chargement...</td></tr>';
+const {data,error}=await client.from("projects").select("id,title,description,objective,budget,status,image_url,start_date,end_date,is_published,created_at").order("created_at",{ascending:false});
+if(error){console.error(error);table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;$("projectsCount").textContent="—";showMessage("Chargement des projets impossible : "+error.message);return;}
+projectRows=data||[];$("projectsCount").textContent=projectRows.length;
+if(!projectRows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun projet enregistré.</td></tr>';return;}
+table.innerHTML=projectRows.map(p=>`<tr><td><strong>${safeText(p.title)}</strong></td><td>${p.budget!==null&&p.budget!==""?formatFCFA(p.budget):"—"}</td><td>${safeText(projectStatusLabel(p.status))}</td><td>${p.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Non publié</span>'}</td><td>${formatDate(p.created_at)}</td><td><div class="action-buttons"><button type="button" class="secondary" data-project-action="edit" data-id="${safeText(p.id)}">Modifier</button><button type="button" class="approve" data-project-action="toggle" data-id="${safeText(p.id)}">${p.is_published?"Dépublier":"Publier"}</button><button type="button" class="danger" data-project-action="delete" data-id="${safeText(p.id)}">Supprimer</button></div></td></tr>`).join("");
 }
-
 function editProject(id){
- const project=projectRows.find(item=>String(item.id)===String(id));
- if(!project)return;
-
- editingProjectId=project.id;
- $("projectTitle").value=project.title||"";
- $("projectBudget").value=project.budget??"";
- $("projectStatus").value=project.status||"planned";
- $("projectStartDate").value=project.start_date||"";
- $("projectEndDate").value=project.end_date||"";
- editingProjectImageUrl=project.image_url||null;
- $("projectImageFile").value="";
- $("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
-
- if(editingProjectImageUrl){
-  $("projectImagePreview").src=editingProjectImageUrl;
-  $("projectImagePreview").style.display="block";
- }else{
-  $("projectImagePreview").removeAttribute("src");
-  $("projectImagePreview").style.display="none";
- }
-
- $("projectDescription").value=project.description||"";
- $("projectObjective").value=project.objective||"";
- $("projectPublished").checked=Boolean(project.is_published);
- $("projectFormTitle").textContent="Modifier le projet";
- $("saveProjectBtn").textContent="Enregistrer les modifications";
- $("cancelProjectEditBtn").hidden=false;
- $("projectsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+const p=projectRows.find(x=>String(x.id)===String(id));if(!p)return;
+editingProjectId=p.id;editingProjectImageUrl=p.image_url||null;
+$("projectTitle").value=p.title||"";$("projectBudget").value=p.budget??"";$("projectStatus").value=p.status||"planned";
+$("projectStartDate").value=p.start_date||"";$("projectEndDate").value=p.end_date||"";
+$("projectDescription").value=p.description||"";$("projectObjective").value=p.objective||"";
+$("projectPublished").checked=Boolean(p.is_published);$("projectImageFile").value="";
+$("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée sans nouvelle sélection.":"Aucune image.";
+if(editingProjectImageUrl){$("projectImagePreview").src=editingProjectImageUrl;$("projectImagePreview").style.display="block";}
+else{$("projectImagePreview").removeAttribute("src");$("projectImagePreview").style.display="none";}
+$("projectFormTitle").textContent="Modifier le projet";$("saveProjectBtn").textContent="Enregistrer les modifications";$("cancelProjectEditBtn").hidden=false;
+$("projectsPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
 async function saveProject(event){
- event.preventDefault();
-
- if(!isAdmin){
-  $("projectFormMessage").textContent="Accès réservé à l'administrateur.";
-  return;
- }
-
- const title=$("projectTitle").value.trim();
- const budgetValue=$("projectBudget").value;
- const imageFile=$("projectImageFile").files[0]||null;
-
- if(!title){
-  $("projectFormMessage").textContent="Veuillez renseigner le titre du projet.";
-  return;
- }
-
- if(imageFile){
-  const allowedTypes=["image/jpeg","image/png","image/webp","image/gif"];
-  if(!allowedTypes.includes(imageFile.type)){
-   $("projectFormMessage").textContent="Format non accepté. Choisissez une image JPG, PNG, WEBP ou GIF.";
-   return;
-  }
-  if(imageFile.size>5*1024*1024){
-   $("projectFormMessage").textContent="L'image ne doit pas dépasser 5 Mo.";
-   return;
-  }
- }
-
- const payload={
-  title,
-  description:$("projectDescription").value.trim()||null,
-  objective:$("projectObjective").value.trim()||null,
-  budget:budgetValue===""?null:Number(budgetValue),
-  status:$("projectStatus").value,
-  image_url:editingProjectImageUrl,
-  start_date:$("projectStartDate").value||null,
-  end_date:$("projectEndDate").value||null,
-  is_published:$("projectPublished").checked
- };
-
- if(payload.budget!==null&&(!Number.isFinite(payload.budget)||payload.budget<0)){
-  $("projectFormMessage").textContent="Le budget doit être un nombre positif ou nul.";
-  return;
- }
-
- if(payload.start_date&&payload.end_date&&payload.end_date<payload.start_date){
-  $("projectFormMessage").textContent="La date de fin ne peut pas précéder la date de début.";
-  return;
- }
-
- const button=$("saveProjectBtn");
- const wasEditing=Boolean(editingProjectId);
- button.disabled=true;
- button.textContent="Enregistrement...";
- $("projectFormMessage").textContent="";
-
- try{
-  if(imageFile){
-   $("projectFormMessage").textContent="Téléversement de l'image...";
-   const extension=(imageFile.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
-   const filePath="projets/"+Date.now()+"-"+crypto.randomUUID()+"."+extension;
-   const {error:uploadError}=await client.storage.from("project-images").upload(filePath,imageFile,{
-    cacheControl:"3600",upsert:false,contentType:imageFile.type
-   });
-   if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
-   const {data:publicUrlData}=client.storage.from("project-images").getPublicUrl(filePath);
-   payload.image_url=publicUrlData?.publicUrl||null;
-   if(!payload.image_url)throw new Error("L'image a été envoyée, mais son adresse publique n'a pas pu être récupérée.");
-  }
-
-  const result=wasEditing
-   ?await client.from("projects").update(payload).eq("id",editingProjectId).select("id")
-   :await client.from("projects").insert(payload).select("id");
-
-  if(result.error)throw result.error;
-  if(!result.data||!result.data.length)throw new Error("Aucun projet n'a été enregistré. Vérifiez les autorisations Supabase.");
-
-  resetProjectForm();
-  $("projectFormMessage").textContent=wasEditing?"Projet modifié avec succès.":"Projet ajouté avec succès.";
-  showMessage(wasEditing?"Projet modifié avec succès.":"Projet ajouté avec succès.","success");
-  await loadProjects();
-
- }catch(error){
-  console.error(error);
-  $("projectFormMessage").textContent="Erreur : "+error.message;
- }finally{
-  button.disabled=false;
-  button.textContent=editingProjectId?"Enregistrer les modifications":"Enregistrer le projet";
- }
+event.preventDefault();if(!isAdmin)return;
+const title=$("projectTitle").value.trim(),budgetValue=$("projectBudget").value,file=$("projectImageFile").files[0]||null;
+if(!title){$("projectFormMessage").textContent="Le titre est obligatoire.";return;}
+if(file&&(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)||file.size>5*1024*1024)){$("projectFormMessage").textContent="Format non accepté ou image supérieure à 5 Mo.";return;}
+const payload={title,description:$("projectDescription").value.trim()||null,objective:$("projectObjective").value.trim()||null,budget:budgetValue===""?null:Number(budgetValue),status:$("projectStatus").value,image_url:editingProjectImageUrl,start_date:$("projectStartDate").value||null,end_date:$("projectEndDate").value||null,is_published:$("projectPublished").checked};
+if(payload.budget!==null&&(!Number.isFinite(payload.budget)||payload.budget<0)){$("projectFormMessage").textContent="Budget invalide.";return;}
+if(payload.start_date&&payload.end_date&&payload.end_date<payload.start_date){$("projectFormMessage").textContent="La date de fin précède la date de début.";return;}
+const button=$("saveProjectBtn"),wasEditing=Boolean(editingProjectId);button.disabled=true;button.textContent="Enregistrement...";
+try{
+if(file){
+$("projectFormMessage").textContent="Téléversement de l'image...";
+const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+const path="projets/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+const {error}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});if(error)throw error;
+payload.image_url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+if(!payload.image_url)throw new Error("Adresse publique de l'image indisponible.");
 }
-
+const result=wasEditing?await client.from("projects").update(payload).eq("id",editingProjectId).select("id"):await client.from("projects").insert(payload).select("id");
+if(result.error)throw result.error;if(!result.data?.length)throw new Error("Aucun projet enregistré. Vérifie les autorisations.");
+resetProjectForm();$("projectFormMessage").textContent=wasEditing?"Projet modifié.":"Projet ajouté.";showMessage($("projectFormMessage").textContent,"success");await loadProjects();
+}catch(error){console.error(error);$("projectFormMessage").textContent="Erreur : "+error.message;}
+finally{button.disabled=false;button.textContent=editingProjectId?"Enregistrer les modifications":"Enregistrer le projet";}
+}
 async function toggleProjectPublication(id){
- const project=projectRows.find(item=>String(item.id)===String(id));
- if(!project)return;
-
- const newValue=!project.is_published;
- if(!confirm(newValue?"Publier ce projet sur le site public ?":"Retirer ce projet du site public ?"))return;
-
- const {data,error}=await client.from("projects")
-  .update({is_published:newValue}).eq("id",id).select("id");
-
- if(error){showMessage("Modification impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
-
- showMessage(newValue?"Projet publié avec succès.":"Projet dépublié avec succès.","success");
- await loadProjects();
+const p=projectRows.find(x=>String(x.id)===String(id));if(!p)return;const next=!p.is_published;
+if(!confirm(next?"Publier ce projet ?":"Dépublier ce projet ?"))return;
+const {data,error}=await client.from("projects").update({is_published:next}).eq("id",id).select("id");
+if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Aucune modification effectuée.");return;}
+showMessage(next?"Projet publié.":"Projet dépublié.","success");await loadProjects();
 }
-
 async function deleteProject(id){
- const project=projectRows.find(item=>String(item.id)===String(id));
- if(!project)return;
-
- if(!confirm("Voulez-vous vraiment supprimer le projet « "+project.title+" » ? Cette opération est définitive."))return;
-
- const {data,error}=await client.from("projects").delete().eq("id",id).select("id");
- if(error){showMessage("Suppression impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucun projet supprimé. Vérifiez les autorisations Supabase.");return;}
-
- if(String(editingProjectId)===String(id))resetProjectForm();
- showMessage("Projet supprimé avec succès.","success");
- await loadProjects();
+const p=projectRows.find(x=>String(x.id)===String(id));if(!p)return;
+if(!confirm("Supprimer définitivement le projet « "+p.title+" » ?"))return;
+const {data,error}=await client.from("projects").delete().eq("id",id).select("id");
+if(error){showMessage("Suppression impossible : "+error.message);return;}if(!data?.length){showMessage("Aucun projet supprimé.");return;}
+if(String(editingProjectId)===String(id))resetProjectForm();showMessage("Projet supprimé.","success");await loadProjects();
 }
 
-/* GESTION DES DOMAINES D'INTERVENTION */
-
+/* DOMAINES ET PHOTOS */
 function renderDomainImageGallery(){
- const gallery=$("domainImageGallery");
- gallery.innerHTML="";
-
- if(editingDomainImageUrl&&!$("domainRemoveImage").checked){
-  const legacy=document.createElement("div");
-  legacy.className="domain-image-item";
-  legacy.innerHTML=`
-   <img src="${safeText(editingDomainImageUrl)}" alt="Ancienne image principale">
-   <button type="button" class="danger" data-legacy-image-remove="true">
-    Retirer cette ancienne image
-   </button>`;
-  gallery.appendChild(legacy);
- }
-
- domainImageRows.forEach(image=>{
-  const item=document.createElement("div");
-  item.className="domain-image-item";
-  item.innerHTML=`
-   <img src="${safeText(image.image_url)}" alt="Photo du domaine">
-   <button type="button" class="danger" data-domain-image-remove="${safeText(image.id)}">
-    Supprimer cette photo
-   </button>`;
-  gallery.appendChild(item);
- });
-
- if(!gallery.children.length){
-  gallery.innerHTML='<p class="locked">Aucune photo enregistrée pour ce domaine.</p>';
- }
+const gallery=$("domainImageGallery");gallery.innerHTML="";
+if(editingDomainImageUrl&&!$("domainRemoveImage").checked){
+const box=document.createElement("div");box.className="domain-image-item";
+box.innerHTML=`<img src="${safeText(editingDomainImageUrl)}" alt="Image principale"><button type="button" class="danger" data-legacy-image-remove="true">Retirer cette image</button>`;gallery.appendChild(box);
 }
-
+domainImageRows.forEach(img=>{
+const box=document.createElement("div");box.className="domain-image-item";
+box.innerHTML=`<img src="${safeText(img.image_url)}" alt="Photo du domaine"><button type="button" class="danger" data-domain-image-remove="${safeText(img.id)}">Supprimer cette photo</button>`;gallery.appendChild(box);
+});
+if(!gallery.children.length)gallery.innerHTML='<p class="locked">Aucune photo enregistrée pour ce domaine.</p>';
+}
 function resetDomainForm(){
- $("domainForm").reset();
- editingDomainId=null;
- editingDomainImageUrl=null;
- domainImageRows=[];
- $("domainImageFiles").value="";
- $("domainImageFileName").textContent="";
- $("domainNewImagePreviews").innerHTML="";
- $("domainImageGallery").innerHTML='<p class="locked">Les photos apparaîtront ici lors de la modification.</p>';
- $("domainRemoveImage").checked=false;
- $("domainOrder").value=String(domainRows.length+1);
- $("domainPublished").checked=true;
- $("domainFormTitle").textContent="Ajouter un domaine";
- $("saveDomainBtn").textContent="Enregistrer le domaine";
- $("cancelDomainEditBtn").hidden=true;
- $("domainFormMessage").textContent="";
+$("domainForm").reset();editingDomainId=null;editingDomainImageUrl=null;domainImageRows=[];
+$("domainImageFiles").value="";$("domainImageFileName").textContent="";$("domainNewImagePreviews").innerHTML="";
+$("domainImageGallery").innerHTML='<p class="locked">Les photos apparaîtront ici lors de la modification.</p>';
+$("domainRemoveImage").checked=false;$("domainOrder").value=String(domainRows.length+1);$("domainPublished").checked=true;
+$("domainFormTitle").textContent="Ajouter un domaine";$("saveDomainBtn").textContent="Enregistrer le domaine";$("cancelDomainEditBtn").hidden=true;$("domainFormMessage").textContent="";
 }
-
 async function loadDomains(){
- const table=$("domainsTable");
- table.innerHTML='<tr><td colspan="6" class="empty">Chargement des domaines...</td></tr>';
-
- const {data,error}=await client.from("intervention_domains")
-  .select("id,title,description,icon,image_url,display_order,is_published,created_at")
-  .order("display_order",{ascending:true})
-  .order("created_at",{ascending:true});
-
- if(error){
-  console.error(error);
-  table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
-  showMessage("Impossible de charger les domaines : "+error.message);
-  return;
- }
-
- domainRows=data||[];
-
- if(domainRows.length){
-  const ids=domainRows.map(item=>item.id);
-  const {data:images,error:imageError}=await client
-   .from("intervention_domain_images")
-   .select("id,domain_id,image_url,display_order,created_at")
-   .in("domain_id",ids)
-   .order("display_order",{ascending:true})
-   .order("created_at",{ascending:true});
-
-  if(imageError){
-   console.error(imageError);
-   table.innerHTML='<tr><td colspan="6" class="empty">Erreur de chargement des photos.</td></tr>';
-   showMessage("Erreur de chargement des photos : "+imageError.message);
-   return;
-  }
-
-  const imageRows=images||[];
-  domainRows=domainRows.map(item=>({
-   ...item,
-   images:imageRows.filter(image=>String(image.domain_id)===String(item.id))
-  }));
- }
-
- if(!domainRows.length){
-  table.innerHTML='<tr><td colspan="6" class="empty">Aucun domaine enregistré.</td></tr>';
-  return;
- }
-
- table.innerHTML=domainRows.map(item=>{
-  const firstImage=item.images?.[0]?.image_url||item.image_url;
-  return `<tr>
-   <td>
-    ${firstImage?`<img class="domain-table-image" src="${safeText(firstImage)}" alt="">`:"—"}
-    ${item.images?.length?`<br><small>${item.images.length} photo(s)</small>`:""}
-   </td>
-   <td><strong>${safeText(item.icon||"")} ${safeText(item.title)}</strong></td>
-   <td>${safeText(item.description)}</td>
-   <td>${safeText(item.display_order)}</td>
-   <td>${item.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td>
-   <td><div class="action-buttons">
-    <button type="button" class="secondary" data-domain-action="edit" data-id="${safeText(item.id)}">Modifier</button>
-    <button type="button" class="approve" data-domain-action="toggle" data-id="${safeText(item.id)}">${item.is_published?"Masquer":"Publier"}</button>
-    <button type="button" class="danger" data-domain-action="delete" data-id="${safeText(item.id)}">Supprimer</button>
-   </div></td>
-  </tr>`;
- }).join("");
+const table=$("domainsTable");table.innerHTML='<tr><td colspan="6" class="empty">Chargement...</td></tr>';
+const {data,error}=await client.from("intervention_domains").select("id,title,description,icon,image_url,display_order,is_published,created_at").order("display_order",{ascending:true}).order("created_at",{ascending:true});
+if(error){console.error(error);table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;showMessage("Chargement des domaines impossible : "+error.message);return;}
+domainRows=data||[];
+if(domainRows.length){
+const ids=domainRows.map(x=>x.id);
+const {data:images,error:imageError}=await client.from("intervention_domain_images").select("id,domain_id,image_url,display_order,created_at").in("domain_id",ids).order("display_order",{ascending:true}).order("created_at",{ascending:true});
+if(imageError){console.error(imageError);table.innerHTML='<tr><td colspan="6" class="empty">Erreur de chargement des photos.</td></tr>';showMessage(imageError.message);return;}
+domainRows=domainRows.map(x=>({...x,images:(images||[]).filter(img=>String(img.domain_id)===String(x.id))}));
 }
-
+if(!domainRows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun domaine enregistré.</td></tr>';return;}
+table.innerHTML=domainRows.map(x=>{
+const first=x.images?.[0]?.image_url||x.image_url;
+return `<tr><td>${first?`<img class="domain-table-image" src="${safeText(first)}" alt="">`:"—"}${x.images?.length?`<br><small>${x.images.length} photo(s)</small>`:""}</td><td><strong>${safeText(x.icon||"")} ${safeText(x.title)}</strong></td><td>${safeText(x.description)}</td><td>${safeText(x.display_order)}</td><td>${x.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td><td><div class="action-buttons"><button type="button" class="secondary" data-domain-action="edit" data-id="${safeText(x.id)}">Modifier</button><button type="button" class="approve" data-domain-action="toggle" data-id="${safeText(x.id)}">${x.is_published?"Masquer":"Publier"}</button><button type="button" class="danger" data-domain-action="delete" data-id="${safeText(x.id)}">Supprimer</button></div></td></tr>`;
+}).join("");
+}
 function editDomain(id){
- const item=domainRows.find(row=>String(row.id)===String(id));
- if(!item)return;
-
- editingDomainId=item.id;
- editingDomainImageUrl=item.image_url||null;
- domainImageRows=[...(item.images||[])];
-
- $("domainTitle").value=item.title||"";
- $("domainIcon").value=item.icon||"";
- $("domainDescription").value=item.description||"";
- $("domainOrder").value=item.display_order??1;
- $("domainPublished").checked=Boolean(item.is_published);
- $("domainImageFiles").value="";
- $("domainNewImagePreviews").innerHTML="";
- $("domainImageFileName").textContent="Tu peux ajouter d'autres photos sans supprimer les anciennes.";
- $("domainRemoveImage").checked=false;
-
- renderDomainImageGallery();
-
- $("domainFormTitle").textContent="Modifier le domaine";
- $("saveDomainBtn").textContent="Enregistrer les modifications";
- $("cancelDomainEditBtn").hidden=false;
- $("domainsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+const x=domainRows.find(y=>String(y.id)===String(id));if(!x)return;
+editingDomainId=x.id;editingDomainImageUrl=x.image_url||null;domainImageRows=[...(x.images||[])];
+$("domainTitle").value=x.title||"";$("domainIcon").value=x.icon||"";$("domainDescription").value=x.description||"";$("domainOrder").value=x.display_order??1;
+$("domainPublished").checked=Boolean(x.is_published);$("domainImageFiles").value="";$("domainNewImagePreviews").innerHTML="";
+$("domainImageFileName").textContent="Tu peux ajouter d'autres photos sans supprimer les anciennes.";$("domainRemoveImage").checked=false;
+renderDomainImageGallery();$("domainFormTitle").textContent="Modifier le domaine";$("saveDomainBtn").textContent="Enregistrer les modifications";$("cancelDomainEditBtn").hidden=false;
+$("domainsPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
-async function removeDomainImage(imageId){
- if(!isAdmin)return;
- if(!confirm("Supprimer définitivement cette photo du domaine ?"))return;
-
- const {data,error}=await client.from("intervention_domain_images")
-  .delete().eq("id",imageId).select("id");
-
- if(error){
-  showMessage("Suppression de la photo impossible : "+error.message);
-  return;
- }
-
- if(!data||!data.length){
-  showMessage("La photo n'a pas été supprimée. Vérifie les autorisations Supabase.");
-  return;
- }
-
- domainImageRows=domainImageRows.filter(image=>String(image.id)!==String(imageId));
- renderDomainImageGallery();
- showMessage("Photo supprimée avec succès.","success");
- await loadDomains();
+async function removeDomainImage(id){
+if(!confirm("Supprimer définitivement cette photo ?"))return;
+const {data,error}=await client.from("intervention_domain_images").delete().eq("id",id).select("id");
+if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Photo non supprimée. Vérifie les autorisations.");return;}
+domainImageRows=domainImageRows.filter(x=>String(x.id)!==String(id));renderDomainImageGallery();showMessage("Photo supprimée.","success");await loadDomains();
 }
-
 async function saveDomain(event){
- event.preventDefault();
-
- if(!isAdmin){
-  $("domainFormMessage").textContent="Accès réservé à l'administrateur.";
-  return;
- }
-
- const files=Array.from($("domainImageFiles").files||[]);
- const title=$("domainTitle").value.trim();
- const description=$("domainDescription").value.trim();
- const order=Number($("domainOrder").value);
-
- if(!title||!description){
-  $("domainFormMessage").textContent="Le titre et la description sont obligatoires.";
-  return;
- }
-
- if(!Number.isInteger(order)||order<0){
-  $("domainFormMessage").textContent="L'ordre doit être un nombre entier positif ou nul.";
-  return;
- }
-
- const allowedTypes=["image/jpeg","image/png","image/webp","image/gif"];
-
- for(const file of files){
-  if(!allowedTypes.includes(file.type)){
-   $("domainFormMessage").textContent="Format non accepté pour "+file.name+". Choisis JPG, PNG, WEBP ou GIF.";
-   return;
-  }
-  if(file.size>5*1024*1024){
-   $("domainFormMessage").textContent="La photo "+file.name+" dépasse la limite de 5 Mo.";
-   return;
-  }
- }
-
- const button=$("saveDomainBtn");
- const wasEditing=Boolean(editingDomainId);
- button.disabled=true;
- button.textContent="Enregistrement...";
- $("domainFormMessage").textContent="";
-
- try{
-  const payload={
-   title,
-   description,
-   icon:$("domainIcon").value.trim()||null,
-   display_order:order,
-   image_url:$("domainRemoveImage").checked?null:editingDomainImageUrl,
-   is_published:$("domainPublished").checked
-  };
-
-  let domainId=editingDomainId;
-
-  if(wasEditing){
-   const {data,error}=await client.from("intervention_domains")
-    .update(payload).eq("id",editingDomainId).select("id");
-   if(error)throw error;
-   if(!data||!data.length)throw new Error("Le domaine n'a pas été modifié. Vérifie les autorisations.");
-  }else{
-   const {data,error}=await client.from("intervention_domains")
-    .insert(payload).select("id");
-   if(error)throw error;
-   if(!data||!data.length)throw new Error("Le domaine n'a pas été créé.");
-   domainId=data[0].id;
-  }
-
-  if(files.length){
-   const imagePayload=[];
-
-   for(let index=0;index<files.length;index++){
-    const file=files[index];
-    $("domainFormMessage").textContent="Envoi de la photo "+(index+1)+" sur "+files.length+"...";
-
-    const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
-    const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
-
-    const {error:uploadError}=await client.storage.from("project-images")
-     .upload(path,file,{
-      cacheControl:"3600",
-      upsert:false,
-      contentType:file.type
-     });
-
-    if(uploadError)throw new Error("Envoi de "+file.name+" impossible : "+uploadError.message);
-
-    const publicUrl=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
-    if(!publicUrl)throw new Error("Impossible de récupérer l'adresse de "+file.name);
-
-    imagePayload.push({
-     domain_id:domainId,
-     image_url:publicUrl,
-     display_order:domainImageRows.length+index+1
-    });
-   }
-
-   const {error:imageInsertError}=await client
-    .from("intervention_domain_images").insert(imagePayload);
-
-   if(imageInsertError)throw imageInsertError;
-  }
-
-  const successMessage=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
-
-  resetDomainForm();
-  $("domainFormMessage").textContent=successMessage;
-  showMessage(successMessage,"success");
-  await loadDomains();
-
- }catch(error){
-  console.error(error);
-  $("domainFormMessage").textContent="Erreur : "+error.message;
- }finally{
-  button.disabled=false;
-  button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";
- }
+event.preventDefault();if(!isAdmin)return;
+const files=Array.from($("domainImageFiles").files||[]),title=$("domainTitle").value.trim(),description=$("domainDescription").value.trim(),order=Number($("domainOrder").value);
+if(!title||!description){$("domainFormMessage").textContent="Titre et description obligatoires.";return;}
+if(!Number.isInteger(order)||order<0){$("domainFormMessage").textContent="Ordre invalide.";return;}
+for(const f of files){if(!["image/jpeg","image/png","image/webp","image/gif"].includes(f.type)||f.size>5*1024*1024){$("domainFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo : "+f.name;return;}}
+const button=$("saveDomainBtn"),wasEditing=Boolean(editingDomainId);button.disabled=true;button.textContent="Enregistrement...";
+try{
+const payload={title,description,icon:$("domainIcon").value.trim()||null,display_order:order,image_url:$("domainRemoveImage").checked?null:editingDomainImageUrl,is_published:$("domainPublished").checked};
+let domainId=editingDomainId;
+if(wasEditing){
+const {data,error}=await client.from("intervention_domains").update(payload).eq("id",editingDomainId).select("id");if(error)throw error;if(!data?.length)throw new Error("Domaine non modifié.");
+}else{
+const {data,error}=await client.from("intervention_domains").insert(payload).select("id");if(error)throw error;if(!data?.length)throw new Error("Domaine non créé.");domainId=data[0].id;
 }
-
+if(files.length){
+const imagePayload=[];
+for(let i=0;i<files.length;i++){
+const f=files[i];$("domainFormMessage").textContent=`Envoi de la photo ${i+1} sur ${files.length}...`;
+const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+const {error}=await client.storage.from("project-images").upload(path,f,{cacheControl:"3600",upsert:false,contentType:f.type});if(error)throw error;
+const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;if(!url)throw new Error("Adresse publique indisponible pour "+f.name);
+imagePayload.push({domain_id:domainId,image_url:url,display_order:domainImageRows.length+i+1});
+}
+const {error:imageError}=await client.from("intervention_domain_images").insert(imagePayload);if(imageError)throw imageError;
+if(imagePayload.length){
+const {error:mainError}=await client.from("intervention_domains").update({image_url:imagePayload[0].image_url}).eq("id",domainId);
+if(mainError)throw mainError;
+}
+}
+const msg=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
+resetDomainForm();$("domainFormMessage").textContent=msg;showMessage(msg,"success");await loadDomains();
+}catch(error){console.error(error);$("domainFormMessage").textContent="Erreur : "+error.message;}
+finally{button.disabled=false;button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";}
+}
 async function toggleDomain(id){
- const item=domainRows.find(row=>String(row.id)===String(id));
- if(!item)return;
-
- const next=!item.is_published;
- if(!confirm(next?"Publier ce domaine sur la page d'accueil ?":"Masquer ce domaine de la page d'accueil ?"))return;
-
- const {data,error}=await client.from("intervention_domains")
-  .update({is_published:next}).eq("id",id).select("id");
-
- if(error){showMessage("Modification impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
-
- showMessage(next?"Domaine publié avec succès.":"Domaine masqué avec succès.","success");
- await loadDomains();
+const x=domainRows.find(y=>String(y.id)===String(id));if(!x)return;const next=!x.is_published;
+if(!confirm(next?"Publier ce domaine ?":"Masquer ce domaine ?"))return;
+const {data,error}=await client.from("intervention_domains").update({is_published:next}).eq("id",id).select("id");
+if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Aucune modification.");return;}
+showMessage(next?"Domaine publié.":"Domaine masqué.","success");await loadDomains();
 }
-
 async function deleteDomain(id){
- const item=domainRows.find(row=>String(row.id)===String(id));
- if(!item)return;
-
- if(!confirm("Supprimer définitivement le domaine « "+item.title+" » et toutes ses photos ?"))return;
-
- const {data,error}=await client.from("intervention_domains")
-  .delete().eq("id",id).select("id");
-
- if(error){showMessage("Suppression impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucun domaine supprimé. Vérifie les autorisations.");return;}
-
- if(String(editingDomainId)===String(id))resetDomainForm();
-
- showMessage("Domaine et photos associés supprimés avec succès.","success");
- await loadDomains();
+const x=domainRows.find(y=>String(y.id)===String(id));if(!x)return;
+if(!confirm("Supprimer définitivement « "+x.title+" » et ses photos ?"))return;
+const {data,error}=await client.from("intervention_domains").delete().eq("id",id).select("id");
+if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Domaine non supprimé.");return;}
+if(String(editingDomainId)===String(id))resetDomainForm();showMessage("Domaine supprimé.","success");await loadDomains();
 }
 
 /* COTISATIONS */
 async function loadCotisationMembers(){
- if(!canManageCotisations)return;
-
- const select=$("cotMember");
- select.innerHTML='<option value="">Chargement des membres...</option>';
-
- const {data,error}=await client.from("profiles")
-  .select("id,full_name").eq("status","active").order("full_name",{ascending:true});
-
- if(error){
-  select.innerHTML='<option value="">Impossible de charger les membres</option>';
-  showMessage("Chargement des membres impossible : "+error.message);
-  return;
- }
-
- if(!data||!data.length){
-  select.innerHTML='<option value="">Aucun membre actif trouvé</option>';
-  return;
- }
-
- select.innerHTML='<option value="">Sélectionner un membre</option>'+
-  data.map(member=>`<option value="${safeText(member.id)}">${safeText(member.full_name||"Membre sans nom")}</option>`).join("");
+if(!canManageCotisations)return;const select=$("cotMember");select.innerHTML='<option value="">Chargement...</option>';
+const {data,error}=await client.from("profiles").select("id,full_name").eq("status","active").order("full_name",{ascending:true});
+if(error){select.innerHTML='<option value="">Erreur de chargement</option>';showMessage(error.message);return;}
+if(!data?.length){select.innerHTML='<option value="">Aucun membre actif</option>';return;}
+select.innerHTML='<option value="">Sélectionner un membre</option>'+data.map(m=>`<option value="${safeText(m.id)}">${safeText(m.full_name||"Membre sans nom")}</option>`).join("");
 }
-
 async function loadCotisations(){
- const table=$("cotisationsTable");
- $("cotisationsMessage").textContent="Chargement des cotisations...";
- table.innerHTML="";
-
- const {data,error}=await client.from("cotisations")
-  .select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)")
-  .order("date_paiement",{ascending:false});
-
- if(error){
-  $("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;
-  table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';
-  console.error(error);
-  return;
- }
-
- cotisationRows=data||[];
- const confirmed=cotisationRows.filter(row=>row.statut==="confirmee");
- const waiting=cotisationRows.filter(row=>row.statut==="en_attente");
-
- $("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((sum,row)=>sum+Number(row.montant||0),0));
- $("cotTotalAttente").textContent=formatFCFA(waiting.reduce((sum,row)=>sum+Number(row.montant||0),0));
- $("cotNombre").textContent=String(cotisationRows.length);
-
- if(!cotisationRows.length){
-  $("cotisationsMessage").textContent="Aucune cotisation enregistrée pour le moment.";
-  table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';
-  return;
- }
-
- $("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregistrée(s).";
-
- table.innerHTML=cotisationRows.map(row=>{
-  const memberName=row.profiles?.full_name||"Membre";
-  const actions=canManageCotisations
-   ?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(row.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(row.id)}">Supprimer</button></div></td>`
-   :"";
-
-  return `<tr>
-   <td>${safeText(memberName)}</td>
-   <td>${safeText(row.periode)}</td>
-   <td>${formatFCFA(row.montant)}</td>
-   <td>${formatDate(row.date_paiement)}</td>
-   <td>${safeText(row.mode_paiement||"—")}</td>
-   <td>${cotStatusLabel(row.statut)}</td>
-   ${actions}
-  </tr>`;
- }).join("");
+const table=$("cotisationsTable");$("cotisationsMessage").textContent="Chargement...";table.innerHTML="";
+const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
+if(error){$("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';console.error(error);return;}
+cotisationRows=data||[];const confirmed=cotisationRows.filter(x=>x.statut==="confirmee"),waiting=cotisationRows.filter(x=>x.statut==="en_attente");
+$("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));
+$("cotTotalAttente").textContent=formatFCFA(waiting.reduce((s,x)=>s+Number(x.montant||0),0));$("cotNombre").textContent=String(cotisationRows.length);
+if(!cotisationRows.length){$("cotisationsMessage").textContent="Aucune cotisation enregistrée.";table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';return;}
+$("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregistrée(s).";
+table.innerHTML=cotisationRows.map(r=>{
+const actions=canManageCotisations?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(r.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(r.id)}">Supprimer</button></div></td>`:"";
+return `<tr><td>${safeText(r.profiles?.full_name||"Membre")}</td><td>${safeText(r.periode)}</td><td>${formatFCFA(r.montant)}</td><td>${formatDate(r.date_paiement)}</td><td>${safeText(r.mode_paiement||"—")}</td><td>${cotStatusLabel(r.statut)}</td>${actions}</tr>`;
+}).join("");
 }
-
 function resetCotisationForm(){
- $("cotisationForm").reset();
- editingCotisationId=null;
- $("cotisationFormTitle").textContent="Enregistrer une cotisation";
- $("saveCotisationBtn").textContent="Enregistrer la cotisation";
- $("cancelCotisationEditBtn").hidden=true;
- $("cotDate").value=new Date().toISOString().slice(0,10);
- $("cotisationFormMessage").textContent="";
+$("cotisationForm").reset();editingCotisationId=null;$("cotisationFormTitle").textContent="Enregistrer une cotisation";$("saveCotisationBtn").textContent="Enregistrer la cotisation";$("cancelCotisationEditBtn").hidden=true;$("cotDate").value=getLocalDate();$("cotisationFormMessage").textContent="";
 }
-
 function editCotisation(id){
- if(!canManageCotisations)return;
- const row=cotisationRows.find(item=>String(item.id)===String(id));
- if(!row)return;
-
- editingCotisationId=row.id;
- $("cotMember").value=row.member_id;
- $("cotAmount").value=row.montant;
- $("cotPeriod").value=row.periode||"";
- $("cotDate").value=row.date_paiement||"";
- $("cotMode").value=row.mode_paiement||"Espèces";
- $("cotStatus").value=row.statut||"confirmee";
- $("cotDescription").value=row.description||"";
-
- $("cotisationFormTitle").textContent="Modifier une cotisation";
- $("saveCotisationBtn").textContent="Enregistrer les modifications";
- $("cancelCotisationEditBtn").hidden=false;
- $("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
+if(!canManageCotisations)return;const r=cotisationRows.find(x=>String(x.id)===String(id));if(!r)return;
+editingCotisationId=r.id;$("cotMember").value=r.member_id;$("cotAmount").value=r.montant;$("cotPeriod").value=r.periode||"";$("cotDate").value=r.date_paiement||"";$("cotMode").value=r.mode_paiement||"Espèces";$("cotStatus").value=r.statut||"confirmee";$("cotDescription").value=r.description||"";
+$("cotisationFormTitle").textContent="Modifier une cotisation";$("saveCotisationBtn").textContent="Enregistrer les modifications";$("cancelCotisationEditBtn").hidden=false;$("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
 async function saveCotisation(event){
- event.preventDefault();
-
- if(!canManageCotisations){
-  $("cotisationFormMessage").textContent="Vous n'êtes pas autorisé à enregistrer des cotisations.";
-  return;
- }
-
- const payload={
-  member_id:$("cotMember").value,
-  montant:Number($("cotAmount").value),
-  periode:$("cotPeriod").value.trim(),
-  date_paiement:$("cotDate").value,
-  mode_paiement:$("cotMode").value,
-  statut:$("cotStatus").value,
-  description:$("cotDescription").value.trim()||null
- };
-
- if(!payload.member_id||!payload.montant||payload.montant<=0||!payload.periode||!payload.date_paiement){
-  $("cotisationFormMessage").textContent="Veuillez renseigner le membre, un montant positif, la période et la date.";
-  return;
- }
-
- const button=$("saveCotisationBtn");
- button.disabled=true;
- button.textContent="Enregistrement...";
- $("cotisationFormMessage").textContent="";
- const wasEditing=Boolean(editingCotisationId);
-
- try{
-  const result=wasEditing
-   ?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id")
-   :await client.from("cotisations").insert(payload).select("id");
-
-  if(result.error)throw result.error;
-  if(!result.data||!result.data.length)throw new Error("Aucune cotisation n'a été enregistrée. Vérifiez les autorisations Supabase.");
-
-  $("cotisationFormMessage").textContent=wasEditing?"Cotisation modifiée avec succès.":"Cotisation enregistrée avec succès.";
-  resetCotisationForm();
-  await loadCotisations();
-
- }catch(error){
-  $("cotisationFormMessage").textContent="Erreur : "+error.message;
- }finally{
-  button.disabled=false;
-  button.textContent="Enregistrer la cotisation";
- }
+event.preventDefault();if(!canManageCotisations)return;
+const payload={member_id:$("cotMember").value,montant:Number($("cotAmount").value),periode:$("cotPeriod").value.trim(),date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
+if(!payload.member_id||!Number.isFinite(payload.montant)||payload.montant<=0||!payload.periode||!payload.date_paiement){$("cotisationFormMessage").textContent="Renseigne le membre, un montant positif, la période et la date.";return;}
+const button=$("saveCotisationBtn"),wasEditing=Boolean(editingCotisationId);button.disabled=true;button.textContent="Enregistrement...";
+try{
+const result=wasEditing?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id"):await client.from("cotisations").insert(payload).select("id");
+if(result.error)throw result.error;if(!result.data?.length)throw new Error("Aucune cotisation enregistrée. Vérifie les autorisations.");
+resetCotisationForm();showMessage(wasEditing?"Cotisation modifiée.":"Cotisation enregistrée.","success");await loadCotisations();
+}catch(error){$("cotisationFormMessage").textContent="Erreur : "+error.message;}
+finally{button.disabled=false;button.textContent=editingCotisationId?"Enregistrer les modifications":"Enregistrer la cotisation";}
 }
-
 async function deleteCotisation(id){
- if(!canManageCotisations)return;
- if(!confirm("Voulez-vous vraiment supprimer cette cotisation ?"))return;
-
- const {data,error}=await client.from("cotisations").delete().eq("id",id).select("id");
-
- if(error){showMessage("Suppression impossible : "+error.message);return;}
- if(!data||!data.length){showMessage("Aucune cotisation supprimée. Vérifiez les autorisations Supabase.");return;}
-
- showMessage("Cotisation supprimée avec succès.","success");
- await loadCotisations();
+if(!canManageCotisations||!confirm("Supprimer cette cotisation ?"))return;
+const {data,error}=await client.from("cotisations").delete().eq("id",id).select("id");
+if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Aucune cotisation supprimée.");return;}
+showMessage("Cotisation supprimée.","success");await loadCotisations();
 }
 
-/* ACTUALISATION DU TABLEAU */
+/* ACTUALISATION */
 async function loadDashboard(){
- hideMessage();
-
- if(isAdmin){
-  await Promise.all([
-   loadMembersCount(),
-   loadRequests(),
-   loadProjects(),
-   loadDomains(),
-   loadOptionalCount("news","newsCount"),
-   loadProfiles(),
-   loadBanner()
-  ]);
- }
-
- if(canManageSupport){
-  await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
- }
+hideMessage();
+if(isAdmin)await Promise.all([loadMembersCount(),loadRequests(),loadProjects(),loadDomains(),loadOptionalCount("news","newsCount"),loadProfiles(),loadBanner()]);
+if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
 }
 
-/* ÉVÉNEMENTS DE LA BANNIÈRE */
-$("chooseBannerImageBtn").addEventListener("click",()=>{
- $("bannerImageFile").click();
-});
-
+/* ÉVÉNEMENTS */
+$("chooseBannerImageBtn").addEventListener("click",()=>$("bannerImageFile").click());
 $("bannerImageFile").addEventListener("change",handleBannerFileChange);
 $("saveBannerBtn").addEventListener("click",saveBanner);
 
-/* ÉVÉNEMENTS */
-$("requestsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-action]");
- if(!button)return;
-
- button.disabled=true;
- try{
-  if(button.dataset.action==="approve")await approveRequest(button.dataset.id);
-  if(button.dataset.action==="reject")await rejectRequest(button.dataset.id);
- }finally{
-  button.disabled=false;
- }
+$("requestsTable").addEventListener("click",async e=>{
+const b=e.target.closest("button[data-action]");if(!b)return;b.disabled=true;
+try{if(b.dataset.action==="approve")await approveRequest(b.dataset.id);if(b.dataset.action==="reject")await rejectRequest(b.dataset.id);}
+finally{b.disabled=false;}
 });
-
-$("profilesTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-action='save-function']");
- if(button)await saveFunction(button.dataset.id);
-});
-
+$("profilesTable").addEventListener("click",e=>{const b=e.target.closest("button[data-action='save-function']");if(b)saveFunction(b.dataset.id);});
 $("refreshBtn").addEventListener("click",loadDashboard);
 $("refreshProfilesBtn").addEventListener("click",loadProfiles);
 $("refreshDonationsBtn").addEventListener("click",loadDonations);
@@ -1813,140 +774,66 @@ $("donationsTable").addEventListener("click",handleSupportAction);
 $("partnershipsTable").addEventListener("click",handleSupportAction);
 $("skillsTable").addEventListener("click",handleSupportAction);
 
-/* ÉVÉNEMENTS DES PROJETS */
+/* ÉVÉNEMENTS PROJETS */
 $("chooseProjectImageBtn").addEventListener("click",()=>$("projectImageFile").click());
-
 $("projectImageFile").addEventListener("change",()=>{
- const file=$("projectImageFile").files[0];
- if(!file){
-  $("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
-  return;
- }
- $("projectImageFileName").textContent="Image sélectionnée : "+file.name;
- const preview=$("projectImagePreview");
- preview.src=URL.createObjectURL(file);
- preview.style.display="block";
+const file=$("projectImageFile").files[0];revokePreview(projectPreviewObjectUrl);projectPreviewObjectUrl=null;
+if(!file){$("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée.":"Aucune image.";return;}
+$("projectImageFileName").textContent="Image sélectionnée : "+file.name;
+projectPreviewObjectUrl=URL.createObjectURL(file);$("projectImagePreview").src=projectPreviewObjectUrl;$("projectImagePreview").style.display="block";
 });
-
 $("projectForm").addEventListener("submit",saveProject);
 $("cancelProjectEditBtn").addEventListener("click",resetProjectForm);
 $("refreshProjectsBtn").addEventListener("click",loadProjects);
-
-$("projectsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-project-action]");
- if(!button)return;
-
- const action=button.dataset.projectAction;
- const id=button.dataset.id;
- button.disabled=true;
-
- try{
-  if(action==="edit")editProject(id);
-  if(action==="toggle")await toggleProjectPublication(id);
-  if(action==="delete")await deleteProject(id);
- }finally{
-  button.disabled=false;
- }
+$("projectsTable").addEventListener("click",async e=>{
+const b=e.target.closest("button[data-project-action]");if(!b)return;b.disabled=true;
+try{if(b.dataset.projectAction==="edit")editProject(b.dataset.id);if(b.dataset.projectAction==="toggle")await toggleProjectPublication(b.dataset.id);if(b.dataset.projectAction==="delete")await deleteProject(b.dataset.id);}
+finally{b.disabled=false;}
 });
 
-/* ÉVÉNEMENTS DES DOMAINES */
-$("chooseDomainImagesBtn").addEventListener("click",()=>{
- $("domainImageFiles").click();
-});
-
+/* ÉVÉNEMENTS DOMAINES */
+$("chooseDomainImagesBtn").addEventListener("click",()=>$("domainImageFiles").click());
 $("domainImageFiles").addEventListener("change",()=>{
- const files=Array.from($("domainImageFiles").files||[]);
- const preview=$("domainNewImagePreviews");
- preview.innerHTML="";
-
- if(!files.length){
-  $("domainImageFileName").textContent="";
-  return;
- }
-
- $("domainImageFileName").textContent=files.length+" photo(s) sélectionnée(s).";
-
- files.forEach(file=>{
-  const reader=new FileReader();
-  reader.onload=()=>{
-   const img=document.createElement("img");
-   img.src=reader.result;
-   img.alt=file.name;
-   img.title=file.name;
-   preview.appendChild(img);
-  };
-  reader.readAsDataURL(file);
- });
+const files=Array.from($("domainImageFiles").files||[]),preview=$("domainNewImagePreviews");preview.innerHTML="";
+$("domainImageFileName").textContent=files.length?files.length+" photo(s) sélectionnée(s).":"";
+files.forEach(file=>{const reader=new FileReader();reader.onload=()=>{const img=document.createElement("img");img.src=reader.result;img.alt=file.name;img.title=file.name;preview.appendChild(img);};reader.readAsDataURL(file);});
 });
-
 $("domainRemoveImage").addEventListener("change",renderDomainImageGallery);
-
-$("domainImageGallery").addEventListener("click",async event=>{
- const removeButton=event.target.closest("[data-domain-image-remove]");
- if(removeButton){
-  removeButton.disabled=true;
-  await removeDomainImage(removeButton.dataset.domainImageRemove);
-  return;
- }
-
- const legacyButton=event.target.closest("[data-legacy-image-remove]");
- if(legacyButton){
-  $("domainRemoveImage").checked=true;
-  renderDomainImageGallery();
- }
+$("domainImageGallery").addEventListener("click",async e=>{
+const b=e.target.closest("[data-domain-image-remove]");
+if(b){b.disabled=true;await removeDomainImage(b.dataset.domainImageRemove);return;}
+if(e.target.closest("[data-legacy-image-remove]")){$("domainRemoveImage").checked=true;renderDomainImageGallery();}
 });
-
 $("domainForm").addEventListener("submit",saveDomain);
 $("cancelDomainEditBtn").addEventListener("click",resetDomainForm);
 $("refreshDomainsBtn").addEventListener("click",loadDomains);
-
-$("domainsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-domain-action]");
- if(!button)return;
-
- const action=button.dataset.domainAction;
- const id=button.dataset.id;
- button.disabled=true;
-
- try{
-  if(action==="edit")editDomain(id);
-  if(action==="toggle")await toggleDomain(id);
-  if(action==="delete")await deleteDomain(id);
- }finally{
-  button.disabled=false;
- }
+$("domainsTable").addEventListener("click",async e=>{
+const b=e.target.closest("button[data-domain-action]");if(!b)return;b.disabled=true;
+try{if(b.dataset.domainAction==="edit")editDomain(b.dataset.id);if(b.dataset.domainAction==="toggle")await toggleDomain(b.dataset.id);if(b.dataset.domainAction==="delete")await deleteDomain(b.dataset.id);}
+finally{b.disabled=false;}
 });
 
-/* ÉVÉNEMENTS DES COTISATIONS */
+/* ÉVÉNEMENTS COTISATIONS */
 $("refreshCotisationsBtn").addEventListener("click",loadCotisations);
 $("cotisationForm").addEventListener("submit",saveCotisation);
 $("cancelCotisationEditBtn").addEventListener("click",resetCotisationForm);
-
-$("cotisationsTable").addEventListener("click",async event=>{
- const button=event.target.closest("button[data-cot-action]");
- if(!button)return;
-
- if(button.dataset.cotAction==="edit")editCotisation(button.dataset.id);
- if(button.dataset.cotAction==="delete")await deleteCotisation(button.dataset.id);
+$("cotisationsTable").addEventListener("click",async e=>{
+const b=e.target.closest("button[data-cot-action]");if(!b)return;b.disabled=true;
+try{if(b.dataset.cotAction==="edit")editCotisation(b.dataset.id);if(b.dataset.cotAction==="delete")await deleteCotisation(b.dataset.id);}
+finally{b.disabled=false;}
 });
 
 $("logoutBtn").addEventListener("click",async()=>{
- const {error}=await client.auth.signOut();
- if(error){showMessage("Erreur lors de la déconnexion : "+error.message);return;}
- window.location.href="connexion.html";
+const {error}=await client.auth.signOut();if(error){showMessage("Erreur de déconnexion : "+error.message);return;}window.location.href="connexion.html";
 });
 
 /* DÉMARRAGE */
 if(await checkAccess()){
- if(isAdmin)await loadDashboard();
- else if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
-
- if(canManageCotisations)await loadCotisationMembers();
-
- await loadCotisations();
- resetCotisationForm();
- resetProjectForm();
- resetDomainForm();
+if(isAdmin)await loadDashboard();
+else if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
+if(canManageCotisations)await loadCotisationMembers();
+await loadCotisations();
+resetCotisationForm();resetProjectForm();resetDomainForm();
 }
 })();
 </script>
