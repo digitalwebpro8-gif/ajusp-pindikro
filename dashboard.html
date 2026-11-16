@@ -60,6 +60,10 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:6px;font:inherit;background:white}
 .form-group textarea{min-height:75px;resize:vertical}
 .form-group input[type="checkbox"]{width:auto;margin-right:7px}
+.image-picker{display:inline-flex;align-items:center;gap:8px;background:#f0f5f1;color:var(--dark);border:2px dashed #9ab6a2;padding:12px 16px;border-radius:7px;margin-top:5px}
+.image-picker:hover{background:#e0eee4}
+#projectImageFile{display:none}
+#projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
 .primary{background:var(--green);color:white}
 .secondary{background:#e8eee9;color:var(--dark)}
 .danger{background:var(--red);color:white}
@@ -199,8 +203,12 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
         </div>
 
         <div class="form-group">
-          <label for="projectImage">Lien de l'image du projet</label>
-          <input id="projectImage" type="url" placeholder="https://...">
+          <label>Image du projet</label>
+          <input id="projectImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <button type="button" class="image-picker" id="chooseProjectImageBtn">📷 Choisir une image dans ma galerie</button>
+          <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.</div>
+          <div id="projectImageFileName" class="locked" aria-live="polite"></div>
+          <img id="projectImagePreview" alt="Aperçu de l'image du projet">
         </div>
       </div>
 
@@ -318,6 +326,7 @@ const $=id=>document.getElementById(id);
 let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false,canManageSupport=false;
 let editingCotisationId=null,cotisationRows=[];
 let editingProjectId=null,projectRows=[];
+let editingProjectImageUrl=null;
 
 const functions=[
  {value:"president",label:"Président"},
@@ -767,6 +776,11 @@ function projectStatusLabel(status){
 function resetProjectForm(){
  $("projectForm").reset();
  editingProjectId=null;
+ editingProjectImageUrl=null;
+ $("projectImageFile").value="";
+ $("projectImageFileName").textContent="";
+ $("projectImagePreview").removeAttribute("src");
+ $("projectImagePreview").style.display="none";
  $("projectFormTitle").textContent="Ajouter un nouveau projet";
  $("saveProjectBtn").textContent="Enregistrer le projet";
  $("cancelProjectEditBtn").hidden=true;
@@ -830,7 +844,16 @@ function editProject(id){
  $("projectStatus").value=project.status||"planned";
  $("projectStartDate").value=project.start_date||"";
  $("projectEndDate").value=project.end_date||"";
- $("projectImage").value=project.image_url||"";
+ editingProjectImageUrl=project.image_url||null;
+ $("projectImageFile").value="";
+ $("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
+ if(editingProjectImageUrl){
+  $("projectImagePreview").src=editingProjectImageUrl;
+  $("projectImagePreview").style.display="block";
+ }else{
+  $("projectImagePreview").removeAttribute("src");
+  $("projectImagePreview").style.display="none";
+ }
  $("projectDescription").value=project.description||"";
  $("projectObjective").value=project.objective||"";
  $("projectPublished").checked=Boolean(project.is_published);
@@ -851,10 +874,23 @@ async function saveProject(event){
 
  const title=$("projectTitle").value.trim();
  const budgetValue=$("projectBudget").value;
+ const imageFile=$("projectImageFile").files[0]||null;
 
  if(!title){
   $("projectFormMessage").textContent="Veuillez renseigner le titre du projet.";
   return;
+ }
+
+ if(imageFile){
+  const allowedTypes=["image/jpeg","image/png","image/webp","image/gif"];
+  if(!allowedTypes.includes(imageFile.type)){
+   $("projectFormMessage").textContent="Format non accepté. Choisissez une image JPG, PNG, WEBP ou GIF.";
+   return;
+  }
+  if(imageFile.size>5*1024*1024){
+   $("projectFormMessage").textContent="L'image ne doit pas dépasser 5 Mo.";
+   return;
+  }
  }
 
  const payload={
@@ -863,7 +899,7 @@ async function saveProject(event){
   objective:$("projectObjective").value.trim()||null,
   budget:budgetValue===""?null:Number(budgetValue),
   status:$("projectStatus").value,
-  image_url:$("projectImage").value.trim()||null,
+  image_url:editingProjectImageUrl,
   start_date:$("projectStartDate").value||null,
   end_date:$("projectEndDate").value||null,
   is_published:$("projectPublished").checked
@@ -886,12 +922,26 @@ async function saveProject(event){
  $("projectFormMessage").textContent="";
 
  try{
+  if(imageFile){
+   $("projectFormMessage").textContent="Téléversement de l'image...";
+   const extension=(imageFile.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+   const filePath="projets/"+Date.now()+"-"+crypto.randomUUID()+"."+extension;
+   const {error:uploadError}=await client.storage.from("project-images").upload(filePath,imageFile,{
+    cacheControl:"3600",
+    upsert:false,
+    contentType:imageFile.type
+   });
+   if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
+   const {data:publicUrlData}=client.storage.from("project-images").getPublicUrl(filePath);
+   payload.image_url=publicUrlData?.publicUrl||null;
+   if(!payload.image_url)throw new Error("L'image a été envoyée, mais son adresse publique n'a pas pu être récupérée.");
+  }
+
   const result=wasEditing
    ?await client.from("projects").update(payload).eq("id",editingProjectId).select("id")
    :await client.from("projects").insert(payload).select("id");
 
   if(result.error)throw result.error;
-
   if(!result.data||!result.data.length){
    throw new Error("Aucun projet n'a été enregistré. Vérifiez les autorisations Supabase.");
   }
@@ -909,7 +959,7 @@ async function saveProject(event){
   $("projectFormMessage").textContent="Erreur : "+error.message;
  }finally{
   button.disabled=false;
-  if(!editingProjectId)button.textContent="Enregistrer le projet";
+  button.textContent=editingProjectId?"Enregistrer les modifications":"Enregistrer le projet";
  }
 }
 
@@ -1184,6 +1234,18 @@ $("partnershipsTable").addEventListener("click",handleSupportAction);
 $("skillsTable").addEventListener("click",handleSupportAction);
 
 /* ÉVÉNEMENTS DES PROJETS */
+$("chooseProjectImageBtn").addEventListener("click",()=>$("projectImageFile").click());
+$("projectImageFile").addEventListener("change",()=>{
+ const file=$("projectImageFile").files[0];
+ if(!file){
+  $("projectImageFileName").textContent=editingProjectImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
+  return;
+ }
+ $("projectImageFileName").textContent="Image sélectionnée : "+file.name;
+ const preview=$("projectImagePreview");
+ preview.src=URL.createObjectURL(file);
+ preview.style.display="block";
+});
 $("projectForm").addEventListener("submit",saveProject);
 $("cancelProjectEditBtn").addEventListener("click",resetProjectForm);
 $("refreshProjectsBtn").addEventListener("click",loadProjects);
