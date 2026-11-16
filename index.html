@@ -299,7 +299,7 @@
     const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
     const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
-    // Charger la bannière enregistrée depuis le tableau de bord.
+    // Charger la bannière principale enregistrée depuis le tableau de bord.
     (async function loadHomeBanner(){
       const hero=document.querySelector(".hero");
       if(!hero)return;
@@ -328,6 +328,35 @@
           '")';
       }catch(error){
         console.error("Erreur de chargement de la bannière AJUSP :",error);
+      }
+    })();
+
+    // Charger l'image de la rubrique « Qui sommes-nous ? » depuis le tableau de bord.
+    (async function loadAboutImage(){
+      const aboutImage=document.querySelector(".about-image");
+      if(!aboutImage)return;
+
+      const defaultImage="banniere-ajusp.jpeg";
+
+      try{
+        const {data,error}=await supabaseClient
+          .from("site_settings")
+          .select("value")
+          .eq("key","about_image")
+          .maybeSingle();
+
+        if(error)throw error;
+
+        const imageUrl=data?.value||defaultImage;
+        const parsedUrl=new URL(imageUrl,window.location.href);
+
+        if(!["http:","https:"].includes(parsedUrl.protocol)){
+          throw new Error("Adresse de l'image invalide.");
+        }
+
+        aboutImage.style.backgroundImage='url("'+parsedUrl.href+'")';
+      }catch(error){
+        console.error("Erreur de chargement de l'image Qui sommes-nous :",error);
       }
     })();
 
