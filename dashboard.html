@@ -64,6 +64,9 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .image-picker:hover{background:#e0eee4}
 #projectImageFile{display:none}
 #projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
+#domainImageFile{display:none}
+#domainImagePreview{display:none;max-width:240px;max-height:160px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
+.domain-table-image{width:72px;height:52px;object-fit:cover;border-radius:6px}
 .primary{background:var(--green);color:white}
 .secondary{background:#e8eee9;color:var(--dark)}
 .danger{background:var(--red);color:white}
@@ -260,6 +263,41 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
     </div>
   </section>
 
+  <!-- GESTION DES DOMAINES D'INTERVENTION -->
+  <section class="panel admin-only" id="domainsPanel">
+    <div class="panel-header">
+      <h2>Gestion des domaines d'intervention</h2>
+      <button class="refresh" id="refreshDomainsBtn" type="button">Actualiser</button>
+    </div>
+    <p>Gère les domaines présentés dans la rubrique « Nos domaines d'intervention » de la page d'accueil.</p>
+    <div class="notice">Les domaines publiés apparaissent automatiquement sur le site public. Tu peux les modifier, les masquer ou les supprimer sans toucher au code.</div>
+    <h3 id="domainFormTitle">Ajouter un domaine</h3>
+    <form id="domainForm">
+      <div class="form-grid">
+        <div class="form-group"><label for="domainTitle">Titre du domaine *</label><input id="domainTitle" type="text" maxlength="150" required placeholder="Ex. : Éducation et formation"></div>
+        <div class="form-group"><label for="domainIcon">Icône ou symbole</label><input id="domainIcon" type="text" maxlength="12" placeholder="Ex. : 🎓"></div>
+        <div class="form-group"><label for="domainOrder">Ordre d'affichage</label><input id="domainOrder" type="number" min="0" step="1" value="1"></div>
+      </div>
+      <div class="form-group"><label for="domainDescription">Description du domaine *</label><textarea id="domainDescription" maxlength="1200" required placeholder="Décris les actions que l'AJUSP souhaite mener dans ce domaine..."></textarea></div>
+      <div class="form-group">
+        <label>Image illustrative (facultative)</label>
+        <input id="domainImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        <button type="button" class="image-picker" id="chooseDomainImageBtn">📷 Choisir une image dans ma galerie</button>
+        <div class="locked">Formats acceptés : JPG, PNG, WEBP et GIF. Taille maximale : 5 Mo.</div>
+        <div id="domainImageFileName" class="locked" aria-live="polite"></div>
+        <img id="domainImagePreview" alt="Aperçu de l'image du domaine">
+        <label style="display:block;margin-top:9px;font-size:13px"><input id="domainRemoveImage" type="checkbox" style="width:auto"> Retirer l'image actuelle</label>
+      </div>
+      <div class="form-group"><label><input id="domainPublished" type="checkbox" checked> Publier ce domaine sur la page d'accueil</label></div>
+      <div class="action-buttons"><button type="submit" class="primary" id="saveDomainBtn">Enregistrer le domaine</button><button type="button" class="secondary" id="cancelDomainEditBtn" hidden>Annuler</button></div>
+      <p id="domainFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+    </form>
+    <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+    <h3>Domaines enregistrés</h3>
+    <div class="table-wrap"><table><thead><tr><th>Image</th><th>Domaine</th><th>Description</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr></thead>
+      <tbody id="domainsTable"><tr><td colspan="6" class="empty">Chargement des domaines...</td></tr></tbody></table></div>
+  </section>
+
   <!-- GESTION DES COTISATIONS -->
   <section class="panel" id="cotisationsPanel">
     <div class="panel-header"><h2>Gestion des cotisations</h2><button class="refresh" id="refreshCotisationsBtn" type="button">Actualiser</button></div>
@@ -327,6 +365,7 @@ let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=f
 let editingCotisationId=null,cotisationRows=[];
 let editingProjectId=null,projectRows=[];
 let editingProjectImageUrl=null;
+let editingDomainId=null,domainRows=[],editingDomainImageUrl=null;
 
 const functions=[
  {value:"president",label:"Président"},
@@ -1019,6 +1058,130 @@ async function deleteProject(id){
  await loadProjects();
 }
 
+/* GESTION DES DOMAINES D'INTERVENTION */
+function resetDomainForm(){
+  $("domainForm").reset();
+  editingDomainId=null;
+  editingDomainImageUrl=null;
+  $("domainImageFile").value="";
+  $("domainImageFileName").textContent="";
+  $("domainImagePreview").removeAttribute("src");
+  $("domainImagePreview").style.display="none";
+  $("domainRemoveImage").checked=false;
+  $("domainOrder").value=String(domainRows.length+1);
+  $("domainPublished").checked=true;
+  $("domainFormTitle").textContent="Ajouter un domaine";
+  $("saveDomainBtn").textContent="Enregistrer le domaine";
+  $("cancelDomainEditBtn").hidden=true;
+  $("domainFormMessage").textContent="";
+}
+
+async function loadDomains(){
+  const table=$("domainsTable");
+  table.innerHTML='<tr><td colspan="6" class="empty">Chargement des domaines...</td></tr>';
+  const {data,error}=await client.from("intervention_domains")
+    .select("id,title,description,icon,image_url,display_order,is_published,created_at")
+    .order("display_order",{ascending:true}).order("created_at",{ascending:true});
+  if(error){
+    console.error(error);
+    table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;
+    showMessage("Impossible de charger les domaines : "+error.message);
+    return;
+  }
+  domainRows=data||[];
+  if(!domainRows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun domaine enregistré.</td></tr>';return;}
+  table.innerHTML=domainRows.map(item=>`<tr>
+    <td>${item.image_url?`<img class="domain-table-image" src="${safeText(item.image_url)}" alt="">`:"—"}</td>
+    <td><strong>${safeText(item.icon||"")} ${safeText(item.title)}</strong></td>
+    <td>${safeText(item.description)}</td>
+    <td>${safeText(item.display_order)}</td>
+    <td>${item.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td>
+    <td><div class="action-buttons">
+      <button type="button" class="secondary" data-domain-action="edit" data-id="${safeText(item.id)}">Modifier</button>
+      <button type="button" class="approve" data-domain-action="toggle" data-id="${safeText(item.id)}">${item.is_published?"Masquer":"Publier"}</button>
+      <button type="button" class="danger" data-domain-action="delete" data-id="${safeText(item.id)}">Supprimer</button>
+    </div></td></tr>`).join("");
+}
+
+function editDomain(id){
+  const item=domainRows.find(row=>String(row.id)===String(id));
+  if(!item)return;
+  editingDomainId=item.id;
+  editingDomainImageUrl=item.image_url||null;
+  $("domainTitle").value=item.title||"";
+  $("domainIcon").value=item.icon||"";
+  $("domainDescription").value=item.description||"";
+  $("domainOrder").value=item.display_order??1;
+  $("domainPublished").checked=Boolean(item.is_published);
+  $("domainImageFile").value="";
+  $("domainRemoveImage").checked=false;
+  $("domainImageFileName").textContent=editingDomainImageUrl?"Image actuelle conservée si aucune nouvelle image n'est choisie.":"Aucune image sélectionnée.";
+  if(editingDomainImageUrl){$("domainImagePreview").src=editingDomainImageUrl;$("domainImagePreview").style.display="block";}
+  else{$("domainImagePreview").removeAttribute("src");$("domainImagePreview").style.display="none";}
+  $("domainFormTitle").textContent="Modifier le domaine";
+  $("saveDomainBtn").textContent="Enregistrer les modifications";
+  $("cancelDomainEditBtn").hidden=false;
+  $("domainsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function saveDomain(event){
+  event.preventDefault();
+  if(!isAdmin){$("domainFormMessage").textContent="Accès réservé à l'administrateur.";return;}
+  const file=$("domainImageFile").files[0]||null;
+  const title=$("domainTitle").value.trim();
+  const description=$("domainDescription").value.trim();
+  const order=Number($("domainOrder").value);
+  if(!title||!description){$("domainFormMessage").textContent="Le titre et la description sont obligatoires.";return;}
+  if(!Number.isInteger(order)||order<0){$("domainFormMessage").textContent="L'ordre doit être un nombre entier positif ou nul.";return;}
+  if(file){
+    if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)){$("domainFormMessage").textContent="Format non accepté. Choisis JPG, PNG, WEBP ou GIF.";return;}
+    if(file.size>5*1024*1024){$("domainFormMessage").textContent="L'image ne doit pas dépasser 5 Mo.";return;}
+  }
+  const button=$("saveDomainBtn"),wasEditing=Boolean(editingDomainId);
+  button.disabled=true;button.textContent="Enregistrement...";$("domainFormMessage").textContent="";
+  try{
+    let imageUrl=$("domainRemoveImage").checked?null:editingDomainImageUrl;
+    if(file){
+      $("domainFormMessage").textContent="Téléversement de l'image...";
+      const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+      const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+      const {error:uploadError}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+      if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
+      imageUrl=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl||null;
+      if(!imageUrl)throw new Error("Impossible de récupérer l'adresse publique de l'image.");
+    }
+    const payload={title,description,icon:$("domainIcon").value.trim()||null,display_order:order,image_url:imageUrl,is_published:$("domainPublished").checked};
+    const result=wasEditing?await client.from("intervention_domains").update(payload).eq("id",editingDomainId).select("id"):await client.from("intervention_domains").insert(payload).select("id");
+    if(result.error)throw result.error;
+    if(!result.data||!result.data.length)throw new Error("Aucun domaine enregistré. Vérifie les autorisations Supabase.");
+    resetDomainForm();
+    $("domainFormMessage").textContent=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
+    showMessage(wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.","success");
+    await loadDomains();
+  }catch(error){console.error(error);$("domainFormMessage").textContent="Erreur : "+error.message;}
+  finally{button.disabled=false;button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";}
+}
+
+async function toggleDomain(id){
+  const item=domainRows.find(row=>String(row.id)===String(id));if(!item)return;
+  const next=!item.is_published;
+  if(!confirm(next?"Publier ce domaine sur la page d'accueil ?":"Masquer ce domaine de la page d'accueil ?"))return;
+  const {data,error}=await client.from("intervention_domains").update({is_published:next}).eq("id",id).select("id");
+  if(error){showMessage("Modification impossible : "+error.message);return;}
+  if(!data||!data.length){showMessage("Aucune modification effectuée. Vérifie les autorisations.");return;}
+  showMessage(next?"Domaine publié avec succès.":"Domaine masqué avec succès.","success");await loadDomains();
+}
+
+async function deleteDomain(id){
+  const item=domainRows.find(row=>String(row.id)===String(id));if(!item)return;
+  if(!confirm("Supprimer définitivement le domaine « "+item.title+" » ?"))return;
+  const {data,error}=await client.from("intervention_domains").delete().eq("id",id).select("id");
+  if(error){showMessage("Suppression impossible : "+error.message);return;}
+  if(!data||!data.length){showMessage("Aucun domaine supprimé. Vérifie les autorisations.");return;}
+  if(String(editingDomainId)===String(id))resetDomainForm();
+  showMessage("Domaine supprimé avec succès.","success");await loadDomains();
+}
+
 /* COTISATIONS */
 async function loadCotisationMembers(){
  if(!canManageCotisations)return;
@@ -1195,6 +1358,7 @@ async function loadDashboard(){
    loadMembersCount(),
    loadRequests(),
    loadProjects(),
+   loadDomains(),
    loadOptionalCount("news","newsCount"),
    loadProfiles()
   ]);
@@ -1268,6 +1432,24 @@ $("projectsTable").addEventListener("click",async event=>{
  }
 });
 
+/* ÉVÉNEMENTS DES DOMAINES */
+$("chooseDomainImageBtn").addEventListener("click",()=>$("domainImageFile").click());
+$("domainImageFile").addEventListener("change",()=>{
+  const file=$("domainImageFile").files[0];if(!file)return;
+  $("domainImageFileName").textContent="Image sélectionnée : "+file.name;
+  const preview=$("domainImagePreview");preview.src=URL.createObjectURL(file);preview.style.display="block";
+  $("domainRemoveImage").checked=false;
+});
+$("domainForm").addEventListener("submit",saveDomain);
+$("cancelDomainEditBtn").addEventListener("click",resetDomainForm);
+$("refreshDomainsBtn").addEventListener("click",loadDomains);
+$("domainsTable").addEventListener("click",async event=>{
+  const button=event.target.closest("button[data-domain-action]");if(!button)return;
+  const action=button.dataset.domainAction,id=button.dataset.id;button.disabled=true;
+  try{if(action==="edit")editDomain(id);if(action==="toggle")await toggleDomain(id);if(action==="delete")await deleteDomain(id);}
+  finally{button.disabled=false;}
+});
+
 /* ÉVÉNEMENTS DES COTISATIONS */
 $("refreshCotisationsBtn").addEventListener("click",loadCotisations);
 $("cotisationForm").addEventListener("submit",saveCotisation);
@@ -1297,6 +1479,7 @@ if(await checkAccess()){
  await loadCotisations();
  resetCotisationForm();
  resetProjectForm();
+ resetDomainForm();
 }
 })();
 </script>
