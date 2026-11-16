@@ -62,8 +62,22 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .form-group input[type="checkbox"]{width:auto;margin-right:7px}
 .image-picker{display:inline-flex;align-items:center;gap:8px;background:#f0f5f1;color:var(--dark);border:2px dashed #9ab6a2;padding:12px 16px;border-radius:7px;margin-top:5px}
 .image-picker:hover{background:#e0eee4}
-#projectImageFile,#domainImageFiles{display:none}
+#projectImageFile,#domainImageFiles,#bannerImageFile{display:none}
 #projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
+#bannerCurrentPreview,#bannerNewPreview{
+ display:block;
+ width:100%;
+ max-width:850px;
+ max-height:320px;
+ object-fit:cover;
+ border-radius:9px;
+ margin-top:12px;
+ border:1px solid #dce5de;
+ background:#f0f5f1;
+}
+#bannerNewPreview{display:none}
+.banner-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.banner-file-name{margin-top:8px;color:var(--gray);font-size:13px}
 .domain-table-image{width:72px;height:52px;object-fit:cover;border-radius:6px}
 .domain-image-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:15px}
 .domain-image-item{border:1px solid #dce5de;border-radius:8px;padding:8px;background:#f8faf8}
@@ -100,6 +114,51 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
   </div>
 
   <div id="globalMessage" class="message"></div>
+
+  <!-- GESTION DE LA BANNIÈRE D'ACCUEIL -->
+  <section class="panel admin-only" id="bannerPanel">
+    <div class="panel-header">
+      <h2>Gestion de la bannière d'accueil</h2>
+    </div>
+
+    <p>Modifie l'image principale affichée sur la page d'accueil du site AJUSP.</p>
+
+    <div class="notice">
+      Cette rubrique permet uniquement de changer l'image de la bannière.
+      Le titre, le slogan et les autres textes du site ne seront pas modifiés.
+    </div>
+
+    <h3>Image actuellement utilisée</h3>
+    <img
+      id="bannerCurrentPreview"
+      src="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg"
+      alt="Bannière actuelle de l'AJUSP"
+    >
+
+    <hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+
+    <h3>Choisir une nouvelle bannière</h3>
+
+    <input id="bannerImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+
+    <button type="button" class="image-picker" id="chooseBannerImageBtn">
+      📷 Choisir une nouvelle image
+    </button>
+
+    <div class="locked">Formats acceptés : JPG, PNG et WEBP. Taille maximale : 5 Mo.</div>
+
+    <div id="bannerImageFileName" class="banner-file-name" aria-live="polite"></div>
+
+    <img id="bannerNewPreview" alt="Aperçu de la nouvelle bannière">
+
+    <div class="banner-actions">
+      <button type="button" class="primary" id="saveBannerBtn" disabled>
+        Enregistrer la nouvelle bannière
+      </button>
+    </div>
+
+    <p id="bannerFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+  </section>
 
   <section class="cards admin-only">
     <div class="card"><p>Membres actifs</p><span class="number" id="membersCount">...</span></div>
@@ -376,6 +435,12 @@ let editingProjectImageUrl=null;
 let editingDomainId=null,domainRows=[],editingDomainImageUrl=null;
 let domainImageRows=[];
 
+/* VARIABLES DE LA BANNIÈRE */
+const DEFAULT_BANNER_URL="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg";
+let currentBannerUrl=DEFAULT_BANNER_URL;
+let selectedBannerFile=null;
+let bannerPreviewObjectUrl=null;
+
 const functions=[
  {value:"president",label:"Président"},
  {value:"vice_president_1",label:"Premier vice-président"},
@@ -425,6 +490,181 @@ function cotStatusLabel(status){
  if(status==="en_attente")return '<span class="status pending">En attente</span>';
  if(status==="annulee")return '<span class="status rejected">Annulée</span>';
  return safeText(status||"Inconnu");
+}
+
+/* GESTION DE LA BANNIÈRE D'ACCUEIL */
+
+async function loadBanner(){
+ if(!isAdmin)return;
+
+ const preview=$("bannerCurrentPreview");
+ const message=$("bannerFormMessage");
+
+ const {data,error}=await client
+  .from("site_settings")
+  .select("value")
+  .eq("key","home_banner")
+  .maybeSingle();
+
+ if(error){
+  console.error("Erreur de chargement de la bannière :",error);
+  message.textContent="Impossible de charger la bannière : "+error.message;
+  return;
+ }
+
+ currentBannerUrl=data?.value||DEFAULT_BANNER_URL;
+ preview.src=currentBannerUrl;
+}
+
+function handleBannerFileChange(){
+ const file=$("bannerImageFile").files[0]||null;
+ const preview=$("bannerNewPreview");
+ const message=$("bannerFormMessage");
+ const saveButton=$("saveBannerBtn");
+
+ selectedBannerFile=null;
+ saveButton.disabled=true;
+ message.textContent="";
+
+ if(bannerPreviewObjectUrl){
+  URL.revokeObjectURL(bannerPreviewObjectUrl);
+  bannerPreviewObjectUrl=null;
+ }
+
+ if(!file){
+  $("bannerImageFileName").textContent="";
+  preview.removeAttribute("src");
+  preview.style.display="none";
+  return;
+ }
+
+ const allowedTypes=["image/jpeg","image/png","image/webp"];
+
+ if(!allowedTypes.includes(file.type)){
+  $("bannerImageFileName").textContent="";
+  preview.removeAttribute("src");
+  preview.style.display="none";
+  message.textContent="Format non accepté. Choisissez une image JPG, PNG ou WEBP.";
+  $("bannerImageFile").value="";
+  return;
+ }
+
+ if(file.size>5*1024*1024){
+  $("bannerImageFileName").textContent="";
+  preview.removeAttribute("src");
+  preview.style.display="none";
+  message.textContent="L'image dépasse la taille maximale autorisée de 5 Mo.";
+  $("bannerImageFile").value="";
+  return;
+ }
+
+ selectedBannerFile=file;
+ bannerPreviewObjectUrl=URL.createObjectURL(file);
+
+ preview.src=bannerPreviewObjectUrl;
+ preview.style.display="block";
+ $("bannerImageFileName").textContent="Image sélectionnée : "+file.name;
+ saveButton.disabled=false;
+}
+
+async function saveBanner(){
+ if(!isAdmin){
+  showMessage("Seul l'administrateur peut modifier la bannière.");
+  return;
+ }
+
+ const message=$("bannerFormMessage");
+ const button=$("saveBannerBtn");
+ const file=selectedBannerFile;
+
+ if(!file){
+  message.textContent="Veuillez d'abord choisir une image.";
+  return;
+ }
+
+ if(file.size>5*1024*1024){
+  message.textContent="L'image dépasse la taille maximale autorisée de 5 Mo.";
+  return;
+ }
+
+ button.disabled=true;
+ button.textContent="Enregistrement...";
+ message.textContent="Téléversement de la nouvelle bannière...";
+
+ let saved=false;
+
+ try{
+  const extensions={
+   "image/jpeg":"jpg",
+   "image/png":"png",
+   "image/webp":"webp"
+  };
+
+  const extension=extensions[file.type];
+
+  if(!extension)throw new Error("Format d'image non accepté.");
+
+  const filePath="banniere/"+Date.now()+"-"+crypto.randomUUID()+"."+extension;
+
+  const {error:uploadError}=await client
+   .storage
+   .from("project-images")
+   .upload(filePath,file,{
+    cacheControl:"3600",
+    upsert:false,
+    contentType:file.type
+   });
+
+  if(uploadError)throw new Error("Envoi de l'image impossible : "+uploadError.message);
+
+  const {data:publicData}=client
+   .storage
+   .from("project-images")
+   .getPublicUrl(filePath);
+
+  const newBannerUrl=publicData?.publicUrl;
+
+  if(!newBannerUrl)throw new Error("Impossible de récupérer l'adresse publique de l'image.");
+
+  message.textContent="Enregistrement du nouveau réglage...";
+
+  const {error:saveError}=await client
+   .from("site_settings")
+   .upsert({
+    key:"home_banner",
+    value:newBannerUrl,
+    updated_at:new Date().toISOString()
+   },{
+    onConflict:"key"
+   });
+
+  if(saveError)throw new Error("Impossible d'enregistrer la bannière : "+saveError.message);
+
+  currentBannerUrl=newBannerUrl;
+  $("bannerCurrentPreview").src=newBannerUrl;
+
+  selectedBannerFile=null;
+  $("bannerImageFile").value="";
+  $("bannerImageFileName").textContent="";
+  $("bannerNewPreview").removeAttribute("src");
+  $("bannerNewPreview").style.display="none";
+
+  if(bannerPreviewObjectUrl){
+   URL.revokeObjectURL(bannerPreviewObjectUrl);
+   bannerPreviewObjectUrl=null;
+  }
+
+  saved=true;
+  message.textContent="La nouvelle bannière a été enregistrée avec succès.";
+  showMessage("La bannière d'accueil a été mise à jour avec succès.","success");
+
+ }catch(error){
+  console.error("Erreur de sauvegarde de la bannière :",error);
+  message.textContent="Erreur : "+error.message;
+ }finally{
+  button.disabled=!selectedBannerFile;
+  button.textContent="Enregistrer la nouvelle bannière";
+ }
 }
 
 /* CONTRÔLE DES ACCÈS */
@@ -1527,7 +1767,8 @@ async function loadDashboard(){
    loadProjects(),
    loadDomains(),
    loadOptionalCount("news","newsCount"),
-   loadProfiles()
+   loadProfiles(),
+   loadBanner()
   ]);
  }
 
@@ -1535,6 +1776,14 @@ async function loadDashboard(){
   await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
  }
 }
+
+/* ÉVÉNEMENTS DE LA BANNIÈRE */
+$("chooseBannerImageBtn").addEventListener("click",()=>{
+ $("bannerImageFile").click();
+});
+
+$("bannerImageFile").addEventListener("change",handleBannerFileChange);
+$("saveBannerBtn").addEventListener("click",saveBanner);
 
 /* ÉVÉNEMENTS */
 $("requestsTable").addEventListener("click",async event=>{
