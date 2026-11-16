@@ -52,6 +52,11 @@
     .card-icon{width:52px;height:52px;background:#E8F2EA;color:var(--vert);border-radius:10px;display:grid;place-items:center;font-size:25px;margin-bottom:17px}
     .card h3{color:var(--bleu);margin-bottom:9px;font-size:18px}
     .card p{font-size:14px;color:var(--gris)}
+    .domain-card{position:relative;overflow:hidden;min-height:210px;display:flex;flex-direction:column}
+    .domain-card-image{width:100%;height:135px;object-fit:cover;border-radius:8px;margin:-7px 0 16px}
+    .domain-card .card-icon{flex:0 0 52px}
+    .domain-card h3{overflow-wrap:anywhere}
+    .domain-empty{grid-column:1/-1;text-align:center;padding:28px;background:#F7F9F6;border-radius:12px;color:var(--gris)}
     .projects{background:#F0F5F0}
     .home-projects-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);gap:22px;align-items:stretch}
     .home-projects-status{grid-column:1/-1;background:#fff;border-radius:12px;padding:28px;text-align:center;color:var(--gris)}
@@ -235,11 +240,8 @@
     </div></section>
     <section class="section domains">
       <div class="section-heading"><span>Nos engagements</span><h2>Nos domaines d'intervention</h2><p>Des actions concrètes pour contribuer au développement durable de notre communauté.</p></div>
-      <div class="cards">
-        <article class="card"><div class="card-icon">🎓</div><h3>Éducation et formation</h3><p>Encourager l'éducation, la formation et l'accompagnement des jeunes.</p></article>
-        <article class="card"><div class="card-icon">🏗️</div><h3>Infrastructures</h3><p>Soutenir les initiatives d'amélioration du cadre de vie du village.</p></article>
-        <article class="card"><div class="card-icon">💼</div><h3>Développement économique</h3><p>Valoriser les potentialités locales et encourager les activités économiques.</p></article>
-        <article class="card"><div class="card-icon">🤝</div><h3>Solidarité communautaire</h3><p>Renforcer l'entraide, la cohésion sociale et l'unité entre les habitants.</p></article>
+      <div class="cards" id="homeDomainsGrid" aria-live="polite">
+        <div class="home-projects-status">Chargement de nos domaines d'intervention...</div>
       </div>
     </section>
 
@@ -301,6 +303,34 @@
 
     const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
     const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+
+    // Domaines d'intervention administrables depuis le tableau de bord.
+    (async function loadHomeDomains(){
+      const area=document.getElementById("homeDomainsGrid");
+      if(!area)return;
+      try{
+        const {data,error}=await supabaseClient.from("intervention_domains")
+          .select("id,title,description,icon,image_url,display_order")
+          .eq("is_published",true)
+          .order("display_order",{ascending:true})
+          .order("created_at",{ascending:true});
+        if(error)throw error;
+        if(!data||!data.length){
+          area.innerHTML='<div class="domain-empty">Nos domaines d’intervention seront présentés ici dès leur publication.</div>';
+          return;
+        }
+        area.innerHTML=data.map(item=>`
+          <article class="card domain-card">
+            ${item.image_url?`<img class="domain-card-image" src="${escapeHTML(item.image_url)}" alt="Illustration : ${escapeHTML(item.title)}" loading="lazy">`:''}
+            ${item.icon?`<div class="card-icon" aria-hidden="true">${escapeHTML(item.icon)}</div>`:''}
+            <h3>${escapeHTML(item.title)}</h3>
+            <p>${escapeHTML(item.description||"")}</p>
+          </article>`).join("");
+      }catch(error){
+        area.innerHTML='<div class="domain-empty">Les domaines d’intervention sont momentanément indisponibles. Veuillez réessayer plus tard.</div>';
+        console.error("Erreur chargement domaines AJUSP:",error);
+      }
+    })();
 
     // Présenter le projet le plus récent en grand, puis jusqu'à trois projets à côté.
     (async function loadHomeProjects(){
