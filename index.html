@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -81,8 +82,6 @@
     .project-small-content h4{font-size:14px;line-height:1.35;color:var(--bleu);margin:7px 0}
     .project-small-content p{font-size:11px;color:var(--gris);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .project-small-meta{font-size:10px;color:var(--gris);margin-top:5px}
-
-    /* Actualités : une actualité principale et trois actualités récentes */
     .news-section{background:#fff}
     .news-feature-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);gap:22px;align-items:stretch}
     .news-feature{position:relative;min-height:440px;border-radius:15px;overflow:hidden;background:linear-gradient(135deg,#10452D,#14263F);color:#fff;box-shadow:0 8px 28px #14263F18}
@@ -113,8 +112,6 @@
     .news-dots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:#c6d1c8;cursor:pointer}
     .news-dots button.active{background:var(--vert);transform:scale(1.25)}
     .news-status{padding:30px;background:var(--fond);border-radius:12px;text-align:center;color:var(--gris);grid-column:1/-1}
-
-    /* Galerie : bloc indépendant, pleine largeur et plus grand */
     .home-gallery-section{margin-top:58px;padding:34px;background:#F7F9F6;border:1px solid #e8eee8;border-radius:16px}
     .home-gallery-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
     .home-gallery-heading .eyebrow{color:var(--vert);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
@@ -302,6 +299,38 @@
     const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
     const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
+    // Charger la bannière enregistrée depuis le tableau de bord.
+    (async function loadHomeBanner(){
+      const hero=document.querySelector(".hero");
+      if(!hero)return;
+
+      const defaultBanner="banniere-ajusp.jpeg";
+
+      try{
+        const {data,error}=await supabaseClient
+          .from("site_settings")
+          .select("value")
+          .eq("key","home_banner")
+          .maybeSingle();
+
+        if(error)throw error;
+
+        const bannerUrl=data?.value||defaultBanner;
+        const parsedUrl=new URL(bannerUrl,window.location.href);
+
+        if(!["http:","https:"].includes(parsedUrl.protocol)){
+          throw new Error("Adresse de bannière invalide.");
+        }
+
+        hero.style.backgroundImage=
+          'linear-gradient(90deg,rgba(10,43,28,.88),rgba(10,43,28,.35)),url("'+
+          parsedUrl.href+
+          '")';
+      }catch(error){
+        console.error("Erreur de chargement de la bannière AJUSP :",error);
+      }
+    })();
+
     // Domaines d'intervention : photos agrandies, sans affichage des icônes.
     (async function loadHomeDomains(){
       const area=document.getElementById("homeDomainsGrid");
@@ -320,12 +349,10 @@
         area.innerHTML=data.map(item=>`
           <article class="card domain-card">
             ${item.image_url?`
-              <img
-                class="domain-card-image"
+              <img class="domain-card-image"
                 src="${escapeHTML(item.image_url)}"
                 alt="Illustration : ${escapeHTML(item.title)}"
-                loading="lazy"
-              >
+                loading="lazy">
             `:''}
             <h3>${escapeHTML(item.title)}</h3>
             <p>${escapeHTML(item.description||"")}</p>
