@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -53,8 +52,7 @@
     .card h3{color:var(--bleu);margin-bottom:9px;font-size:18px}
     .card p{font-size:14px;color:var(--gris)}
     .domain-card{position:relative;overflow:hidden;min-height:210px;display:flex;flex-direction:column}
-    .domain-card-image{width:100%;height:135px;object-fit:cover;border-radius:8px;margin:-7px 0 16px}
-    .domain-card .card-icon{flex:0 0 52px}
+    .domain-card-image{width:100%;height:180px;object-fit:cover;object-position:center;border-radius:8px;margin:-7px 0 16px}
     .domain-card h3{overflow-wrap:anywhere}
     .domain-empty{grid-column:1/-1;text-align:center;padding:28px;background:#F7F9F6;border-radius:12px;color:var(--gris)}
     .projects{background:#F0F5F0}
@@ -304,13 +302,13 @@
     const supabaseClient=window.supabase.createClient("https://pcgshqscsdyyszbjkvjq.supabase.co","sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF");
     const escapeHTML=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 
-    // Domaines d'intervention administrables depuis le tableau de bord.
+    // Domaines d'intervention : photos agrandies, sans affichage des icônes.
     (async function loadHomeDomains(){
       const area=document.getElementById("homeDomainsGrid");
       if(!area)return;
       try{
         const {data,error}=await supabaseClient.from("intervention_domains")
-          .select("id,title,description,icon,image_url,display_order")
+          .select("id,title,description,image_url,display_order")
           .eq("is_published",true)
           .order("display_order",{ascending:true})
           .order("created_at",{ascending:true});
@@ -321,11 +319,18 @@
         }
         area.innerHTML=data.map(item=>`
           <article class="card domain-card">
-            ${item.image_url?`<img class="domain-card-image" src="${escapeHTML(item.image_url)}" alt="Illustration : ${escapeHTML(item.title)}" loading="lazy">`:''}
-            ${item.icon?`<div class="card-icon" aria-hidden="true">${escapeHTML(item.icon)}</div>`:''}
+            ${item.image_url?`
+              <img
+                class="domain-card-image"
+                src="${escapeHTML(item.image_url)}"
+                alt="Illustration : ${escapeHTML(item.title)}"
+                loading="lazy"
+              >
+            `:''}
             <h3>${escapeHTML(item.title)}</h3>
             <p>${escapeHTML(item.description||"")}</p>
-          </article>`).join("");
+          </article>
+        `).join("");
       }catch(error){
         area.innerHTML='<div class="domain-empty">Les domaines d’intervention sont momentanément indisponibles. Veuillez réessayer plus tard.</div>';
         console.error("Erreur chargement domaines AJUSP:",error);
