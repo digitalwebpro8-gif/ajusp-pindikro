@@ -275,6 +275,8 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 <form id="cotisationForm">
 <div class="form-grid">
 <div class="form-group"><label for="cotMember">Membre concerné *</label><select id="cotMember" required><option value="">Chargement des membres...</option></select></div>
+<div class="form-group"><label for="cotNature">Nature de la cotisation *</label><select id="cotNature" required><option value="mensuelle">Cotisation mensuelle</option><option value="exceptionnelle">Cotisation exceptionnelle</option></select></div>
+<div class="form-group" id="cotObjetGroup" hidden><label for="cotObjet">Objet de la cotisation exceptionnelle *</label><textarea id="cotObjet" maxlength="500" placeholder="Précise le motif de cette cotisation exceptionnelle..."></textarea></div>
 <div class="form-group"><label for="cotAmount">Montant (FCFA) *</label><input id="cotAmount" type="number" min="1" step="1" required placeholder="Ex. : 5000"></div>
 <div class="form-group"><label for="cotPeriod">Période concernée *</label><input id="cotPeriod" type="text" maxlength="100" required placeholder="Ex. : Janvier 2026 ou Année 2026"></div>
 <div class="form-group"><label for="cotDate">Date de paiement *</label><input id="cotDate" type="date" required></div>
@@ -289,8 +291,8 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 <h3>Historique des cotisations</h3>
 <div id="cotisationsMessage" class="empty">Chargement des cotisations...</div>
 <div class="table-wrap"><table>
-<thead><tr><th>Membre</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th></tr></thead>
-<tbody id="cotisationsTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody>
+<thead><tr><th>Membre</th><th>Nature</th><th>Objet</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th id="cotActionsHeader" hidden>Actions</th></tr></thead>
+<tbody id="cotisationsTable"><tr><td colspan="9" class="empty">Chargement...</td></tr></tbody>
 </table></div>
 </section>
 
@@ -766,30 +768,41 @@ select.innerHTML='<option value="">Sélectionner un membre</option>'+data.map(m=
 }
 async function loadCotisations(){
 const table=$("cotisationsTable");$("cotisationsMessage").textContent="Chargement...";table.innerHTML="";
-const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
-if(error){$("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;table.innerHTML='<tr><td colspan="7" class="empty">Erreur de chargement.</td></tr>';console.error(error);return;}
+const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,nature,objet,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
+if(error){$("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;table.innerHTML='<tr><td colspan="9" class="empty">Erreur de chargement.</td></tr>';console.error(error);return;}
 cotisationRows=data||[];const confirmed=cotisationRows.filter(x=>x.statut==="confirmee"),waiting=cotisationRows.filter(x=>x.statut==="en_attente");
 $("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));
 $("cotTotalAttente").textContent=formatFCFA(waiting.reduce((s,x)=>s+Number(x.montant||0),0));$("cotNombre").textContent=String(cotisationRows.length);
-if(!cotisationRows.length){$("cotisationsMessage").textContent="Aucune cotisation enregistrée.";table.innerHTML='<tr><td colspan="7" class="empty">Aucune donnée disponible.</td></tr>';return;}
+if(!cotisationRows.length){$("cotisationsMessage").textContent="Aucune cotisation enregistrée.";table.innerHTML='<tr><td colspan="9" class="empty">Aucune donnée disponible.</td></tr>';return;}
 $("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregistrée(s).";
 table.innerHTML=cotisationRows.map(r=>{
+const nature=r.nature==="exceptionnelle"?"Exceptionnelle":"Mensuelle";
+const objet=r.nature==="exceptionnelle"?(r.objet||"—"):"—";
 const actions=canManageCotisations?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(r.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(r.id)}">Supprimer</button></div></td>`:"";
-return `<tr><td>${safeText(r.profiles?.full_name||"Membre")}</td><td>${safeText(r.periode)}</td><td>${formatFCFA(r.montant)}</td><td>${formatDate(r.date_paiement)}</td><td>${safeText(r.mode_paiement||"—")}</td><td>${cotStatusLabel(r.statut)}</td>${actions}</tr>`;
+return `<tr><td>${safeText(r.profiles?.full_name||"Membre")}</td><td>${nature}</td><td>${safeText(objet)}</td><td>${safeText(r.periode)}</td><td>${formatFCFA(r.montant)}</td><td>${formatDate(r.date_paiement)}</td><td>${safeText(r.mode_paiement||"—")}</td><td>${cotStatusLabel(r.statut)}</td>${actions}</tr>`;
 }).join("");
 }
+function updateCotObjetVisibility(){
+const exceptional=$("cotNature").value==="exceptionnelle";
+$("cotObjetGroup").hidden=!exceptional;
+$("cotObjet").required=exceptional;
+if(!exceptional)$("cotObjet").value="";
+}
 function resetCotisationForm(){
-$("cotisationForm").reset();editingCotisationId=null;$("cotisationFormTitle").textContent="Enregistrer une cotisation";$("saveCotisationBtn").textContent="Enregistrer la cotisation";$("cancelCotisationEditBtn").hidden=true;$("cotDate").value=getLocalDate();$("cotisationFormMessage").textContent="";
+$("cotisationForm").reset();editingCotisationId=null;$("cotNature").value="mensuelle";updateCotObjetVisibility();$("cotisationFormTitle").textContent="Enregistrer une cotisation";$("saveCotisationBtn").textContent="Enregistrer la cotisation";$("cancelCotisationEditBtn").hidden=true;$("cotDate").value=getLocalDate();$("cotisationFormMessage").textContent="";
 }
 function editCotisation(id){
 if(!canManageCotisations)return;const r=cotisationRows.find(x=>String(x.id)===String(id));if(!r)return;
-editingCotisationId=r.id;$("cotMember").value=r.member_id;$("cotAmount").value=r.montant;$("cotPeriod").value=r.periode||"";$("cotDate").value=r.date_paiement||"";$("cotMode").value=r.mode_paiement||"Espèces";$("cotStatus").value=r.statut||"confirmee";$("cotDescription").value=r.description||"";
+editingCotisationId=r.id;$("cotMember").value=r.member_id;$("cotNature").value=r.nature||"mensuelle";updateCotObjetVisibility();$("cotObjet").value=r.objet||"";$("cotAmount").value=r.montant;$("cotPeriod").value=r.periode||"";$("cotDate").value=r.date_paiement||"";$("cotMode").value=r.mode_paiement||"Espèces";$("cotStatus").value=r.statut||"confirmee";$("cotDescription").value=r.description||"";
 $("cotisationFormTitle").textContent="Modifier une cotisation";$("saveCotisationBtn").textContent="Enregistrer les modifications";$("cancelCotisationEditBtn").hidden=false;$("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function saveCotisation(event){
 event.preventDefault();if(!canManageCotisations)return;
-const payload={member_id:$("cotMember").value,montant:Number($("cotAmount").value),periode:$("cotPeriod").value.trim(),date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
+const nature=$("cotNature").value;
+const objet=$("cotObjet").value.trim();
+const payload={member_id:$("cotMember").value,nature,objet:nature==="exceptionnelle"?objet:null,montant:Number($("cotAmount").value),periode:$("cotPeriod").value.trim(),date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
 if(!payload.member_id||!Number.isFinite(payload.montant)||payload.montant<=0||!payload.periode||!payload.date_paiement){$("cotisationFormMessage").textContent="Renseigne le membre, un montant positif, la période et la date.";return;}
+if(nature==="exceptionnelle"&&!objet){$("cotisationFormMessage").textContent="Précise obligatoirement l'objet de la cotisation exceptionnelle.";return;}
 const button=$("saveCotisationBtn"),wasEditing=Boolean(editingCotisationId);button.disabled=true;button.textContent="Enregistrement...";
 try{
 const result=wasEditing?await client.from("cotisations").update(payload).eq("id",editingCotisationId).select("id"):await client.from("cotisations").insert(payload).select("id");
@@ -874,6 +887,7 @@ finally{b.disabled=false;}
 
 /* ÉVÉNEMENTS COTISATIONS */
 $("refreshCotisationsBtn").addEventListener("click",loadCotisations);
+$("cotNature").addEventListener("change",updateCotObjetVisibility);
 $("cotisationForm").addEventListener("submit",saveCotisation);
 $("cancelCotisationEditBtn").addEventListener("click",resetCotisationForm);
 $("cotisationsTable").addEventListener("click",async e=>{
