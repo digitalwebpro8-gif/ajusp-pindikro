@@ -197,8 +197,7 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 <p>Ajoute, modifie, publie, dépublie ou supprime les projets de développement de Pindikro.</p>
 <div class="notice">Les projets publiés peuvent être affichés sur le site public de l'AJUSP.</div>
 <h3 id="projectFormTitle">Ajouter un nouveau projet</h3>
-<form id="projectForm">
-<div class="form-grid">
+<form id="projectForm"><div class="form-grid">
 <div class="form-group"><label for="projectTitle">Titre du projet *</label><input id="projectTitle" type="text" maxlength="200" required placeholder="Ex. : Construction d'une bibliothèque"></div>
 <div class="form-group"><label for="projectBudget">Budget prévisionnel (FCFA)</label><input id="projectBudget" type="number" min="0" step="1" placeholder="Ex. : 5000000"></div>
 <div class="form-group"><label for="projectStatus">État du projet *</label><select id="projectStatus" required><option value="planned">Projet planifié</option><option value="ongoing">En cours</option><option value="completed">Terminé</option></select></div>
@@ -296,15 +295,15 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 </table></div>
 </section>
 
-<section class="panel admin-only">
+<section class="panel" id="quickLinksPanel">
 <h2>Accès rapides</h2>
 <div class="quick-links">
 <a href="index.html">Voir le site public</a>
-<a href="gestion-membres.html">👥 Gérer les membres de l'AJUSP</a>
-<a href="actualites.html">Gestion des actualités</a>
-<a href="gestion-projets.html">Gestion des projets</a>
-<a href="cotisations.html">Cotisations et dons</a>
-<a href="depenses.html">Recettes et dépenses</a>
+<a href="gestion-membres.html" class="admin-quick-link">👥 Gérer les membres de l'AJUSP</a>
+<a href="actualites.html" class="admin-quick-link">Gestion des actualités</a>
+<a href="gestion-projets.html" class="admin-quick-link">Gestion des projets</a>
+<a href="cotisations.html" class="finance-quick-link">Cotisations et dons</a>
+<a href="depenses.html" class="finance-quick-link">Recettes et dépenses</a>
 </div>
 </section>
 </main>
@@ -397,8 +396,7 @@ const path="banniere/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
 const {error:uploadError}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
 if(uploadError)throw uploadError;
 const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
-if(!url)throw new Error("Adresse publique de l'image indisponible.");
-const {error}=await client.from("site_settings").upsert({key:"home_banner",value:url,updated_at:new Date().toISOString()},{onConflict:"key"});
+if(!url)throw new Error("Adresse publique de l'image indisponible.");const {error}=await client.from("site_settings").upsert({key:"home_banner",value:url,updated_at:new Date().toISOString()},{onConflict:"key"});
 if(error)throw error;
 currentBannerUrl=url;$("bannerCurrentPreview").src=url;
 selectedBannerFile=null;$("bannerImageFile").value="";$("bannerImageFileName").textContent="";
@@ -428,6 +426,8 @@ showMessage("Accès réservé aux administrateurs et responsables de la trésore
 $("adminName").textContent=profile.full_name||currentUser.email||"Responsable";
 if(!isAdmin){
 document.querySelectorAll(".admin-only").forEach(section=>{section.hidden=true;section.style.display="none";});
+document.querySelectorAll(".admin-quick-link").forEach(link=>{link.hidden=true;link.style.display="none";});
+$("quickLinksPanel").hidden=false;$("quickLinksPanel").style.display="block";
 ["donationsPanel","partnershipsPanel","skillsPanel"].forEach(id=>{const panel=$(id);if(panel){panel.hidden=false;panel.style.display="block";}});
 $("cotisationsAccessInfo").textContent="Espace réservé au trésorier et au trésorier adjoint : enregistrement et suivi des cotisations.";
 }
@@ -597,8 +597,7 @@ $("cancelProjectEditBtn").hidden=true;$("projectPublished").checked=true;$("proj
 }
 async function loadProjects(){
 const table=$("projectsTable");table.innerHTML='<tr><td colspan="6" class="empty">Chargement...</td></tr>';
-const {data,error}=await client.from("projects").select("id,title,description,objective,budget,status,image_url,start_date,end_date,is_published,created_at").order("created_at",{ascending:false});
-if(error){console.error(error);table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;$("projectsCount").textContent="—";showMessage("Chargement des projets impossible : "+error.message);return;}
+const {data,error}=await client.from("projects").select("id,title,description,objective,budget,status,image_url,start_date,end_date,is_published,created_at").order("created_at",{ascending:false});if(error){console.error(error);table.innerHTML=`<tr><td colspan="6" class="empty">Erreur : ${safeText(error.message)}</td></tr>`;$("projectsCount").textContent="—";showMessage("Chargement des projets impossible : "+error.message);return;}
 projectRows=data||[];$("projectsCount").textContent=projectRows.length;
 if(!projectRows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun projet enregistré.</td></tr>';return;}
 table.innerHTML=projectRows.map(p=>`<tr><td><strong>${safeText(p.title)}</strong></td><td>${p.budget!==null&&p.budget!==""?formatFCFA(p.budget):"—"}</td><td>${safeText(projectStatusLabel(p.status))}</td><td>${p.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Non publié</span>'}</td><td>${formatDate(p.created_at)}</td><td><div class="action-buttons"><button type="button" class="secondary" data-project-action="edit" data-id="${safeText(p.id)}">Modifier</button><button type="button" class="approve" data-project-action="toggle" data-id="${safeText(p.id)}">${p.is_published?"Dépublier":"Publier"}</button><button type="button" class="danger" data-project-action="delete" data-id="${safeText(p.id)}">Supprimer</button></div></td></tr>`).join("");
@@ -797,8 +796,7 @@ editingCotisationId=r.id;$("cotMember").value=r.member_id;$("cotNature").value=r
 $("cotisationFormTitle").textContent="Modifier une cotisation";$("saveCotisationBtn").textContent="Enregistrer les modifications";$("cancelCotisationEditBtn").hidden=false;$("cotisationFormPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function saveCotisation(event){
-event.preventDefault();if(!canManageCotisations)return;
-const nature=$("cotNature").value;
+event.preventDefault();if(!canManageCotisations)return;const nature=$("cotNature").value;
 const objet=$("cotObjet").value.trim();
 const payload={member_id:$("cotMember").value,nature,objet:nature==="exceptionnelle"?objet:null,montant:Number($("cotAmount").value),periode:$("cotPeriod").value.trim(),date_paiement:$("cotDate").value,mode_paiement:$("cotMode").value,statut:$("cotStatus").value,description:$("cotDescription").value.trim()||null};
 if(!payload.member_id||!Number.isFinite(payload.montant)||payload.montant<=0||!payload.periode||!payload.date_paiement){$("cotisationFormMessage").textContent="Renseigne le membre, un montant positif, la période et la date.";return;}
