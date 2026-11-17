@@ -1,40 +1,698 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Découvrir Pindikro – AJUSP Pindikro"><title>Découvrir Pindikro | AJUSP</title><style>
-:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--text:#26352D;--muted:#68756D}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65}
-a{text-decoration:none;color:inherit}.site-header{background:white;padding:12px 6%;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:10;box-shadow:0 3px 14px #0001}
-.brand{display:flex;align-items:center;gap:10px}.brand img{width:56px;height:56px;object-fit:contain}.brand b{display:block;color:var(--green);font-size:20px}.brand small{display:block;color:var(--navy);font-size:9px;max-width:220px}
-nav{display:flex;align-items:center;gap:13px;flex-wrap:wrap}nav a{font-size:12px;font-weight:bold;color:var(--navy)}nav a:hover{color:var(--green)}.nav-cta,.btn{background:var(--green);color:white!important;padding:10px 15px;border-radius:5px}
-.toggle{display:none;background:var(--green);color:white;border:0;padding:8px 12px;border-radius:5px;font-size:22px}
-.hero{padding:75px 8%;background:linear-gradient(90deg,#103e2fe8,#103e2f70),url("banniere-ajusp.jpeg") center/cover;color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.15;max-width:850px;margin-bottom:12px}.hero p{max-width:760px;color:#f0f4f0}
-.wrap{max-width:1100px;margin:auto;padding:55px 6%}.eyebrow{color:var(--green);font-weight:bold;letter-spacing:1.5px;font-size:12px;text-transform:uppercase}
-h2{color:var(--navy);font-size:27px;margin:8px 0 15px}h3{color:var(--navy);margin-bottom:8px}.lead{font-size:18px;color:var(--muted);margin-bottom:25px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.card{background:white;padding:24px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;border-bottom:3px solid var(--yellow)}
-.card p,.muted{color:var(--muted)}.photo{width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:20px 0}
-ul{padding-left:22px;margin:12px 0 20px}li{margin:6px 0}.callout{background:#eaf2eb;padding:24px;border-radius:10px;margin-top:25px}
-form{background:white;padding:25px;border-radius:10px;box-shadow:0 4px 20px #14263f0c;max-width:720px}
-label{display:block;font-weight:bold;color:var(--navy);margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:5px;font:inherit}textarea{min-height:120px}
-button.submit{border:0;cursor:pointer;font:inherit;font-weight:bold;margin-top:16px}.notice{font-size:13px;color:var(--muted);margin-top:12px}
-footer{background:var(--navy);color:#dce5e8;padding:28px 6%;text-align:center;font-size:13px;margin-top:30px}
-@media(max-width:900px){.toggle{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:white;padding:18px 6%;flex-direction:column;align-items:stretch}nav.open{display:flex}nav a{padding:8px;border-bottom:1px solid #eee}.grid{grid-template-columns:1fr}}
-</style></head><body>
+
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Découvrez Pindikro, son peuple Baoulé, ses traditions, ses activités économiques, son marché et son cadre de vie avec l'AJUSP.">
+<meta name="theme-color" content="#17643D">
+<title>Découvrir Pindikro | AJUSP</title>
+
+<style>
+:root{
+--green:#17643D;
+--dark:#10452D;
+--yellow:#F2C94C;
+--navy:#14263F;
+--bg:#F7F9F6;
+--text:#26352D;
+--muted:#68756D;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body{
+font-family:Arial,sans-serif;
+background:var(--bg);
+color:var(--text);
+line-height:1.7;
+}
+
+a{text-decoration:none;color:inherit}
+
+.site-header{
+background:white;
+padding:12px 6%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:20px;
+position:sticky;
+top:0;
+z-index:100;
+box-shadow:0 3px 14px #0001;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.brand img{
+width:56px;
+height:56px;
+object-fit:contain;
+}
+
+.brand b{
+display:block;
+color:var(--green);
+font-size:20px;
+}
+
+.brand small{
+display:block;
+color:var(--navy);
+font-size:9px;
+max-width:220px;
+}
+
+nav{
+display:flex;
+align-items:center;
+gap:13px;
+flex-wrap:wrap;
+}
+
+nav a{
+font-size:12px;
+font-weight:bold;
+color:var(--navy);
+}
+
+nav a:hover{color:var(--green)}
+
+.nav-cta,.btn{
+background:var(--green);
+color:white!important;
+padding:10px 15px;
+border-radius:5px;
+}
+
+.toggle{
+display:none;
+background:var(--green);
+color:white;
+border:0;
+padding:8px 12px;
+border-radius:5px;
+font-size:22px;
+cursor:pointer;
+}
+
+.hero{
+padding:85px 8%;
+background:
+linear-gradient(90deg,#103e2fe8,#103e2f70),
+url("banniere-ajusp.jpeg") center/cover;
+color:white;
+}
+
+.hero h1{
+font-size:clamp(32px,5vw,50px);
+line-height:1.15;
+max-width:850px;
+margin:12px 0;
+}
+
+.hero p{
+max-width:760px;
+color:#f0f4f0;
+font-size:17px;
+}
+
+.eyebrow{
+color:var(--green);
+font-weight:bold;
+letter-spacing:1.5px;
+font-size:12px;
+text-transform:uppercase;
+}
+
+.wrap{
+max-width:1100px;
+margin:auto;
+padding:55px 6%;
+}
+
+.intro{
+font-size:19px;
+color:var(--muted);
+margin-bottom:25px;
+}
+
+h2{
+color:var(--navy);
+font-size:27px;
+margin:8px 0 15px;
+}
+
+h3{
+color:var(--green);
+font-size:19px;
+margin-bottom:9px;
+}
+
+p{margin-bottom:14px}
+
+.section{
+margin-top:50px;
+scroll-margin-top:100px;
+}
+
+.section-title{
+border-left:5px solid var(--yellow);
+padding-left:15px;
+margin-bottom:22px;
+}
+
+.section-title p{
+color:var(--muted);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
+}
+
+.card{
+background:white;
+padding:24px;
+border-radius:10px;
+box-shadow:0 4px 20px #14263f0c;
+border-bottom:3px solid var(--yellow);
+}
+
+.card p:last-child{margin-bottom:0}
+
+.card-icon{
+font-size:27px;
+margin-bottom:8px;
+}
+
+.card p{color:var(--muted)}
+
+.photo{
+width:100%;
+max-height:420px;
+object-fit:cover;
+border-radius:10px;
+margin:20px 0;
+}
+
+.callout{
+background:#eaf2eb;
+padding:25px;
+border-radius:10px;
+margin-top:25px;
+}
+
+.callout h3{color:var(--dark)}
+
+.info-list{
+display:grid;
+gap:14px;
+}
+
+.info-item{
+background:white;
+padding:20px;
+border-radius:8px;
+border-left:4px solid var(--green);
+}
+
+.info-item h3{margin-bottom:5px}
+
+.info-item p{
+color:var(--muted);
+margin:0;
+}
+
+.tag{
+display:inline-block;
+background:#eaf2eb;
+color:var(--green);
+font-size:12px;
+font-weight:bold;
+padding:4px 10px;
+border-radius:20px;
+margin-bottom:9px;
+}
+
+.notice{
+font-size:13px;
+color:var(--muted);
+font-style:italic;
+}
+
+.cta{
+background:var(--navy);
+color:white;
+padding:35px;
+border-radius:12px;
+margin-top:50px;
+text-align:center;
+}
+
+.cta h2{color:white}
+
+.cta p{
+color:#e0e8ec;
+max-width:700px;
+margin:0 auto 20px;
+}
+
+.cta .btn{
+display:inline-block;
+background:var(--yellow);
+color:var(--navy)!important;
+font-weight:bold;
+}
+
+footer{
+background:var(--navy);
+color:#dce5e8;
+padding:28px 6%;
+text-align:center;
+font-size:13px;
+margin-top:30px;
+}
+
+@media(max-width:900px){
+.toggle{display:block}
+
+nav{
+display:none;
+position:absolute;
+top:100%;
+left:0;
+right:0;
+background:white;
+padding:18px 6%;
+flex-direction:column;
+align-items:stretch;
+box-shadow:0 8px 15px #0001;
+}
+
+nav.open{display:flex}
+
+nav a{
+padding:9px;
+border-bottom:1px solid #eee;
+font-size:14px;
+}
+
+.grid{grid-template-columns:1fr}
+
+.hero{padding:65px 7%}
+
+.wrap{padding:40px 6%}
+
+.brand small{font-size:8px}
+}
+
+@media(max-width:450px){
+.brand img{width:45px;height:45px}
+.brand b{font-size:17px}
+.hero h1{font-size:33px}
+h2{font-size:23px}
+.card{padding:19px}
+}
+</style>
+</head>
+
+<body>
+
 <header class="site-header">
-  <a class="brand" href="index.html"><img src="logo-ajusp1.jpg" alt="Logo AJUSP"><span><b>AJUSP</b><small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small></span></a>
-  <button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
-  <nav>
-    <a href="index.html">Accueil</a><a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
-    <a href="association.html">Notre association</a><a href="projets.html">Nos projets</a>
-    <a href="actualites.html">Actualités</a><a href="galerie.html">Galerie</a>
-    <a href="soutien.html">Nous soutenir</a><a href="contact-adhesion.html">Adhésion</a>
-    <a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
-  </nav>
-</header><section class="hero"><span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span><h1>Découvrir Pindikro</h1><p>Un village, une communauté et une ambition commune : préparer un avenir meilleur.</p></section><main class="wrap">
-<p class="lead">Bienvenue à Pindikro, village au cœur de notre engagement collectif.</p>
-<img class="photo" src="banniere-ajusp.jpeg" alt="Bannière de l'AJUSP et communauté de Pindikro">
+
+<a class="brand" href="index.html">
+<img src="logo-ajusp1.jpg" alt="Logo AJUSP">
+<span>
+<b>AJUSP</b>
+<small>ASSOCIATION JEUNESSE UNIE ET SOLIDAIRE DE PINDIKRO</small>
+</span>
+</a>
+
+<button class="toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+
+<nav>
+<a href="index.html">Accueil</a>
+<a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+<a href="association.html">Notre association</a>
+<a href="projets.html">Nos projets</a>
+<a href="actualites.html">Actualités</a>
+<a href="galerie.html">Galerie</a>
+<a href="soutien.html">Nous soutenir</a>
+<a href="contact-adhesion.html">Adhésion</a>
+<a class="nav-cta" href="espace-membre/connexion.html">Espace membre</a>
+</nav>
+
+</header>
+
+<section class="hero">
+<span class="eyebrow" style="color:#F2C94C">AJUSP · PINDIKRO</span>
+<h1>Découvrir Pindikro</h1>
+<p>
+Un village, une identité culturelle, des traditions et une ambition commune :
+construire ensemble un avenir meilleur.
+</p>
+</section>
+
+<main class="wrap">
+
+<p class="intro">
+Bienvenue à Pindikro, village situé dans la zone de Brobo en Côte d'Ivoire.
+C'est ici que se trouve le cœur de l'engagement de l'AJUSP et de ses actions
+en faveur du développement communautaire.
+</p>
+
+<!-- PRESENTATION GENERALE -->
+<section class="section" id="presentation">
+
+<div class="section-title">
+<span class="eyebrow">Notre village</span>
 <h2>Un territoire porté par sa communauté</h2>
-<p>Pindikro est au centre de l'engagement de l'AJUSP. L'association souhaite contribuer à son développement en encourageant la solidarité, la participation des habitants et la mobilisation de ses filles et fils.</p>
-<div class="callout"><h3>Faire connaître Pindikro</h3><p>Cette page sera enrichie avec des informations validées sur l'histoire du village, sa localisation, ses traditions, ses infrastructures et ses activités. Les informations précises seront ajoutées après validation par la communauté.</p></div>
-</main><footer>© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro · « Ensemble pour un avenir meilleur »</footer><script>document.getElementById("year").textContent=new Date().getFullYear();</script><script>
-const t=document.querySelector('.toggle'),n=document.querySelector('nav');
-t?.addEventListener('click',()=>{const o=n.classList.toggle('open');t.setAttribute('aria-expanded',o);t.textContent=o?'✕':'☰'});
-</script></body></html>
+</div>
+
+<p>
+Pindikro est un village dont la vie repose sur les liens familiaux,
+la solidarité et la participation de ses habitants. Ses filles et fils,
+qu'ils vivent au village ou ailleurs, partagent un attachement à leur
+communauté et à son développement.
+</p>
+
+<p>
+À travers ses initiatives, l'AJUSP souhaite encourager la mobilisation
+des populations, valoriser les ressources locales et accompagner les
+actions qui contribuent à améliorer les conditions de vie à Pindikro.
+</p>
+
+</section>
+
+<!-- ACTIVITES ECONOMIQUES -->
+<section class="section" id="economie">
+
+<div class="section-title">
+<span class="eyebrow">Développement local</span>
+<h2>Les activités économiques et le potentiel de Pindikro</h2>
+<p>L'agriculture et le commerce occupent une place importante dans
+l'économie locale.</p>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="card-icon">🌱</div>
+<h3>L'agriculture</h3>
+<p>
+L'économie locale de Pindikro repose principalement sur l'agriculture.
+Les populations pratiquent différentes cultures, notamment l'igname,
+le manioc, l'anacarde et le cacao.
+</p>
+<p>
+Ces productions représentent des ressources importantes pour les familles
+et contribuent à la vie économique du village.
+</p>
+</div>
+
+<div class="card">
+<div class="card-icon">🛍️</div>
+<h3>Le commerce</h3>
+<p>
+Le commerce contribue également à la dynamique économique du village
+à travers les échanges et la commercialisation des produits locaux.
+</p>
+<p>
+Il permet aux habitants de répondre à leurs besoins quotidiens et
+représente une activité importante pour les échanges entre populations.
+</p>
+</div>
+
+</div>
+
+<div class="callout">
+<h3>Un potentiel à valoriser</h3>
+<p>
+Ces activités représentent des opportunités pour renforcer les revenus
+des familles, encourager l'entrepreneuriat et favoriser le développement
+économique de Pindikro.
+</p>
+</div>
+
+</section>
+
+<!-- INFRASTRUCTURES -->
+<section class="section" id="infrastructures">
+
+<div class="section-title">
+<span class="eyebrow">Cadre de vie</span>
+<h2>Infrastructures et conditions de vie</h2>
+<p>
+Pindikro dispose de certains équipements essentiels, mais des besoins
+restent à satisfaire pour améliorer le quotidien des populations.
+</p>
+</div>
+
+<div class="info-list">
+
+<div class="info-item">
+<h3>🏫 Éducation</h3>
+<p>
+Pindikro dispose d'une école primaire qui permet aux enfants de commencer
+leur parcours scolaire dans leur localité. Cette école constitue un acquis
+important pour les familles et contribue à la formation des jeunes générations.
+</p>
+</div>
+
+<div class="info-item">
+<h3>🏥 Santé</h3>
+<p>
+Le village ne dispose pas actuellement de centre de santé. Pour leurs
+consultations et leurs besoins médicaux, les habitants doivent se rendre
+dans une autre localité. L'amélioration de l'accès aux soins demeure donc
+un enjeu important pour la population.
+</p>
+</div>
+
+<div class="info-item">
+<h3>💧 Accès à l'eau potable</h3>
+<p>
+Les habitants de Pindikro ont accès à l'eau courante grâce à des robinets.
+Cette disponibilité facilite les besoins quotidiens des familles et contribue
+à l'amélioration des conditions d'hygiène et de vie.
+</p>
+</div>
+
+<div class="info-item">
+<h3>💡 Électricité</h3>
+<p>
+Le village ne bénéficie pas actuellement du raccordement au réseau
+électrique de la CIE. L'accès à l'électricité constitue ainsi un besoin
+important pour le confort des ménages, l'éducation des jeunes et le
+développement des activités économiques.
+</p>
+</div>
+
+<div class="info-item">
+<h3>🛣️ Voies d'accès</h3>
+<p>
+L'accès à Pindikro se fait principalement par une voie en terre,
+sous forme de piste rurale. L'amélioration de cette voie faciliterait
+les déplacements des habitants, le transport des produits agricoles
+et les échanges avec les localités voisines.
+</p>
+</div>
+
+</div>
+
+<div class="callout">
+<h3>Un village tourné vers l'avenir</h3>
+<p>
+Le renforcement des infrastructures et l'amélioration des services essentiels
+représentent des enjeux importants pour le développement de Pindikro.
+La mobilisation des filles et fils du village constitue un atout pour
+accompagner cette évolution.
+</p>
+</div>
+
+</section>
+
+<!-- IDENTITE CULTURELLE -->
+<section class="section" id="culture">
+
+<div class="section-title">
+<span class="eyebrow">Identité et patrimoine</span>
+<h2>Histoire, peuple et identité culturelle</h2>
+</div>
+
+<h3>Le peuple Baoulé</h3>
+<p>
+Les habitants de Pindikro sont des Baoulés. Cette appartenance culturelle
+constitue un élément important de l'identité du village et de la vie de
+sa communauté.
+</p>
+
+<h3>La langue baoulé</h3>
+<p>
+La langue baoulé est principalement utilisée dans les échanges quotidiens
+entre les habitants. Elle représente un héritage culturel précieux,
+transmis de génération en génération. Elle contribue à préserver
+l'identité du village et à renforcer les liens entre les populations.
+</p>
+
+<div class="callout">
+<h3>Préserver notre histoire</h3>
+<p>
+L'origine du nom Pindikro et les différentes étapes de l'histoire ancienne
+du village restent à documenter. Les témoignages des anciens et des
+personnes ressources permettront de mieux faire connaître cette mémoire
+aux jeunes générations.
+</p>
+</div>
+
+</section>
+
+<!-- TRADITIONS -->
+<section class="section" id="traditions">
+
+<div class="section-title">
+<span class="eyebrow">Patrimoine vivant</span>
+<h2>Traditions et manifestations culturelles</h2>
+<p>
+La culture baoulé est marquée par des traditions et des moments de
+rassemblement qui contribuent à préserver les liens communautaires.
+</p>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+<span class="tag">Tradition baoulé</span>
+<h3>La fête des ignames</h3>
+<p>
+La fête des ignames est une célébration traditionnelle importante
+en pays baoulé. Elle marque notamment la fin des récoltes et l'arrivée
+de l'igname nouvelle. Elle est associée aux traditions ancestrales,
+aux actions de grâce et à la valorisation des produits de la terre.
+</p>
+<p class="notice">
+La célébration effective de cette fête à Pindikro reste à confirmer.
+</p>
+</div>
+
+<div class="card">
+<span class="tag">Retrouvailles annuelles</span>
+<h3>Paquinou</h3>
+<p>
+Paquinou est célébré chaque année à Pindikro autour du week-end de Pâques.
+Cette période constitue une occasion privilégiée pour les filles et fils
+du village vivant dans d'autres localités ou à l'étranger de revenir
+auprès de leurs familles.
+</p>
+<p>
+Ces retrouvailles sont des moments de partage, de fraternité et de
+renforcement des liens familiaux. Elles permettent aux ressortissants
+de renouer avec leurs racines et de maintenir leur attachement au village.
+</p>
+</div>
+
+</section>
+
+<!-- CHEFFERIE -->
+<section class="section" id="chefferie">
+
+<div class="section-title">
+<span class="eyebrow">Organisation communautaire</span>
+<h2>La chefferie traditionnelle</h2>
+</div>
+
+<p>
+Pindikro possède une chefferie traditionnelle dirigée par un chef de village,
+accompagné d'un conseil de notables et de sages qui l'assistent dans ses
+responsabilités.
+</p>
+
+<p>
+Cette organisation joue un rôle important dans la vie communautaire.
+Elle contribue à la préservation des traditions, à la transmission des
+valeurs culturelles, au maintien de la cohésion sociale et à l'organisation
+de la communauté.
+</p>
+
+</section>
+
+<!-- MARCHE -->
+<section class="section" id="marche">
+
+<div class="section-title">
+<span class="eyebrow">Vie quotidienne</span>
+<h2>Le marché et les échanges commerciaux</h2>
+</div>
+
+<div class="card">
+<div class="card-icon">🏪</div>
+<h3>Un marché ouvert tous les jours</h3>
+<p>
+Pindikro dispose d'un marché ouvert tous les jours. Il permet aux habitants
+d'acheter et de vendre différents produits, notamment les produits agricoles
+issus des activités locales.
+</p>
+<p>
+Ce marché joue un rôle important dans l'approvisionnement des familles,
+la commercialisation des récoltes et le développement du petit commerce.
+Il constitue également un lieu de rencontres et d'échanges qui contribue
+à l'animation de la vie quotidienne du village.
+</p>
+</div>
+
+</section>
+
+<!-- AJUSP -->
+<section class="cta">
+
+<h2>Ensemble pour le développement de Pindikro</h2>
+
+<p>
+La connaissance de notre village, la préservation de son identité
+et la mobilisation de ses filles et fils sont essentielles pour
+construire un avenir meilleur.
+</p>
+
+<a href="association.html" class="btn">Découvrir notre association</a>
+
+</section>
+
+</main>
+
+<footer>
+© <span id="year"></span> AJUSP – Association Jeunesse Unie et Solidaire de Pindikro
+<br>
+« Ensemble pour un avenir meilleur »
+</footer>
+
+<script>
+document.getElementById("year").textContent =
+new Date().getFullYear();
+
+const toggle = document.querySelector(".toggle");
+const nav = document.querySelector("nav");
+
+toggle.addEventListener("click",()=>{
+const open = nav.classList.toggle("open");
+toggle.setAttribute("aria-expanded",open);
+toggle.textContent = open ? "✕" : "☰";
+});
+
+nav.querySelectorAll("a").forEach(link=>{
+link.addEventListener("click",()=>{
+nav.classList.remove("open");
+toggle.setAttribute("aria-expanded","false");
+toggle.textContent="☰";
+});
+});
+</script>
+
+</body>
+</html>
