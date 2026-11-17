@@ -1,0 +1,535 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion des membres | AJUSP Pindikro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--green:#17643D;
+--dark:#10452D;
+--yellow:#F2C94C;
+--navy:#14263F;
+--bg:#F7F9F6;
+--white:#fff;
+--red:#c0392b;
+--gray:#64748b;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:var(--bg);
+color:#243044;
+}
+header{
+background:var(--dark);
+color:white;
+padding:20px 5%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:12px;
+}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px;color:#e4eee7}
+header a{
+color:var(--navy);
+background:var(--yellow);
+padding:10px 15px;
+border-radius:6px;
+text-decoration:none;
+font-weight:bold;
+}
+main{max-width:1250px;margin:30px auto;padding:0 18px}
+h2{color:var(--dark)}
+.panel{
+background:white;
+padding:22px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,.06);
+margin-bottom:22px;
+}
+.summary{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+margin-bottom:22px;
+}
+.summary-card{
+background:white;
+border-left:5px solid var(--green);
+padding:18px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.summary-card strong{
+display:block;
+font-size:28px;
+color:var(--dark);
+margin-top:8px;
+}
+.toolbar{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+margin:18px 0;
+}
+input{
+width:100%;
+padding:11px;
+border:1px solid #ccd5ce;
+border-radius:6px;
+font:inherit;
+}
+.toolbar input{flex:1;min-width:220px}
+button{
+border:0;
+border-radius:6px;
+padding:10px 15px;
+cursor:pointer;
+font-weight:bold;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:var(--green);color:white}
+.secondary{background:#e8eee9;color:var(--dark)}
+.danger{background:var(--red);color:white}
+.table-wrap{overflow-x:auto}
+table{
+width:100%;
+border-collapse:collapse;
+min-width:850px;
+}
+th,td{
+padding:13px 11px;
+border-bottom:1px solid #e7ece8;
+text-align:left;
+font-size:13px;
+vertical-align:middle;
+}
+th{background:#f0f5f1;color:var(--dark)}
+.action-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.action-buttons button{padding:8px 10px;font-size:12px}
+.status{
+display:inline-block;
+padding:5px 9px;
+border-radius:20px;
+font-size:12px;
+font-weight:bold;
+}
+.active{background:#d4edda;color:#155724}
+.inactive{background:#f8d7da;color:#721c24}
+.empty{text-align:center;color:var(--gray);padding:25px}
+.message{
+display:none;
+padding:12px 15px;
+border-radius:6px;
+margin-bottom:18px;
+white-space:pre-wrap;
+}
+.message.error{display:block;background:#f8d7da;color:#721c24}
+.message.success{display:block;background:#d4edda;color:#155724}
+.form-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+.form-group{margin-bottom:15px}
+.form-group label{
+display:block;
+font-size:13px;
+font-weight:bold;
+color:var(--dark);
+margin-bottom:7px;
+}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap}
+.notice{
+background:#fff8df;
+border-left:4px solid var(--yellow);
+padding:12px 15px;
+border-radius:5px;
+font-size:13px;
+line-height:1.5;
+margin-bottom:18px;
+}
+footer{
+text-align:center;
+padding:25px;
+background:var(--dark);
+color:white;
+font-size:13px;
+line-height:1.7;
+margin-top:35px;
+}
+[hidden]{display:none!important}
+@media(max-width:600px){
+header{padding:18px}
+header h1{font-size:19px}
+main{margin-top:20px}
+.panel{padding:15px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div>
+<h1>AJUSP PINDIKRO</h1>
+<p>Administration – Gestion des membres</p>
+</div>
+<a href="dashboard.html">← Retour au dashboard</a>
+</header>
+
+<main>
+
+<div id="globalMessage" class="message"></div>
+
+<div class="panel">
+<h2>Gestion des membres</h2>
+<p>Consulte les membres enregistrés dans la base de données de l'AJUSP et actualise leurs informations personnelles.</p>
+<div class="notice">
+Seuls les administrateurs actifs peuvent accéder à cette page.
+Les modifications effectuées ici concernent les informations du profil. Les rôles et les droits d'accès ne peuvent pas être modifiés depuis cette page.
+</div>
+</div>
+
+<div class="summary">
+<div class="summary-card">
+Nombre de profils
+<strong id="membersCount">...</strong>
+</div>
+<div class="summary-card">
+Membres actifs
+<strong id="activeCount">...</strong>
+</div>
+</div>
+
+<section class="panel">
+<h2>Liste des membres</h2>
+
+<div class="toolbar">
+<input type="search" id="searchMember" placeholder="Rechercher par nom, téléphone, e-mail ou résidence...">
+<button type="button" class="primary" id="refreshBtn">Actualiser</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Nom et prénoms</th>
+<th>Téléphone</th>
+<th>E-mail</th>
+<th>Résidence</th>
+<th>Fonction</th>
+<th>Statut</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="membersTable">
+<tr><td colspan="7" class="empty">Chargement des membres...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="panel" id="editPanel" hidden>
+<h2 id="formTitle">Modifier les informations du membre</h2>
+
+<div class="notice">
+Vérifie soigneusement les informations avant de les enregistrer.
+Le champ e-mail ci-dessous correspond à l'e-mail de contact enregistré dans le profil. Il ne change pas automatiquement l'adresse utilisée pour la connexion au compte.
+</div>
+
+<form id="memberForm">
+<div class="form-grid">
+
+<div class="form-group">
+<label for="memberName">Nom et prénoms *</label>
+<input type="text" id="memberName" maxlength="150" required>
+</div>
+
+<div class="form-group">
+<label for="memberPhone">Téléphone</label>
+<input type="tel" id="memberPhone" maxlength="30">
+</div>
+
+<div class="form-group">
+<label for="memberEmail">E-mail de contact</label>
+<input type="email" id="memberEmail" maxlength="254">
+</div>
+
+<div class="form-group">
+<label for="memberResidence">Lieu de résidence</label>
+<input type="text" id="memberResidence" maxlength="150">
+</div>
+
+</div>
+
+<div class="form-actions">
+<button type="submit" class="primary" id="saveBtn">Enregistrer les modifications</button>
+<button type="button" class="secondary" id="cancelBtn">Annuler</button>
+</div>
+
+<p id="formMessage" aria-live="polite"></p>
+</form>
+</section>
+
+</main>
+
+<footer>
+Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>
+Ensemble pour un avenir meilleur
+</footer>
+
+<script>
+(async function(){
+"use strict";
+
+const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const $=id=>document.getElementById(id);
+
+let currentUser=null;
+let memberRows=[];
+let editingMemberId=null;
+
+function safeText(value){
+return String(value??"").replace(/[&<>"']/g,char=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[char]));
+}
+
+function showMessage(message,type="error"){
+const box=$("globalMessage");
+box.textContent=message;
+box.className="message "+type;
+}
+
+function hideMessage(){
+$("globalMessage").textContent="";
+$("globalMessage").className="message";
+}
+
+function functionLabel(value){
+const labels={
+president:"Président",
+vice_president_1:"Premier vice-président",
+vice_president_2:"Deuxième vice-président",
+secretaire_general:"Secrétaire général",
+secretaire_general_adjoint:"Secrétaire général adjoint",
+tresorier:"Trésorier général",
+adjoint_tresorier:"Trésorier général adjoint",
+responsable_communication:"Responsable communication",
+membre_communication:"Membre communication"
+};
+return labels[value]||"Aucune fonction";
+}
+
+async function checkAccess(){
+const {data:sessionData,error:sessionError}=await client.auth.getSession();
+
+if(sessionError||!sessionData.session){
+window.location.href="connexion.html";
+return false;
+}
+
+currentUser=sessionData.session.user;
+
+const {data:profile,error}=await client
+.from("profiles")
+.select("id,full_name,role,status")
+.eq("id",currentUser.id)
+.single();
+
+if(error||!profile||profile.status!=="active"||profile.role!=="admin"){
+showMessage("Accès refusé. Cette page est réservée aux administrateurs actifs.");
+await client.auth.signOut();
+setTimeout(()=>window.location.href="connexion.html",2500);
+return false;
+}
+
+return true;
+}
+
+function renderMembers(){
+const search=$("searchMember").value.trim().toLowerCase();
+
+const filtered=memberRows.filter(member=>{
+const content=[
+member.full_name,
+member.phone,
+member.email,
+member.residence,
+member.fonction,
+member.role
+].join(" ").toLowerCase();
+
+return content.includes(search);
+});
+
+if(!filtered.length){
+$("membersTable").innerHTML=
+'<tr><td colspan="7" class="empty">Aucun membre correspondant à la recherche.</td></tr>';
+return;
+}
+
+$("membersTable").innerHTML=filtered.map(member=>`
+<tr>
+<td><strong>${safeText(member.full_name||"Sans nom")}</strong></td>
+<td>${safeText(member.phone||"—")}</td>
+<td>${safeText(member.email||"—")}</td>
+<td>${safeText(member.residence||"—")}</td>
+<td>${safeText(functionLabel(member.fonction))}</td>
+<td>
+${member.status==="active"
+?'<span class="status active">Actif</span>'
+:'<span class="status inactive">Inactif</span>'}
+</td>
+<td>
+<div class="action-buttons">
+<button type="button" class="secondary" data-edit-member="${safeText(member.id)}">
+Modifier
+</button>
+</div>
+</td>
+</tr>
+`).join("");
+}
+
+async function loadMembers(){
+hideMessage();
+$("membersTable").innerHTML=
+'<tr><td colspan="7" class="empty">Chargement des membres...</td></tr>';
+
+const {data,error}=await client
+.from("profiles")
+.select("id,full_name,phone,email,residence,fonction,role,status")
+.order("full_name",{ascending:true});
+
+if(error){
+console.error(error);
+$("membersTable").innerHTML=
+'<tr><td colspan="7" class="empty">Impossible de charger les membres.</td></tr>';
+showMessage("Erreur de chargement : "+error.message);
+return;
+}
+
+memberRows=data||[];
+
+$("membersCount").textContent=memberRows.length;
+$("activeCount").textContent=memberRows.filter(m=>m.status==="active").length;
+
+renderMembers();
+}
+
+function editMember(id){
+const member=memberRows.find(m=>String(m.id)===String(id));
+if(!member)return;
+
+editingMemberId=member.id;
+
+$("memberName").value=member.full_name||"";
+$("memberPhone").value=member.phone||"";
+$("memberEmail").value=member.email||"";
+$("memberResidence").value=member.residence||"";
+
+$("formTitle").textContent="Modifier : "+(member.full_name||"Membre");
+$("formMessage").textContent="";
+$("editPanel").hidden=false;
+
+$("editPanel").scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+}
+
+function resetForm(){
+editingMemberId=null;
+$("memberForm").reset();
+$("editPanel").hidden=true;
+$("formMessage").textContent="";
+$("formTitle").textContent="Modifier les informations du membre";
+}
+
+async function saveMember(event){
+event.preventDefault();
+
+if(!editingMemberId)return;
+
+const full_name=$("memberName").value.trim();
+const phone=$("memberPhone").value.trim()||null;
+const email=$("memberEmail").value.trim()||null;
+const residence=$("memberResidence").value.trim()||null;
+
+if(!full_name){
+$("formMessage").textContent="Le nom et les prénoms sont obligatoires.";
+return;
+}
+
+const button=$("saveBtn");
+button.disabled=true;
+button.textContent="Enregistrement...";
+
+try{
+const {data,error}=await client
+.from("profiles")
+.update({
+full_name,
+phone,
+email,
+residence
+})
+.eq("id",editingMemberId)
+.select("id");
+
+if(error)throw error;
+
+if(!data||data.length===0){
+throw new Error("Aucune modification effectuée. Vérifie les autorisations de la table profiles dans Supabase.");
+}
+
+$("formMessage").textContent="Les informations du membre ont été mises à jour.";
+showMessage("Mise à jour effectuée avec succès.","success");
+
+resetForm();
+await loadMembers();
+
+}catch(error){
+console.error(error);
+$("formMessage").textContent="Erreur : "+error.message;
+}finally{
+button.disabled=false;
+button.textContent="Enregistrer les modifications";
+}
+}
+
+$("membersTable").addEventListener("click",event=>{
+const button=event.target.closest("[data-edit-member]");
+if(button)editMember(button.dataset.editMember);
+});
+
+$("memberForm").addEventListener("submit",saveMember);
+$("cancelBtn").addEventListener("click",resetForm);
+$("refreshBtn").addEventListener("click",loadMembers);
+$("searchMember").addEventListener("input",renderMembers);
+
+if(await checkAccess()){
+await loadMembers();
+}
+
+})();
+</script>
+
+</body>
+</html>
