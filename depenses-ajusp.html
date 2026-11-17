@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gestion financière de l'AJUSP Pindikro">
+<title>Recettes et dépenses | AJUSP Pindikro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--green:#17643D;--dark:#10452D;--yellow:#F2C94C;--navy:#14263F;--bg:#F7F9F6;--white:#fff;--red:#b42318;--gray:#64748b;--line:#e4ebe5}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#243044}
+header{background:var(--dark);color:#fff;padding:19px 5%;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{font-size:13px;margin:6px 0 0;color:#e4eee7}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+button,.link-button{border:0;border-radius:7px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;font-size:13px}
+button:disabled{opacity:.55;cursor:not-allowed}
+.logout{background:var(--yellow);color:var(--navy)}
+.back{background:#fff;color:var(--dark)}
+main{max-width:1320px;margin:26px auto;padding:0 18px}
+.intro{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.intro h2{margin:0 0 6px;color:var(--dark)}.muted,.small{color:var(--gray)}.small{font-size:12px}
+.notice{background:#fff8df;border-left:4px solid var(--yellow);padding:12px 15px;border-radius:6px;font-size:13px;line-height:1.5;margin:14px 0 20px}
+.message{display:none;padding:12px 15px;border-radius:7px;margin:0 0 18px;white-space:pre-wrap;font-size:14px}
+.message.success{display:block;background:#e4f4e9;color:#14532d}.message.error{display:block;background:#fde8e7;color:#8a1c13}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:18px 0 24px}
+.card,.panel{background:#fff;border-radius:11px;box-shadow:0 2px 10px rgba(0,0,0,.055)}
+.card{padding:18px;border-top:4px solid var(--green)}.card:nth-child(2){border-color:var(--yellow)}.card:nth-child(3){border-color:var(--navy)}.card:nth-child(4){border-color:#5b9b75}
+.card .label{font-size:13px;color:var(--gray)}.card strong{display:block;color:var(--dark);font-size:25px;margin-top:9px;overflow-wrap:anywhere}
+.panel{padding:21px;margin:0 0 22px}.panel h2{margin:0;color:var(--dark);font-size:19px}.panel h3{color:var(--dark);font-size:16px;margin:20px 0 12px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
+.tab{background:#e9f0eb;color:var(--dark)}.tab.active{background:var(--green);color:#fff}
+.section{display:none}.section.active{display:block}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.form-group{margin-bottom:13px}.form-group label{display:block;font-size:13px;font-weight:700;color:var(--dark);margin-bottom:6px}
+input,select,textarea{width:100%;border:1px solid #ccd7ce;border-radius:7px;padding:10px 11px;font:inherit;background:#fff;color:#243044}
+textarea{min-height:76px;resize:vertical}
+.form-actions,.actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.primary{background:var(--green);color:#fff}.secondary{background:#e8eee9;color:var(--dark)}.danger{background:#b42318;color:#fff}.warning{background:#fff0c2;color:#714f00}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:780px}
+th,td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;vertical-align:top}
+th{background:#f0f5f1;color:var(--dark);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.empty{text-align:center;color:var(--gray);padding:25px}
+.badge{display:inline-block;border-radius:20px;padding:4px 8px;font-size:11px;font-weight:700;background:#edf1ee;color:#475569}
+.badge.confirmed{background:#e1f3e7;color:#17643d}.badge.pending{background:#fff3cd;color:#856404}.badge.cancelled{background:#fce7e7;color:#9b1c1c}
+.row-actions{display:flex;gap:5px;flex-wrap:wrap}.row-actions button{padding:6px 8px;font-size:11px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:14px 0}
+.summary{background:#f3f7f4;border-radius:8px;padding:12px}.summary span{font-size:12px;color:var(--gray)}.summary strong{display:block;font-size:18px;color:var(--dark);margin-top:6px}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.filter-row input,.filter-row select{max-width:240px}
+.readonly-note{font-size:12px;color:var(--gray);margin:8px 0 14px}
+footer{text-align:center;padding:23px;background:var(--dark);color:#fff;font-size:13px;line-height:1.7;margin-top:35px}
+@media(max-width:600px){header{padding:17px}header h1{font-size:18px}main{margin-top:18px;padding:0 12px}.panel{padding:15px}.card strong{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>AJUSP PINDIKRO</h1><p>Gestion financière — Ensemble pour un avenir meilleur</p></div>
+ <div class="header-actions"><a class="link-button back" href="dashboard.html">← Tableau de bord</a><button class="logout" id="logoutBtn">Déconnexion</button></div>
+</header>
+<main>
+ <div class="intro">
+  <div><h2>Recettes et dépenses</h2><div class="muted">Suivi des mouvements financiers de l'association.</div></div>
+  <div class="small">Connecté : <strong id="userName">Chargement...</strong> · <span id="userFunction"></span></div>
+ </div>
+ <div id="globalMessage" class="message" role="status"></div>
+ <div class="notice"><strong>Accès sécurisé :</strong> le président / administrateur peut consulter les données. Seuls le trésorier général et le trésorier adjoint peuvent enregistrer, modifier, valider ou supprimer les opérations financières. Les règles de sécurité Supabase restent actives en complément de cette interface.</div>
+
+ <section class="cards">
+  <div class="card"><div class="label">Recettes confirmées</div><strong id="totalIncome">—</strong></div>
+  <div class="card"><div class="label">Dépenses réglées</div><strong id="totalExpenses">—</strong></div>
+  <div class="card"><div class="label">Solde disponible</div><strong id="balance">—</strong></div>
+  <div class="card"><div class="label">Opérations en attente</div><strong id="pendingCount">—</strong></div>
+ </section>
+ <section class="panel">
+  <div class="panel-head"><h2>Vue d'ensemble financière</h2><button class="secondary" id="refreshBtn">Actualiser les données</button></div>
+  <div class="summary-grid">
+   <div class="summary"><span>Cotisations confirmées</span><strong id="sumCotisations">—</strong></div>
+   <div class="summary"><span>Dons confirmés</span><strong id="sumDonations">—</strong></div>
+   <div class="summary"><span>Autres contributions confirmées</span><strong id="sumContributions">—</strong></div>
+   <div class="summary"><span>Autres recettes confirmées</span><strong id="sumOtherIncome">—</strong></div>
+   <div class="summary"><span>Dépenses réglées</span><strong id="sumExpenses">—</strong></div>
+  </div>
+  <p class="small">Les montants sont exprimés en FCFA. Les dons en attente et les opérations annulées sont exclus des recettes encaissées. Les totaux reposent sur les statuts reconnus comme confirmés ou réglés.</p>
+ </section>
+
+ <nav class="tabs" aria-label="Rubriques financières">
+  <button class="tab active" data-tab="cotisations">Cotisations</button>
+  <button class="tab" data-tab="dons">Dons</button>
+  <button class="tab" data-tab="contributions">Contributions membres</button>
+  <button class="tab" data-tab="autres-recettes">Autres recettes</button>
+  <button class="tab" data-tab="depenses">Dépenses</button>
+ </nav>
+
+ <section class="section active" id="section-cotisations">
+  <div class="panel">
+   <div class="panel-head"><h2>Historique des cotisations</h2><button class="secondary" data-refresh="cotisations">Actualiser</button></div>
+   <div class="readonly-note" id="cotReadOnlyNote">Consultation des cotisations.</div>
+   <div class="summary-grid"><div class="summary"><span>Total confirmé</span><strong id="cotConfirmed">—</strong></div><div class="summary"><span>En attente</span><strong id="cotPending">—</strong></div><div class="summary"><span>Nombre d'opérations</span><strong id="cotCount">—</strong></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Membre</th><th>Nature</th><th>Objet</th><th>Période</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th></tr></thead><tbody id="cotTable"><tr><td colspan="8" class="empty">Chargement...</td></tr></tbody></table></div>
+   <p class="small">La saisie et la modification des cotisations restent disponibles dans la rubrique de gestion des cotisations du tableau de bord existant.</p>
+  </div>
+ </section>
+
+ <section class="section" id="section-dons">
+  <div class="panel">
+   <div class="panel-head"><h2>Gestion des dons</h2><button class="secondary" data-refresh="donations">Actualiser</button></div>
+   <div id="donationFormWrap" hidden>
+    <h3 id="donationFormTitle">Enregistrer un don reçu</h3>
+    <form id="donationForm">
+     <div class="form-grid">
+      <div class="form-group"><label for="donorName">Nom du donateur *</label><input id="donorName" maxlength="200" required></div>
+      <div class="form-group"><label for="donorAmount">Montant reçu (FCFA) *</label><input id="donorAmount" type="number" min="1" step="1" required></div>
+      <div class="form-group"><label for="donorPhone">Téléphone</label><input id="donorPhone" maxlength="40"></div>
+      <div class="form-group"><label for="donorEmail">E-mail</label><input id="donorEmail" type="email" maxlength="254"></div>
+     </div>
+     <div class="form-group"><label for="donorDescription">Observation</label><textarea id="donorDescription" maxlength="1000"></textarea></div>
+     <div class="form-actions"><button class="primary" type="submit" id="saveDonationBtn">Enregistrer le don</button><button class="secondary" type="button" id="cancelDonationEdit" hidden>Annuler</button></div>
+     <p class="small" id="donationFormMessage"></p>
+    </form><hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+   </div>
+   <div class="summary-grid"><div class="summary"><span>Dons confirmés</span><strong id="donConfirmed">—</strong></div><div class="summary"><span>Dons en attente</span><strong id="donPending">—</strong></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Donateur</th><th>Montant</th><th>Téléphone</th><th>Date</th><th>Statut</th><th id="donActionsHead">Actions</th></tr></thead><tbody id="donTable"><tr><td colspan="6" class="empty">Chargement...</td></tr></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="section" id="section-contributions">
+  <div class="panel">
+   <div class="panel-head"><h2>Autres contributions des membres</h2><button class="secondary" data-refresh="contributions">Actualiser</button></div>
+   <div id="contributionFormWrap" hidden>
+    <h3 id="contributionFormTitle">Enregistrer une contribution</h3>
+    <form id="contributionForm">
+     <div class="form-grid">
+      <div class="form-group"><label for="contribMember">Membre concerné *</label><select id="contribMember" required><option value="">Chargement des membres...</option></select></div>
+      <div class="form-group"><label for="contribAmount">Montant (FCFA) *</label><input id="contribAmount" type="number" min="1" step="1" required></div>
+      <div class="form-group"><label for="contribStart">Date de début de période</label><input id="contribStart" type="date"></div>
+      <div class="form-group"><label for="contribEnd">Date de fin de période</label><input id="contribEnd" type="date"></div>
+      <div class="form-group"><label for="contribStatus">Statut *</label><select id="contribStatus"><option value="confirmed">Confirmée</option><option value="pending">En attente</option></select></div>
+      <div class="form-group"><label for="contribReceipt">N° de reçu</label><input id="contribReceipt" maxlength="100"></div>
+     </div>
+     <div class="form-group"><label for="contribDescription">Description *</label><textarea id="contribDescription" maxlength="1000" required></textarea></div>
+     <div class="form-actions"><button class="primary" type="submit" id="saveContributionBtn">Enregistrer la contribution</button><button class="secondary" type="button" id="cancelContributionEdit" hidden>Annuler</button></div>
+     <p class="small" id="contributionFormMessage"></p>
+    </form><hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+   </div>
+   <div class="summary-grid"><div class="summary"><span>Confirmées</span><strong id="contribConfirmed">—</strong></div><div class="summary"><span>En attente</span><strong id="contribPending">—</strong></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Membre</th><th>Description</th><th>Montant</th><th>Période</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="contribTable"><tr><td colspan="6" class="empty">Chargement...</td></tr></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="section" id="section-autres-recettes">
+  <div class="panel">
+   <div class="panel-head"><h2>Autres recettes de l'association</h2><button class="secondary" data-refresh="other_income">Actualiser</button></div>
+   <div id="otherIncomeFormWrap" hidden>
+    <h3 id="otherIncomeFormTitle">Enregistrer une autre recette</h3>
+    <form id="otherIncomeForm">
+     <div class="form-grid">
+      <div class="form-group"><label for="incomeSource">Source / organisme</label><input id="incomeSource" maxlength="200" placeholder="Partenaire, mairie, activité..."></div>
+      <div class="form-group"><label for="incomeCategory">Catégorie *</label><select id="incomeCategory" required><option value="Subvention">Subvention</option><option value="Aide partenaire">Aide partenaire</option><option value="Recette d'activité">Recette d'activité</option><option value="Financement">Financement</option><option value="Autre">Autre</option></select></div>
+      <div class="form-group"><label for="incomeAmount">Montant (FCFA) *</label><input id="incomeAmount" type="number" min="1" step="1" required></div>
+      <div class="form-group"><label for="incomeDate">Date de réception *</label><input id="incomeDate" type="date" required></div>
+      <div class="form-group"><label for="incomeMethod">Mode de réception</label><select id="incomeMethod"><option value="">Non précisé</option><option>Espèces</option><option>Virement</option><option>Mobile Money</option><option>Chèque</option><option>Autre</option></select></div>
+      <div class="form-group"><label for="incomeReference">Référence / N° reçu</label><input id="incomeReference" maxlength="150"></div>
+      <div class="form-group"><label for="incomeStatus">Statut *</label><select id="incomeStatus"><option value="confirmed">Confirmée</option><option value="pending">En attente</option></select></div>
+     </div>
+     <div class="form-group"><label for="incomeDescription">Description / précision</label><textarea id="incomeDescription" maxlength="2000"></textarea></div>
+     <div class="form-actions"><button class="primary" type="submit" id="saveIncomeBtn">Enregistrer la recette</button><button class="secondary" type="button" id="cancelIncomeEdit" hidden>Annuler</button></div>
+     <p class="small" id="incomeFormMessage"></p>
+    </form><hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+   </div>
+   <div class="summary-grid"><div class="summary"><span>Confirmées</span><strong id="incomeConfirmed">—</strong></div><div class="summary"><span>En attente</span><strong id="incomePending">—</strong></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Source</th><th>Catégorie</th><th>Description</th><th>Montant</th><th>Date</th><th>Mode</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="incomeTable"><tr><td colspan="8" class="empty">Chargement...</td></tr></tbody></table></div>
+  </div>
+ </section>
+
+ <section class="section" id="section-depenses">
+  <div class="panel">
+   <div class="panel-head"><h2>Gestion des dépenses</h2><button class="secondary" data-refresh="expenses">Actualiser</button></div>
+   <div id="expenseFormWrap" hidden>
+    <h3 id="expenseFormTitle">Enregistrer une dépense</h3>
+    <form id="expenseForm">
+     <div class="form-grid">
+      <div class="form-group"><label for="expenseTitle">Intitulé *</label><input id="expenseTitle" maxlength="200" required></div>
+      <div class="form-group"><label for="expenseCategory">Catégorie *</label><select id="expenseCategory" required><option value="Fonctionnement">Fonctionnement</option><option value="Projet">Projet</option><option value="Transport">Transport</option><option value="Communication">Communication</option><option value="Équipement">Équipement</option><option value="Événement">Événement</option><option value="Autre">Autre</option></select></div>
+      <div class="form-group"><label for="expenseAmount">Montant (FCFA) *</label><input id="expenseAmount" type="number" min="1" step="1" required></div>
+      <div class="form-group"><label for="expenseDate">Date de dépense *</label><input id="expenseDate" type="date" required></div>
+      <div class="form-group"><label for="expenseBeneficiary">Bénéficiaire</label><input id="expenseBeneficiary" maxlength="200"></div>
+      <div class="form-group"><label for="expenseStatus">Statut *</label><select id="expenseStatus"><option value="paid">Réglée</option><option value="pending">En attente</option></select></div>
+     </div>
+     <div class="form-group"><label for="expenseDescription">Description / justificatif</label><textarea id="expenseDescription" maxlength="2000"></textarea></div>
+     <div class="form-actions"><button class="primary" type="submit" id="saveExpenseBtn">Enregistrer la dépense</button><button class="secondary" type="button" id="cancelExpenseEdit" hidden>Annuler</button></div>
+     <p class="small" id="expenseFormMessage"></p>
+    </form><hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+   </div>
+   <div class="summary-grid"><div class="summary"><span>Réglées</span><strong id="expensePaid">—</strong></div><div class="summary"><span>En attente</span><strong id="expensePending">—</strong></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Intitulé</th><th>Catégorie</th><th>Bénéficiaire</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="expenseTable"><tr><td colspan="7" class="empty">Chargement...</td></tr></tbody></table></div>
+  </div>
+ </section>
+</main>
+<footer>Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>Ensemble pour un avenir meilleur</footer>
+
+<script>
+(async function(){
+"use strict";
+const SUPABASE_URL="https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY="sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+let currentUser=null,profile=null,canManage=false,isAdmin=false;
+let cotRows=[],donRows=[],contribRows=[],incomeRows=[],expenseRows=[];
+let editing={donation:null,contribution:null,income:null,expense:null};
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+const money=n=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(Number(n||0))+" FCFA";
+const dateLabel=v=>{if(!v)return "—";const d=new Date(v+"T00:00:00");return Number.isNaN(d.getTime())?String(v):d.toLocaleDateString("fr-FR")};
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=v=>String(v??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\s_-]+/g,"");
+const isPending=s=>["pending","enattente","attente"].includes(norm(s));
+const isCancelled=s=>["cancelled","canceled","annule","rejected","refuse","rejected"].includes(norm(s));
+const isIncomeConfirmed=s=>["confirmed","confirmee","confirme","paid","payee","paye","validee","valide","approved","approuvee","approuve","received","recu","recue"].includes(norm(s));
+const isExpensePaid=s=>["paid","payee","paye","confirmed","confirmee","validee","valide","approved","approuvee","approuve","reglee","regle","effectuee","effectue"].includes(norm(s));
+function msg(text,type="error"){const el=$("globalMessage");el.textContent=text;el.className="message "+type;window.scrollTo({top:0,behavior:"smooth"});}
+function clearMsg(){const el=$("globalMessage");el.textContent="";el.className="message";}
+function setEmpty(id,cols,text){$(id).innerHTML=`<tr><td colspan="${cols}" class="empty">${esc(text)}</td></tr>`;}
+function badge(status){let c=isPending(status)?"pending":(isCancelled(status)?"cancelled":(isIncomeConfirmed(status)||isExpensePaid(status)?"confirmed":""));return `<span class="badge ${c}">${esc(statusLabel(status))}</span>`;}
+function statusLabel(s){const k=norm(s);const map={pending:"En attente",enattente:"En attente",confirmed:"Confirmée",confirmee:"Confirmée",paid:"Réglée",payee:"Réglée",cancelled:"Annulée",canceled:"Annulée",rejected:"Rejetée",approved:"Approuvée",approvede:"Approuvée",validee:"Validée",valide:"Validé",paid:"Réglée"};return map[k]||String(s||"Non précisé");}
+function sum(rows,fn){return rows.filter(fn).reduce((a,r)=>a+Number(r.amount??r.montant??0),0);}
+function actions(type,id){if(!canManage)return "";return `<div class="row-actions"><button class="secondary" data-action="${type}-edit" data-id="${esc(id)}">Modifier</button><button class="danger" data-action="${type}-delete" data-id="${esc(id)}">Supprimer</button></div>`;}
+function toggleForms(){for(const id of ["donationFormWrap","contributionFormWrap","otherIncomeFormWrap","expenseFormWrap"])$(id).hidden=!canManage;}
+function setFormDateDefaults(){$("incomeDate").value=today();$("expenseDate").value=today();}
+function resetForm(type){
+ editing[type]=null;
+ const forms={donation:"donationForm",contribution:"contributionForm",income:"otherIncomeForm",expense:"expenseForm"};
+ $(forms[type]).reset();
+ const configs={donation:["donationFormTitle","Enregistrer un don reçu","saveDonationBtn","Enregistrer le don","cancelDonationEdit"],contribution:["contributionFormTitle","Enregistrer une contribution","saveContributionBtn","Enregistrer la contribution","cancelContributionEdit"],income:["otherIncomeFormTitle","Enregistrer une autre recette","saveIncomeBtn","Enregistrer la recette","cancelIncomeEdit"],expense:["expenseFormTitle","Enregistrer une dépense","saveExpenseBtn","Enregistrer la dépense","cancelExpenseEdit"]};
+ const c=configs[type];$(c[0]).textContent=c[1];$(c[2]).textContent=c[3];$(c[4]).hidden=true;
+ const m={donation:"donationFormMessage",contribution:"contributionFormMessage",income:"incomeFormMessage",expense:"expenseFormMessage"};$(m[type]).textContent="";
+ if(type==="income"||type==="expense")setFormDateDefaults();
+}
+async function authenticate(){
+ const {data:{session},error}=await client.auth.getSession();
+ if(error||!session){window.location.href="connexion.html";return false;}
+ currentUser=session.user;
+ const {data:p,error:pe}=await client.from("profiles").select("id,full_name,role,status,fonction").eq("id",currentUser.id).single();
+ if(pe||!p||p.status!=="active"){msg("Accès refusé : profil introuvable ou inactif.");await client.auth.signOut();setTimeout(()=>location.href="connexion.html",1800);return false;}
+ profile=p;isAdmin=p.role==="admin";
+ canManage=["tresorier","adjoint_tresorier"].includes(String(p.fonction||"").trim().toLowerCase());
+ if(!isAdmin&&!canManage){msg("Accès réservé au président / administrateur et à l'équipe de trésorerie.");await client.auth.signOut();setTimeout(()=>location.href="connexion.html",2200);return false;}
+ $("userName").textContent=p.full_name||currentUser.email||"Responsable";
+ $("userFunction").textContent=canManage?(p.fonction==="tresorier"?"Trésorier général":"Trésorier adjoint"):"Consultation";
+ toggleForms();
+ return true;
+}
+async function loadCotisations(){
+ const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,nature,objet,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
+ if(error){setEmpty("cotTable",8,"Erreur de chargement : "+error.message);console.error(error);return;}
+ cotRows=data||[];
+ const ok=cotRows.filter(r=>norm(r.statut)==="confirmee"),wait=cotRows.filter(r=>isPending(r.statut));
+ $("cotConfirmed").textContent=money(sum(ok,()=>true));$("cotPending").textContent=money(sum(wait,()=>true));$("cotCount").textContent=String(cotRows.length);
+ $("cotTable").innerHTML=cotRows.length?cotRows.map(r=>`<tr><td>${esc(r.profiles?.full_name||"Membre")}</td><td>${esc(r.nature||"Mensuelle")}</td><td>${esc(r.objet||"—")}</td><td>${esc(r.periode||"—")}</td><td>${money(r.montant)}</td><td>${dateLabel(r.date_paiement)}</td><td>${esc(r.mode_paiement||"—")}</td><td>${badge(r.statut)}</td></tr>`).join(""):'<tr><td colspan="8" class="empty">Aucune cotisation enregistrée.</td></tr>';
+}
+async function loadDonations(){
+ const {data,error}=await client.from("donations").select("id,member_id,donor_name,donor_phone,donor_email,phone,email,description,message,amount,status,paid_at,created_at,currency,receipt_number").order("created_at",{ascending:false});
+ if(error){setEmpty("donTable",6,"Erreur de chargement : "+error.message);console.error(error);return;}
+ donRows=data||[];
+ $("donConfirmed").textContent=money(sum(donRows,isIncomeConfirmed));$("donPending").textContent=money(sum(donRows,r=>isPending(r.status)));
+ $("donTable").innerHTML=donRows.length?donRows.map(r=>`<tr><td>${esc(r.donor_name||"Donateur")}</td><td>${money(r.amount)}</td><td>${esc(r.donor_phone||r.phone||"—")}</td><td>${dateLabel((r.paid_at||r.created_at||"").slice(0,10))}</td><td>${badge(r.status)}</td><td>${canManage?`<div class="row-actions">${isPending(r.status)?`<button class="primary" data-action="donation-confirm" data-id="${esc(r.id)}">Confirmer</button><button class="warning" data-action="donation-reject" data-id="${esc(r.id)}">Rejeter</button>`:""}${actions("donation",r.id)}</div>`:"—"}</td></tr>`).join(""):'<tr><td colspan="6" class="empty">Aucun don enregistré.</td></tr>';
+}
+async function loadActiveMembers(){
+ const {data,error}=await client.from("profiles").select("id,full_name").eq("status","active").order("full_name");
+ if(error){$("contribMember").innerHTML='<option value="">Erreur de chargement</option>';return;}
+ $("contribMember").innerHTML='<option value="">Sélectionner un membre</option>'+(data||[]).map(m=>`<option value="${esc(m.id)}">${esc(m.full_name||"Membre")}</option>`).join("");
+}
+async function loadContributions(){
+ const {data,error}=await client.from("contributions").select("id,member_id,description,amount,period_start,period_end,status,paid_at,receipt_number,created_at,profiles(full_name)").order("created_at",{ascending:false});
+ if(error){setEmpty("contribTable",6,"Erreur de chargement : "+error.message);console.error(error);return;}
+ contribRows=data||[];
+ $("contribConfirmed").textContent=money(sum(contribRows,isIncomeConfirmed));$("contribPending").textContent=money(sum(contribRows,r=>isPending(r.status)));
+ $("contribTable").innerHTML=contribRows.length?contribRows.map(r=>`<tr><td>${esc(r.profiles?.full_name||"Membre")}</td><td>${esc(r.description||"—")}</td><td>${money(r.amount)}</td><td>${dateLabel(r.period_start)} – ${dateLabel(r.period_end)}</td><td>${badge(r.status)}</td><td>${actions("contribution",r.id)}</td></tr>`).join(""):'<tr><td colspan="6" class="empty">Aucune contribution enregistrée.</td></tr>';
+}
+async function loadOtherIncome(){
+ const {data,error}=await client.from("other_income").select("id,source_name,category,description,amount,currency,received_date,payment_method,reference,status,recorded_by,created_at").order("received_date",{ascending:false});
+ if(error){setEmpty("incomeTable",8,"Erreur de chargement : "+error.message);console.error(error);return;}
+ incomeRows=data||[];
+ $("incomeConfirmed").textContent=money(sum(incomeRows,isIncomeConfirmed));$("incomePending").textContent=money(sum(incomeRows,r=>isPending(r.status)));
+ $("incomeTable").innerHTML=incomeRows.length?incomeRows.map(r=>`<tr><td>${esc(r.source_name||"Non précisée")}</td><td>${esc(r.category)}</td><td>${esc(r.description||"—")}</td><td>${money(r.amount)}</td><td>${dateLabel(r.received_date)}</td><td>${esc(r.payment_method||"—")}</td><td>${badge(r.status)}</td><td>${actions("income",r.id)}</td></tr>`).join(""):'<tr><td colspan="8" class="empty">Aucune autre recette enregistrée.</td></tr>';
+}
+async function loadExpenses(){
+ const {data,error}=await client.from("expenses").select("id,title,description,category,amount,expense_date,beneficiary,proof_url,status,recorded_by,created_at").order("expense_date",{ascending:false});
+ if(error){setEmpty("expenseTable",7,"Erreur de chargement : "+error.message);console.error(error);return;}
+ expenseRows=data||[];
+ $("expensePaid").textContent=money(sum(expenseRows,isExpensePaid));$("expensePending").textContent=money(sum(expenseRows,r=>isPending(r.status)));
+ $("expenseTable").innerHTML=expenseRows.length?expenseRows.map(r=>`<tr><td><strong>${esc(r.title)}</strong>${r.description?`<br><span class="small">${esc(r.description)}</span>`:""}</td><td>${esc(r.category)}</td><td>${esc(r.beneficiary||"—")}</td><td>${money(r.amount)}</td><td>${dateLabel(r.expense_date)}</td><td>${badge(r.status)}</td><td>${actions("expense",r.id)}</td></tr>`).join(""):'<tr><td colspan="7" class="empty">Aucune dépense enregistrée.</td></tr>';
+}
+function updateTotals(){
+ const cot=sum(cotRows,r=>norm(r.statut)==="confirmee");
+ const don=sum(donRows,r=>isIncomeConfirmed(r.status));
+ const con=sum(contribRows,r=>isIncomeConfirmed(r.status));
+ const oth=sum(incomeRows,r=>isIncomeConfirmed(r.status));
+ const exp=sum(expenseRows,r=>isExpensePaid(r.status));
+ const inc=cot+don+con+oth,bal=inc-exp;
+ $("sumCotisations").textContent=money(cot);$("sumDonations").textContent=money(don);$("sumContributions").textContent=money(con);$("sumOtherIncome").textContent=money(oth);$("sumExpenses").textContent=money(exp);
+ $("totalIncome").textContent=money(inc);$("totalExpenses").textContent=money(exp);$("balance").textContent=money(bal);
+ const pending=donRows.filter(r=>isPending(r.status)).length+contribRows.filter(r=>isPending(r.status)).length+incomeRows.filter(r=>isPending(r.status)).length+expenseRows.filter(r=>isPending(r.status)).length+cotRows.filter(r=>isPending(r.statut)).length;
+ $("pendingCount").textContent=String(pending);
+}
+async function refreshAll(){
+ clearMsg();
+ await Promise.all([loadCotisations(),loadDonations(),loadContributions(),loadOtherIncome(),loadExpenses()]);
+ updateTotals();
+}
+function editDonation(id){
+ const r=donRows.find(x=>String(x.id)===String(id));if(!r||!canManage)return;
+ editing.donation=id;$("donorName").value=r.donor_name||"";$("donorAmount").value=r.amount||"";$("donorPhone").value=r.donor_phone||r.phone||"";$("donorEmail").value=r.donor_email||r.email||"";$("donorDescription").value=r.description||r.message||"";
+ $("donationFormTitle").textContent="Modifier le don";$("saveDonationBtn").textContent="Enregistrer les modifications";$("cancelDonationEdit").hidden=false;$("donationFormWrap").scrollIntoView({behavior:"smooth"});
+}
+function editContribution(id){
+ const r=contribRows.find(x=>String(x.id)===String(id));if(!r||!canManage)return;
+ editing.contribution=id;$("contribMember").value=r.member_id;$("contribAmount").value=r.amount;$("contribStart").value=r.period_start||"";$("contribEnd").value=r.period_end||"";$("contribStatus").value=isIncomeConfirmed(r.status)?"confirmed":(isPending(r.status)?"pending":r.status);$("contribReceipt").value=r.receipt_number||"";$("contribDescription").value=r.description||"";
+ $("contributionFormTitle").textContent="Modifier la contribution";$("saveContributionBtn").textContent="Enregistrer les modifications";$("cancelContributionEdit").hidden=false;$("contributionFormWrap").scrollIntoView({behavior:"smooth"});
+}
+function editIncome(id){
+ const r=incomeRows.find(x=>String(x.id)===String(id));if(!r||!canManage)return;
+ editing.income=id;$("incomeSource").value=r.source_name||"";$("incomeCategory").value=r.category||"Autre";$("incomeAmount").value=r.amount;$("incomeDate").value=r.received_date||today();$("incomeMethod").value=r.payment_method||"";$("incomeReference").value=r.reference||"";$("incomeStatus").value=isIncomeConfirmed(r.status)?"confirmed":(isPending(r.status)?"pending":r.status);$("incomeDescription").value=r.description||"";
+ $("otherIncomeFormTitle").textContent="Modifier l'autre recette";$("saveIncomeBtn").textContent="Enregistrer les modifications";$("cancelIncomeEdit").hidden=false;$("otherIncomeFormWrap").scrollIntoView({behavior:"smooth"});
+}
+function editExpense(id){
+ const r=expenseRows.find(x=>String(x.id)===String(id));if(!r||!canManage)return;
+ editing.expense=id;$("expenseTitle").value=r.title;$("expenseCategory").value=r.category;$("expenseAmount").value=r.amount;$("expenseDate").value=r.expense_date;$("expenseBeneficiary").value=r.beneficiary||"";$("expenseStatus").value=isExpensePaid(r.status)?"paid":(isPending(r.status)?"pending":r.status);$("expenseDescription").value=r.description||"";
+ $("expenseFormTitle").textContent="Modifier la dépense";$("saveExpenseBtn").textContent="Enregistrer les modifications";$("cancelExpenseEdit").hidden=false;$("expenseFormWrap").scrollIntoView({behavior:"smooth"});
+}
+async function saveDonation(e){
+ e.preventDefault();if(!canManage)return;
+ const payload={donor_name:$("donorName").value.trim(),amount:Number($("donorAmount").value),donor_phone:$("donorPhone").value.trim()||null,donor_email:$("donorEmail").value.trim()||null,description:$("donorDescription").value.trim()||null,status:"confirmed",paid_at:new Date().toISOString(),currency:"FCFA",is_public:false};
+ if(!payload.donor_name||!Number.isFinite(payload.amount)||payload.amount<=0){$("donationFormMessage").textContent="Nom et montant positif obligatoires.";return;}
+ const btn=$("saveDonationBtn"),wasEditing=Boolean(editing.donation);btn.disabled=true;
+ try{const q=editing.donation?client.from("donations").update(payload).eq("id",editing.donation):client.from("donations").insert(payload);const {data,error}=await q.select("id");if(error)throw error;if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");resetForm("donation");msg(wasEditing?"Don modifié.":"Don enregistré.","success");await refreshAll();}
+ catch(err){$("donationFormMessage").textContent="Erreur : "+err.message;}finally{btn.disabled=false;}
+}
+async function saveContribution(e){
+ e.preventDefault();if(!canManage)return;
+ const payload={member_id:$("contribMember").value,amount:Number($("contribAmount").value),period_start:$("contribStart").value||null,period_end:$("contribEnd").value||null,status:$("contribStatus").value,receipt_number:$("contribReceipt").value.trim()||null,description:$("contribDescription").value.trim()};
+ if(!payload.member_id||!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0){$("contributionFormMessage").textContent="Membre, description et montant positif obligatoires.";return;}
+ if(payload.period_start&&payload.period_end&&payload.period_end<payload.period_start){$("contributionFormMessage").textContent="La date de fin précède la date de début.";return;}
+ const btn=$("saveContributionBtn");btn.disabled=true;
+ try{const q=editing.contribution?client.from("contributions").update(payload).eq("id",editing.contribution):client.from("contributions").insert(payload);const {data,error}=await q.select("id");if(error)throw error;if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");const was=Boolean(editing.contribution);resetForm("contribution");msg(was?"Contribution modifiée.":"Contribution enregistrée.","success");await refreshAll();}
+ catch(err){$("contributionFormMessage").textContent="Erreur : "+err.message;}finally{btn.disabled=false;}
+}
+async function saveIncome(e){
+ e.preventDefault();if(!canManage)return;
+ const payload={source_name:$("incomeSource").value.trim()||null,category:$("incomeCategory").value,amount:Number($("incomeAmount").value),received_date:$("incomeDate").value,payment_method:$("incomeMethod").value||null,reference:$("incomeReference").value.trim()||null,status:$("incomeStatus").value,description:$("incomeDescription").value.trim()||null,currency:"FCFA",recorded_by:currentUser.id};
+ if(!payload.category||!payload.received_date||!Number.isFinite(payload.amount)||payload.amount<=0){$("incomeFormMessage").textContent="Catégorie, date et montant positif obligatoires.";return;}
+ const btn=$("saveIncomeBtn");btn.disabled=true;
+ try{const q=editing.income?client.from("other_income").update(payload).eq("id",editing.income):client.from("other_income").insert(payload);const {data,error}=await q.select("id");if(error)throw error;if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");const was=Boolean(editing.income);resetForm("income");msg(was?"Recette modifiée.":"Recette enregistrée.","success");await refreshAll();}
+ catch(err){$("incomeFormMessage").textContent="Erreur : "+err.message;}finally{btn.disabled=false;}
+}
+async function saveExpense(e){
+ e.preventDefault();if(!canManage)return;
+ const payload={title:$("expenseTitle").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_date:$("expenseDate").value,beneficiary:$("expenseBeneficiary").value.trim()||null,status:$("expenseStatus").value,description:$("expenseDescription").value.trim()||null,recorded_by:currentUser.id};
+ if(!payload.title||!payload.category||!payload.expense_date||!Number.isFinite(payload.amount)||payload.amount<=0){$("expenseFormMessage").textContent="Intitulé, catégorie, date et montant positif obligatoires.";return;}
+ const btn=$("saveExpenseBtn");btn.disabled=true;
+ try{const q=editing.expense?client.from("expenses").update(payload).eq("id",editing.expense):client.from("expenses").insert(payload);const {data,error}=await q.select("id");if(error)throw error;if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");const was=Boolean(editing.expense);resetForm("expense");msg(was?"Dépense modifiée.":"Dépense enregistrée.","success");await refreshAll();}
+ catch(err){$("expenseFormMessage").textContent="Erreur : "+err.message;}finally{btn.disabled=false;}
+}
+async function updateDonationStatus(id,status){
+ if(!canManage)return;const label=status==="confirmed"?"confirmer ce don":"rejeter ce don";
+ if(!confirm("Confirmer l'action : "+label+" ?"))return;
+ const payload=status==="confirmed"?{status,paid_at:new Date().toISOString()}:{status};
+ const {data,error}=await client.from("donations").update(payload).eq("id",id).eq("status","pending").select("id");
+ if(error){msg("Modification impossible : "+error.message);return;}if(!data?.length){msg("Le don n'a pas été modifié. Il a peut-être déjà été traité.");return;}
+ msg(status==="confirmed"?"Don confirmé.":"Don rejeté.","success");await refreshAll();
+}
+async function deleteRecord(type,id){
+ if(!canManage)return;
+ const cfg={donation:["donations",donRows,"ce don"],contribution:["contributions",contribRows,"cette contribution"],income:["other_income",incomeRows,"cette recette"],expense:["expenses",expenseRows,"cette dépense"]}[type];
+ const row=cfg[1].find(x=>String(x.id)===String(id));if(!row)return;
+ if(!confirm("Supprimer définitivement "+cfg[2]+" ?"))return;
+ const {data,error}=await client.from(cfg[0]).delete().eq("id",id).select("id");
+ if(error){msg("Suppression impossible : "+error.message);return;}if(!data?.length){msg("Aucune suppression effectuée. Vérifie les droits RLS.");return;}
+ msg("Opération supprimée.","success");await refreshAll();
+}
+function showTab(name){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id==="section-"+name));
+}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+$("logoutBtn").addEventListener("click",async()=>{await client.auth.signOut();location.href="connexion.html";});
+$("refreshBtn").addEventListener("click",refreshAll);
+document.querySelectorAll("[data-refresh]").forEach(b=>b.addEventListener("click",refreshAll));
+$("donationForm").addEventListener("submit",saveDonation);
+$("contributionForm").addEventListener("submit",saveContribution);
+$("otherIncomeForm").addEventListener("submit",saveIncome);
+$("expenseForm").addEventListener("submit",saveExpense);
+$("cancelDonationEdit").addEventListener("click",()=>resetForm("donation"));
+$("cancelContributionEdit").addEventListener("click",()=>resetForm("contribution"));
+$("cancelIncomeEdit").addEventListener("click",()=>resetForm("income"));
+$("cancelExpenseEdit").addEventListener("click",()=>resetForm("expense"));
+document.addEventListener("click",async e=>{
+ const b=e.target.closest("button[data-action]");if(!b)return;
+ const {action,id}=b.dataset;
+ if(action==="donation-edit")editDonation(id);
+ else if(action==="contribution-edit")editContribution(id);
+ else if(action==="income-edit")editIncome(id);
+ else if(action==="expense-edit")editExpense(id);
+ else if(action==="donation-delete")await deleteRecord("donation",id);
+ else if(action==="contribution-delete")await deleteRecord("contribution",id);
+ else if(action==="income-delete")await deleteRecord("income",id);
+ else if(action==="expense-delete")await deleteRecord("expense",id);
+ else if(action==="donation-confirm")await updateDonationStatus(id,"confirmed");
+ else if(action==="donation-reject")await updateDonationStatus(id,"rejected");
+});
+try{
+ if(await authenticate()){
+  setFormDateDefaults();
+  await loadActiveMembers();
+  await refreshAll();
+ }
+}catch(err){console.error(err);msg("Une erreur inattendue est survenue : "+err.message);}
+})();
+</script>
+</body>
+</html>
