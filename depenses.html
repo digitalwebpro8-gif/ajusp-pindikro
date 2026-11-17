@@ -217,14 +217,14 @@ const dateLabel=v=>{if(!v)return "—";const d=new Date(v+"T00:00:00");return Nu
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=v=>String(v??"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\s_-]+/g,"");
 const isPending=s=>["pending","enattente","attente"].includes(norm(s));
-const isCancelled=s=>["cancelled","canceled","annule","rejected","refuse","rejected"].includes(norm(s));
+const isCancelled=s=>["cancelled","canceled","annule","rejected","refuse"].includes(norm(s));
 const isIncomeConfirmed=s=>["confirmed","confirmee","confirme","paid","payee","paye","validee","valide","approved","approuvee","approuve","received","recu","recue"].includes(norm(s));
 const isExpensePaid=s=>["paid","payee","paye","confirmed","confirmee","validee","valide","approved","approuvee","approuve","reglee","regle","effectuee","effectue"].includes(norm(s));
 function msg(text,type="error"){const el=$("globalMessage");el.textContent=text;el.className="message "+type;window.scrollTo({top:0,behavior:"smooth"});}
 function clearMsg(){const el=$("globalMessage");el.textContent="";el.className="message";}
 function setEmpty(id,cols,text){$(id).innerHTML=`<tr><td colspan="${cols}" class="empty">${esc(text)}</td></tr>`;}
 function badge(status){let c=isPending(status)?"pending":(isCancelled(status)?"cancelled":(isIncomeConfirmed(status)||isExpensePaid(status)?"confirmed":""));return `<span class="badge ${c}">${esc(statusLabel(status))}</span>`;}
-function statusLabel(s){const k=norm(s);const map={pending:"En attente",enattente:"En attente",confirmed:"Confirmée",confirmee:"Confirmée",paid:"Réglée",payee:"Réglée",cancelled:"Annulée",canceled:"Annulée",rejected:"Rejetée",approved:"Approuvée",approvede:"Approuvée",validee:"Validée",valide:"Validé",paid:"Réglée"};return map[k]||String(s||"Non précisé");}
+function statusLabel(s){const k=norm(s);const map={pending:"En attente",enattente:"En attente",confirmed:"Confirmée",confirmee:"Confirmée",paid:"Réglée",payee:"Réglée",cancelled:"Annulée",canceled:"Annulée",rejected:"Rejetée",approved:"Approuvée",validee:"Validée",valide:"Validé"};return map[k]||String(s||"Non précisé");}
 function sum(rows,fn){return rows.filter(fn).reduce((a,r)=>a+Number(r.amount??r.montant??0),0);}
 function actions(type,id){if(!canManage)return "";return `<div class="row-actions"><button class="secondary" data-action="${type}-edit" data-id="${esc(id)}">Modifier</button><button class="danger" data-action="${type}-delete" data-id="${esc(id)}">Supprimer</button></div>`;}
 function toggleForms(){for(const id of ["donationFormWrap","contributionFormWrap","otherIncomeFormWrap","expenseFormWrap"])$(id).hidden=!canManage;}
@@ -243,12 +243,15 @@ async function authenticate(){
  if(error||!session){window.location.href="connexion.html";return false;}
  currentUser=session.user;
  const {data:p,error:pe}=await client.from("profiles").select("id,full_name,role,status,fonction").eq("id",currentUser.id).single();
- if(pe||!p||p.status!=="active"){msg("Accès refusé : profil introuvable ou inactif.");await client.auth.signOut();setTimeout(()=>location.href="connexion.html",1800);return false;}
- profile=p;isAdmin=p.role==="admin";
- canManage=["tresorier","adjoint_tresorier"].includes(String(p.fonction||"").trim().toLowerCase());
+ if(pe||!p||String(p.status||"").toLowerCase()!=="active"){msg("Accès refusé : profil introuvable ou inactif.");await client.auth.signOut();setTimeout(()=>location.href="connexion.html",1800);return false;}
+ profile=p;
+ isAdmin=String(p.role||"").toLowerCase()==="admin";
+ // Normalisation : accepte les valeurs techniques et les libellés lisibles de la fonction.
+ const fonctionNormalisee=norm(p.fonction);
+ canManage=["tresorier","tresoriergeneral","adjointtresorier","tresorieradjoint"].includes(fonctionNormalisee);
  if(!isAdmin&&!canManage){msg("Accès réservé au président / administrateur et à l'équipe de trésorerie.");await client.auth.signOut();setTimeout(()=>location.href="connexion.html",2200);return false;}
  $("userName").textContent=p.full_name||currentUser.email||"Responsable";
- $("userFunction").textContent=canManage?(p.fonction==="tresorier"?"Trésorier général":"Trésorier adjoint"):"Consultation";
+ $("userFunction").textContent=canManage?(fonctionNormalisee.includes("adjoint")?"Trésorier adjoint":"Trésorier général"):"Consultation";
  toggleForms();
  return true;
 }
@@ -360,8 +363,20 @@ async function saveExpense(e){
  const payload={title:$("expenseTitle").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_date:$("expenseDate").value,beneficiary:$("expenseBeneficiary").value.trim()||null,status:$("expenseStatus").value,description:$("expenseDescription").value.trim()||null,recorded_by:currentUser.id};
  if(!payload.title||!payload.category||!payload.expense_date||!Number.isFinite(payload.amount)||payload.amount<=0){$("expenseFormMessage").textContent="Intitulé, catégorie, date et montant positif obligatoires.";return;}
  const btn=$("saveExpenseBtn");btn.disabled=true;
- try{const q=editing.expense?client.from("expenses").update(payload).eq("id",editing.expense):client.from("expenses").insert(payload);const {data,error}=await q.select("id");if(error)throw error;if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");const was=Boolean(editing.expense);resetForm("expense");msg(was?"Dépense modifiée.":"Dépense enregistrée.","success");await refreshAll();}
- catch(err){$("expenseFormMessage").textContent="Erreur : "+err.message;}finally{btn.disabled=false;}
+ try{
+  const q=editing.expense?client.from("expenses").update(payload).eq("id",editing.expense):client.from("expenses").insert(payload);
+  const {data,error}=await q.select("id");
+  if(error)throw error;
+  if(!data?.length)throw new Error("Aucune modification effectuée. Vérifie les droits RLS.");
+  const was=Boolean(editing.expense);
+  resetForm("expense");
+  msg(was?"Dépense modifiée.":"Dépense enregistrée.","success");
+  await refreshAll();
+ }catch(err){
+  $("expenseFormMessage").textContent="Erreur : "+err.message;
+ }finally{
+  btn.disabled=false;
+ }
 }
 async function updateDonationStatus(id,status){
  if(!canManage)return;const label=status==="confirmed"?"confirmer ce don":"rejeter ce don";
