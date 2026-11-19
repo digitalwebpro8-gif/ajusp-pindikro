@@ -42,7 +42,7 @@
     .section-heading h2{color:var(--bleu);font-size:clamp(27px,4vw,38px);margin:8px 0 12px}
     .section-heading p{color:var(--gris)}
     .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:45px;align-items:center}
-    .about-image{min-height:380px;border-radius:15px;background:url("banniere-ajusp.jpeg") center/cover no-repeat,#DCE8DE}
+    .about-image{min-height:380px;border-radius:15px;background:url("photo-qui-sommes-nous.jpeg") center/cover no-repeat,#DCE8DE}
     .about-text h2{color:var(--bleu);font-size:32px;margin-bottom:18px}
     .about-text p{color:var(--gris);margin-bottom:15px}
     .domains{background:#fff}
@@ -347,34 +347,7 @@
       }
     })();
 
-    // Charger l'image de la rubrique « Qui sommes-nous ? » depuis le tableau de bord.
-    (async function loadAboutImage(){
-      const aboutImage=document.querySelector(".about-image");
-      if(!aboutImage)return;
-
-      const defaultImage="banniere-ajusp.jpeg";
-
-      try{
-        const {data,error}=await supabaseClient
-          .from("site_settings")
-          .select("value")
-          .eq("key","about_image")
-          .maybeSingle();
-
-        if(error)throw error;
-
-        const imageUrl=data?.value||defaultImage;
-        const parsedUrl=new URL(imageUrl,window.location.href);
-
-        if(!["http:","https:"].includes(parsedUrl.protocol)){
-          throw new Error("Adresse de l'image invalide.");
-        }
-
-        aboutImage.style.backgroundImage='url("'+parsedUrl.href+'")';
-      }catch(error){
-        console.error("Erreur de chargement de l'image Qui sommes-nous :",error);
-      }
-    })();
+    // L’image « Qui sommes-nous ? » est définie manuellement dans le CSS.
 
     // Domaines d'intervention : diaporama automatique des photos de chaque domaine.
     (async function loadHomeDomains(){
