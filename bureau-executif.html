@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Découvrez les membres du bureau exécutif de l'Association Jeunesse Unie et Solidaire de Pindikro.">
+<title>Bureau exécutif | AJUSP Pindikro</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --green:#17643D;
+  --dark:#10452D;
+  --yellow:#F2C94C;
+  --navy:#14263F;
+  --bg:#F7F9F6;
+  --white:#fff;
+  --text:#263238;
+  --muted:#68756e;
+  --shadow:0 8px 25px rgba(16,69,45,.10);
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+}
+
+header {
+  background:white;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.header-inner {
+  max-width:1150px;
+  margin:auto;
+  padding:12px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:var(--dark);
+  font-weight:bold;
+}
+
+.brand img {
+  width:58px;
+  height:58px;
+  object-fit:contain;
+}
+
+.brand-name {
+  font-size:17px;
+  line-height:1.3;
+}
+
+.brand-name small {
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:normal;
+}
+
+nav {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+nav a {
+  text-decoration:none;
+  color:var(--dark);
+  font-weight:bold;
+  padding:9px 14px;
+  border-radius:7px;
+}
+
+nav a:hover,
+nav a.active {
+  background:var(--green);
+  color:white;
+}
+
+.hero {
+  background:linear-gradient(120deg,rgba(16,69,45,.96),rgba(20,38,63,.94));
+  color:white;
+  text-align:center;
+  padding:65px 20px;
+  border-bottom:5px solid var(--yellow);
+}
+
+.hero h1 {
+  font-size:clamp(28px,5vw,43px);
+  margin:0 0 12px;
+}
+
+.hero p {
+  max-width:700px;
+  margin:auto;
+  font-size:16px;
+  color:#edf5ee;
+}
+
+.hero-line {
+  width:75px;
+  height:4px;
+  background:var(--yellow);
+  margin:20px auto 0;
+  border-radius:5px;
+}
+
+main {
+  max-width:1150px;
+  margin:45px auto;
+  padding:0 20px;
+}
+
+.section-heading {
+  text-align:center;
+  margin-bottom:32px;
+}
+
+.section-heading h2 {
+  color:var(--dark);
+  font-size:28px;
+  margin:0 0 8px;
+}
+
+.section-heading p {
+  color:var(--muted);
+  margin:0;
+}
+
+.members-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
+  gap:25px;
+}
+
+.member-card {
+  background:white;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  border:1px solid #e8eee9;
+  transition:transform .2s,box-shadow .2s;
+}
+
+.member-card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 13px 30px rgba(16,69,45,.15);
+}
+
+.member-photo {
+  height:260px;
+  background:#eaf0eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.member-photo img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.photo-placeholder {
+  color:var(--green);
+  font-size:65px;
+  font-weight:bold;
+}
+
+.member-info {
+  padding:22px;
+  text-align:center;
+}
+
+.member-info h3 {
+  color:var(--navy);
+  font-size:19px;
+  margin:0 0 7px;
+}
+
+.member-function {
+  display:inline-block;
+  background:#edf5ef;
+  color:var(--green);
+  font-weight:bold;
+  font-size:13px;
+  padding:6px 12px;
+  border-radius:20px;
+  margin-bottom:12px;
+}
+
+.member-bio {
+  color:var(--muted);
+  font-size:14px;
+  margin:5px 0 0;
+  white-space:pre-line;
+}
+
+.status-message {
+  text-align:center;
+  background:white;
+  padding:30px 20px;
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  color:var(--muted);
+  margin:20px auto;
+}
+
+.status-message.error {
+  color:#a32626;
+}
+
+.back-link {
+  display:inline-block;
+  margin:35px auto 0;
+  padding:12px 22px;
+  background:var(--green);
+  color:white;
+  text-decoration:none;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+.back-link:hover {
+  background:var(--dark);
+}
+
+.back-container {
+  text-align:center;
+}
+
+footer {
+  background:var(--navy);
+  color:white;
+  text-align:center;
+  padding:30px 20px;
+  margin-top:60px;
+}
+
+footer strong {
+  color:var(--yellow);
+}
+
+footer p {
+  margin:6px 0;
+  font-size:14px;
+}
+
+@media(max-width:650px) {
+  .header-inner {
+    flex-direction:column;
+    gap:10px;
+  }
+
+  nav {
+    justify-content:center;
+  }
+
+  nav a {
+    font-size:13px;
+    padding:8px 10px;
+  }
+
+  .hero {
+    padding:48px 16px;
+  }
+
+  main {
+    margin:32px auto;
+  }
+
+  .member-photo {
+    height:280px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="brand">
+      <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+      <span class="brand-name">
+        AJUSP PINDIKRO
+        <small>Ensemble pour un avenir meilleur</small>
+      </span>
+    </a>
+
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="bureau-executif.html" class="active">Bureau exécutif</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Notre Bureau Exécutif</h1>
+  <p>
+    Découvrez les femmes et les hommes qui assurent la conduite
+    et la coordination des actions de l'AJUSP pour le développement
+    de notre village, Pindikro.
+  </p>
+  <div class="hero-line"></div>
+</section>
+
+<main id="bureau">
+  <div class="section-heading">
+    <h2>Les membres du bureau</h2>
+    <p>Une équipe engagée au service de notre communauté.</p>
+  </div>
+
+  <div id="loading" class="status-message">
+    Chargement des membres du bureau exécutif...
+  </div>
+
+  <div id="membersGrid" class="members-grid"></div>
+
+  <div id="emptyMessage" class="status-message" hidden>
+    Aucun membre du bureau exécutif n'est actuellement publié.
+  </div>
+
+  <div id="errorMessage" class="status-message error" hidden>
+    Impossible de charger les membres pour le moment.
+    Veuillez réessayer ultérieurement.
+  </div>
+
+  <div class="back-container">
+    <a href="index.html" class="back-link">← Retour à l'accueil</a>
+  </div>
+</main>
+
+<footer>
+  <p><strong>AJUSP PINDIKRO</strong></p>
+  <p>Association Jeunesse Unie et Solidaire de Pindikro</p>
+  <p><em>Ensemble pour un avenir meilleur</em></p>
+  <p>© <span id="year"></span> AJUSP Pindikro. Tous droits réservés.</p>
+</footer>
+
+<script>
+const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const loading = document.getElementById("loading");
+const membersGrid = document.getElementById("membersGrid");
+const emptyMessage = document.getElementById("emptyMessage");
+const errorMessage = document.getElementById("errorMessage");
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+function renderMember(member) {
+  const name = escapeHTML(member.full_name);
+  const fonction = escapeHTML(member.fonction);
+  const bio = escapeHTML(member.bio || "");
+
+  const photo = typeof member.photo_url === "string" &&
+                member.photo_url.startsWith("https://")
+    ? `<img src="${escapeHTML(member.photo_url)}" alt="Photo de ${name}" loading="lazy">`
+    : `<div class="photo-placeholder" aria-label="Photo non disponible">AJ</div>`;
+
+  return `
+    <article class="member-card">
+      <div class="member-photo">
+        ${photo}
+      </div>
+      <div class="member-info">
+        <h3>${name}</h3>
+        <div class="member-function">${fonction}</div>
+        ${bio ? `<p class="member-bio">${bio}</p>` : ""}
+      </div>
+    </article>
+  `;
+}
+
+async function loadExecutiveMembers() {
+  loading.hidden = false;
+  emptyMessage.hidden = true;
+  errorMessage.hidden = true;
+  membersGrid.innerHTML = "";
+
+  try {
+    const { data, error } = await client
+      .from("executive_members")
+      .select("id,full_name,fonction,photo_url,bio,display_order,created_at")
+      .eq("is_published", true)
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    loading.hidden = true;
+
+    if (!data || data.length === 0) {
+      emptyMessage.hidden = false;
+      return;
+    }
+
+    membersGrid.innerHTML = data.map(renderMember).join("");
+
+  } catch (error) {
+    console.error("Erreur de chargement du bureau exécutif :", error);
+    loading.hidden = true;
+    errorMessage.hidden = false;
+  }
+}
+
+loadExecutiveMembers();
+</script>
+
+</body>
+</html>
