@@ -4,295 +4,370 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Découvrez les membres du bureau exécutif de l'Association Jeunesse Unie et Solidaire de Pindikro.">
+
 <title>Bureau exécutif | AJUSP Pindikro</title>
+<meta name="description" content="Découvrez les membres du bureau exécutif de l'Association Jeunesse Unie et Solidaire de Pindikro.">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --green:#17643D;
-  --dark:#10452D;
-  --yellow:#F2C94C;
-  --navy:#14263F;
-  --bg:#F7F9F6;
-  --white:#fff;
-  --text:#263238;
-  --muted:#68756e;
-  --shadow:0 8px 25px rgba(16,69,45,.10);
+    --green: #17643D;
+    --dark: #10452D;
+    --yellow: #F2C94C;
+    --navy: #14263F;
+    --bg: #F7F9F6;
+    --white: #FFFFFF;
+    --text: #263238;
+    --muted: #68756D;
+    --shadow: 0 8px 25px rgba(16,69,45,.10);
 }
 
-* { box-sizing:border-box; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  line-height:1.6;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
 header {
-  background:white;
-  box-shadow:0 2px 12px rgba(0,0,0,.07);
-  position:sticky;
-  top:0;
-  z-index:10;
+    background: var(--white);
+    box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.header-inner {
-  max-width:1150px;
-  margin:auto;
-  padding:12px 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
+.header-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
-.brand {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-  color:var(--dark);
-  font-weight:bold;
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 190px;
 }
 
-.brand img {
-  width:58px;
-  height:58px;
-  object-fit:contain;
+.logo img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
 }
 
-.brand-name {
-  font-size:17px;
-  line-height:1.3;
+.logo-text strong {
+    display: block;
+    color: var(--green);
+    font-size: 17px;
 }
 
-.brand-name small {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  font-weight:normal;
+.logo-text span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
 }
 
 nav {
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+    display: flex;
+    align-items: center;
+    gap: 17px;
 }
 
 nav a {
-  text-decoration:none;
-  color:var(--dark);
-  font-weight:bold;
-  padding:9px 14px;
-  border-radius:7px;
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s;
 }
 
 nav a:hover,
 nav a.active {
-  background:var(--green);
-  color:white;
+    color: var(--green);
+}
+
+.nav-button {
+    background: var(--green);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.nav-button:hover {
+    background: var(--dark);
+    color: white;
+}
+
+.menu-toggle {
+    display: none;
+    border: none;
+    background: var(--green);
+    color: white;
+    font-size: 24px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .hero {
-  background:linear-gradient(120deg,rgba(16,69,45,.96),rgba(20,38,63,.94));
-  color:white;
-  text-align:center;
-  padding:65px 20px;
-  border-bottom:5px solid var(--yellow);
+    background: linear-gradient(120deg, rgba(16,69,45,.94), rgba(20,38,63,.88)),
+                url("banniere-ajusp.jpeg") center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 75px 20px;
 }
 
 .hero h1 {
-  font-size:clamp(28px,5vw,43px);
-  margin:0 0 12px;
+    font-size: clamp(28px, 5vw, 44px);
+    margin-bottom: 12px;
 }
 
 .hero p {
-  max-width:700px;
-  margin:auto;
-  font-size:16px;
-  color:#edf5ee;
+    max-width: 700px;
+    margin: auto;
+    font-size: 16px;
 }
 
 .hero-line {
-  width:75px;
-  height:4px;
-  background:var(--yellow);
-  margin:20px auto 0;
-  border-radius:5px;
+    width: 75px;
+    height: 4px;
+    background: var(--yellow);
+    margin: 20px auto 0;
+    border-radius: 5px;
 }
 
 main {
-  max-width:1150px;
-  margin:45px auto;
-  padding:0 20px;
+    max-width: 1200px;
+    margin: auto;
+    padding: 55px 20px 70px;
 }
 
 .section-heading {
-  text-align:center;
-  margin-bottom:32px;
+    text-align: center;
+    margin-bottom: 35px;
 }
 
 .section-heading h2 {
-  color:var(--dark);
-  font-size:28px;
-  margin:0 0 8px;
+    color: var(--green);
+    font-size: 29px;
+    margin-bottom: 10px;
 }
 
 .section-heading p {
-  color:var(--muted);
-  margin:0;
+    color: var(--muted);
+    max-width: 700px;
+    margin: auto;
 }
 
 .members-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
-  gap:25px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
 }
 
 .member-card {
-  background:white;
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  border:1px solid #e8eee9;
-  transition:transform .2s,box-shadow .2s;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform .25s, box-shadow .25s;
+    border: 1px solid #edf1ed;
 }
 
 .member-card:hover {
-  transform:translateY(-5px);
-  box-shadow:0 13px 30px rgba(16,69,45,.15);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(16,69,45,.15);
 }
 
+/* ZONE PHOTO CARREE */
 .member-photo {
-  height:260px;
-  background:#eaf0eb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #e9eee9;
+    position: relative;
 }
 
 .member-photo img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
-.photo-placeholder {
-  color:var(--green);
-  font-size:65px;
-  font-weight:bold;
-}
+/* Fin de la zone photo carrée */
 
 .member-info {
-  padding:22px;
-  text-align:center;
-}
-
-.member-info h3 {
-  color:var(--navy);
-  font-size:19px;
-  margin:0 0 7px;
+    padding: 20px;
+    text-align: center;
 }
 
 .member-function {
-  display:inline-block;
-  background:#edf5ef;
-  color:var(--green);
-  font-weight:bold;
-  font-size:13px;
-  padding:6px 12px;
-  border-radius:20px;
-  margin-bottom:12px;
+    display: inline-block;
+    background: #e8f3ec;
+    color: var(--green);
+    padding: 6px 13px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.member-info h3 {
+    color: var(--navy);
+    font-size: 19px;
+    margin-bottom: 9px;
 }
 
 .member-bio {
-  color:var(--muted);
-  font-size:14px;
-  margin:5px 0 0;
-  white-space:pre-line;
+    color: var(--muted);
+    font-size: 14px;
+    white-space: pre-line;
 }
 
-.status-message {
-  text-align:center;
-  background:white;
-  padding:30px 20px;
-  border-radius:12px;
-  box-shadow:var(--shadow);
-  color:var(--muted);
-  margin:20px auto;
+.loading,
+.empty-state,
+.error-state {
+    text-align: center;
+    padding: 35px 20px;
+    background: white;
+    border-radius: 12px;
+    color: var(--muted);
+    box-shadow: var(--shadow);
 }
 
-.status-message.error {
-  color:#a32626;
-}
-
-.back-link {
-  display:inline-block;
-  margin:35px auto 0;
-  padding:12px 22px;
-  background:var(--green);
-  color:white;
-  text-decoration:none;
-  border-radius:8px;
-  font-weight:bold;
-}
-
-.back-link:hover {
-  background:var(--dark);
-}
-
-.back-container {
-  text-align:center;
+.error-state {
+    color: #a52b2b;
 }
 
 footer {
-  background:var(--navy);
-  color:white;
-  text-align:center;
-  padding:30px 20px;
-  margin-top:60px;
+    background: var(--navy);
+    color: white;
+    padding: 45px 20px 20px;
 }
 
-footer strong {
-  color:var(--yellow);
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 35px;
 }
 
-footer p {
-  margin:6px 0;
-  font-size:14px;
+footer h3,
+footer h4 {
+    color: var(--yellow);
+    margin-bottom: 14px;
 }
 
-@media(max-width:650px) {
-  .header-inner {
-    flex-direction:column;
-    gap:10px;
-  }
+footer p,
+footer a {
+    color: #e0e7e3;
+    font-size: 14px;
+}
 
-  nav {
-    justify-content:center;
-  }
+footer a {
+    display: block;
+    margin-bottom: 8px;
+}
 
-  nav a {
-    font-size:13px;
-    padding:8px 10px;
-  }
+footer a:hover {
+    color: var(--yellow);
+}
 
-  .hero {
-    padding:48px 16px;
-  }
+.footer-bottom {
+    max-width: 1200px;
+    margin: 30px auto 0;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.18);
+    text-align: center;
+    color: #d4ddd8;
+    font-size: 13px;
+}
 
-  main {
-    margin:32px auto;
-  }
+@media (max-width: 900px) {
+    .members-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-  .member-photo {
-    height:280px;
-  }
+    nav {
+        gap: 10px;
+    }
+
+    nav a {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 700px) {
+    .header-container {
+        flex-wrap: wrap;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding-top: 10px;
+    }
+
+    nav.open {
+        display: flex;
+    }
+
+    nav a {
+        padding: 12px 8px;
+        border-top: 1px solid #edf0ed;
+        font-size: 14px;
+    }
+
+    nav .nav-button {
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .hero {
+        padding: 55px 18px;
+    }
+
+    main {
+        padding: 40px 15px 55px;
+    }
+
+    .members-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        max-width: 430px;
+        margin: auto;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
 }
 </style>
 </head>
@@ -300,145 +375,198 @@ footer p {
 <body>
 
 <header>
-  <div class="header-inner">
-    <a href="index.html" class="brand">
-      <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
-      <span class="brand-name">
-        AJUSP PINDIKRO
-        <small>Ensemble pour un avenir meilleur</small>
-      </span>
-    </a>
+    <div class="header-container">
 
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="bureau-executif.html" class="active">Bureau exécutif</a>
-    </nav>
-  </div>
+        <a href="index.html" class="logo">
+            <img src="logo-ajusp.jpeg" alt="Logo AJUSP">
+            <div class="logo-text">
+                <strong>AJUSP Pindikro</strong>
+                <span>Ensemble pour un avenir meilleur</span>
+            </div>
+        </a>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">☰</button>
+
+        <nav id="mainNav">
+            <a href="index.html">Accueil</a>
+            <a href="decouvrir-pindikro.html">Découvrir Pindikro</a>
+            <a href="association.html">Notre association</a>
+            <a href="bureau-executif.html" class="active">Bureau exécutif</a>
+            <a href="projets.html">Nos projets</a>
+            <a href="actualites.html">Actualités</a>
+            <a href="galerie.html">Galerie</a>
+            <a href="soutien.html">Nous soutenir</a>
+            <a href="contact-adhesion.html">Adhésion</a>
+            <a href="connexion.html" class="nav-button">Espace membre</a>
+        </nav>
+
+    </div>
 </header>
 
 <section class="hero">
-  <h1>Notre Bureau Exécutif</h1>
-  <p>
-    Découvrez les femmes et les hommes qui assurent la conduite
-    et la coordination des actions de l'AJUSP pour le développement
-    de notre village, Pindikro.
-  </p>
-  <div class="hero-line"></div>
+    <h1>Notre Bureau exécutif</h1>
+    <p>
+        Découvrez les femmes et les hommes qui assurent la coordination
+        et la conduite des actions de l'AJUSP pour le développement de Pindikro.
+    </p>
+    <div class="hero-line"></div>
 </section>
 
-<main id="bureau">
-  <div class="section-heading">
-    <h2>Les membres du bureau</h2>
-    <p>Une équipe engagée au service de notre communauté.</p>
-  </div>
+<main>
 
-  <div id="loading" class="status-message">
-    Chargement des membres du bureau exécutif...
-  </div>
+    <div class="section-heading">
+        <h2>Les membres du bureau</h2>
+        <p>
+            Une équipe engagée au service de la jeunesse, de la solidarité
+            et du développement de notre village.
+        </p>
+    </div>
 
-  <div id="membersGrid" class="members-grid"></div>
+    <div id="membersContainer" class="loading">
+        Chargement des membres du bureau exécutif...
+    </div>
 
-  <div id="emptyMessage" class="status-message" hidden>
-    Aucun membre du bureau exécutif n'est actuellement publié.
-  </div>
-
-  <div id="errorMessage" class="status-message error" hidden>
-    Impossible de charger les membres pour le moment.
-    Veuillez réessayer ultérieurement.
-  </div>
-
-  <div class="back-container">
-    <a href="index.html" class="back-link">← Retour à l'accueil</a>
-  </div>
 </main>
 
 <footer>
-  <p><strong>AJUSP PINDIKRO</strong></p>
-  <p>Association Jeunesse Unie et Solidaire de Pindikro</p>
-  <p><em>Ensemble pour un avenir meilleur</em></p>
-  <p>© <span id="year"></span> AJUSP Pindikro. Tous droits réservés.</p>
+    <div class="footer-container">
+
+        <div>
+            <h3>AJUSP Pindikro</h3>
+            <p>
+                Association Jeunesse Unie et Solidaire de Pindikro.
+                Ensemble, mobilisons nos énergies pour contribuer
+                au développement de notre village.
+            </p>
+            <p style="margin-top:12px;color:#F2C94C;font-weight:bold;">
+                Ensemble pour un avenir meilleur
+            </p>
+        </div>
+
+        <div>
+            <h4>Navigation</h4>
+            <a href="index.html">Accueil</a>
+            <a href="association.html">Notre association</a>
+            <a href="bureau-executif.html">Bureau exécutif</a>
+            <a href="projets.html">Nos projets</a>
+            <a href="actualites.html">Actualités</a>
+        </div>
+
+        <div>
+            <h4>Nous rejoindre</h4>
+            <a href="contact-adhesion.html">Adhérer à l'AJUSP</a>
+            <a href="soutien.html">Nous soutenir</a>
+            <a href="connexion.html">Espace membre</a>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © <span id="currentYear"></span> AJUSP Pindikro. Tous droits réservés.
+    </div>
 </footer>
 
 <script>
+/* CONFIGURATION SUPABASE */
 const SUPABASE_URL = "https://pcgshqscsdyyszbjkvjq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
+const SUPABASE_ANON_KEY = "sb_publishable_jo6bCbDh2HyT-rwoKBkSYA_cNn7XVPF";
 
-const client = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
 );
 
-const loading = document.getElementById("loading");
-const membersGrid = document.getElementById("membersGrid");
-const emptyMessage = document.getElementById("emptyMessage");
-const errorMessage = document.getElementById("errorMessage");
+/* MENU MOBILE */
+const menuToggle = document.getElementById("menuToggle");
+const mainNav = document.getElementById("mainNav");
 
-document.getElementById("year").textContent = new Date().getFullYear();
+menuToggle.addEventListener("click", function() {
+    mainNav.classList.toggle("open");
+});
 
+/* ANNEE AUTOMATIQUE */
+document.getElementById("currentYear").textContent =
+    new Date().getFullYear();
+
+/* SECURISATION DU TEXTE A AFFICHER */
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  })[char]);
+    return String(value ?? "").replace(/[&<>"']/g, function(char) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[char];
+    });
 }
 
-function renderMember(member) {
-  const name = escapeHTML(member.full_name);
-  const fonction = escapeHTML(member.fonction);
-  const bio = escapeHTML(member.bio || "");
-
-  const photo = typeof member.photo_url === "string" &&
-                member.photo_url.startsWith("https://")
-    ? `<img src="${escapeHTML(member.photo_url)}" alt="Photo de ${name}" loading="lazy">`
-    : `<div class="photo-placeholder" aria-label="Photo non disponible">AJ</div>`;
-
-  return `
-    <article class="member-card">
-      <div class="member-photo">
-        ${photo}
-      </div>
-      <div class="member-info">
-        <h3>${name}</h3>
-        <div class="member-function">${fonction}</div>
-        ${bio ? `<p class="member-bio">${bio}</p>` : ""}
-      </div>
-    </article>
-  `;
-}
-
+/* AFFICHAGE DES MEMBRES */
 async function loadExecutiveMembers() {
-  loading.hidden = false;
-  emptyMessage.hidden = true;
-  errorMessage.hidden = true;
-  membersGrid.innerHTML = "";
+    const container = document.getElementById("membersContainer");
 
-  try {
-    const { data, error } = await client
-      .from("executive_members")
-      .select("id,full_name,fonction,photo_url,bio,display_order,created_at")
-      .eq("is_published", true)
-      .order("display_order", { ascending: true })
-      .order("created_at", { ascending: true });
+    try {
+        const { data, error } = await supabaseClient
+            .from("executive_members")
+            .select("id,full_name,fonction,photo_url,bio,display_order,created_at")
+            .eq("is_published", true)
+            .order("display_order", { ascending: true })
+            .order("created_at", { ascending: true });
 
-    if (error) throw error;
+        if (error) {
+            throw error;
+        }
 
-    loading.hidden = true;
+        if (!data || data.length === 0) {
+            container.className = "empty-state";
+            container.textContent =
+                "La composition du bureau exécutif sera bientôt disponible.";
+            return;
+        }
 
-    if (!data || data.length === 0) {
-      emptyMessage.hidden = false;
-      return;
+        container.className = "members-grid";
+
+        container.innerHTML = data.map(function(member) {
+            const photo = member.photo_url
+                ? `<img src="${escapeHTML(member.photo_url)}"
+                        alt="Photo de ${escapeHTML(member.full_name)}"
+                        loading="lazy">`
+                : "";
+
+            return `
+                <article class="member-card">
+
+                    <div class="member-photo">
+                        ${photo}
+                    </div>
+
+                    <div class="member-info">
+
+                        <div class="member-function">
+                            ${escapeHTML(member.fonction)}
+                        </div>
+
+                        <h3>${escapeHTML(member.full_name)}</h3>
+
+                        ${
+                            member.bio
+                            ? `<p class="member-bio">${escapeHTML(member.bio)}</p>`
+                            : ""
+                        }
+
+                    </div>
+
+                </article>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Erreur de chargement du bureau exécutif :", error);
+
+        container.className = "error-state";
+        container.textContent =
+            "Impossible de charger les membres du bureau exécutif. Veuillez réessayer plus tard.";
     }
-
-    membersGrid.innerHTML = data.map(renderMember).join("");
-
-  } catch (error) {
-    console.error("Erreur de chargement du bureau exécutif :", error);
-    loading.hidden = true;
-    errorMessage.hidden = false;
-  }
 }
 
 loadExecutiveMembers();
