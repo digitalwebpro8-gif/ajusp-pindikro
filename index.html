@@ -54,6 +54,15 @@
     .card p{font-size:14px;color:var(--gris)}
     .domain-card{position:relative;overflow:hidden;min-height:210px;display:flex;flex-direction:column}
     .domain-card-image{width:100%;height:180px;object-fit:cover;object-position:center;border-radius:8px;margin:-7px 0 16px}
+    .domain-carousel{position:relative;width:100%;height:180px;margin:-7px 0 16px;border-radius:8px;overflow:hidden;background:#e8f2ea}
+    .domain-carousel-images{width:100%;height:100%;position:relative}
+    .domain-carousel .domain-card-image{position:absolute;inset:0;width:100%;height:100%;margin:0;border-radius:0;object-fit:cover;opacity:0;transition:opacity .65s ease}
+    .domain-carousel .domain-card-image.active{opacity:1}
+    .domain-carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:32px;height:32px;border:0;border-radius:50%;background:#ffffffdf;color:var(--bleu);font-size:22px;line-height:1;cursor:pointer}
+    .domain-carousel-arrow.prev{left:8px}.domain-carousel-arrow.next{right:8px}
+    .domain-carousel-arrow:hover{background:var(--jaune)}
+    .domain-carousel-count{position:absolute;right:9px;bottom:8px;z-index:2;padding:3px 8px;border-radius:20px;background:#102016b8;color:#fff;font-size:10px}
+    @media(prefers-reduced-motion:reduce){.domain-carousel .domain-card-image{transition:none}}
     .domain-card h3{overflow-wrap:anywhere}
     .domain-empty{grid-column:1/-1;text-align:center;padding:28px;background:#F7F9F6;border-radius:12px;color:var(--gris)}
     .projects{background:#F0F5F0}
@@ -360,33 +369,79 @@
       }
     })();
 
-    // Domaines d'intervention : photos agrandies, sans affichage des icônes.
+    // Domaines d'intervention : diaporama automatique des photos de chaque domaine.
     (async function loadHomeDomains(){
       const area=document.getElementById("homeDomainsGrid");
       if(!area)return;
       try{
-        const {data,error}=await supabaseClient.from("intervention_domains")
-          .select("id,title,description,image_url,display_order")
+        const {data:domains,error}=await supabaseClient.from("intervention_domains")
+          .select("id,title,description,image_url,display_order,created_at")
           .eq("is_published",true)
           .order("display_order",{ascending:true})
           .order("created_at",{ascending:true});
         if(error)throw error;
-        if(!data||!data.length){
+        if(!domains||!domains.length){
           area.innerHTML='<div class="domain-empty">Nos domaines d’intervention seront présentés ici dès leur publication.</div>';
           return;
         }
-        area.innerHTML=data.map(item=>`
-          <article class="card domain-card">
-            ${item.image_url?`
-              <img class="domain-card-image"
-                src="${escapeHTML(item.image_url)}"
-                alt="Illustration : ${escapeHTML(item.title)}"
-                loading="lazy">
-            `:''}
-            <h3>${escapeHTML(item.title)}</h3>
-            <p>${escapeHTML(item.description||"")}</p>
-          </article>
-        `).join("");
+
+        const ids=domains.map(item=>item.id);
+        const {data:photos,error:photosError}=await supabaseClient
+          .from("intervention_domain_images")
+          .select("id,domain_id,image_url,display_order,created_at")
+          .in("domain_id",ids)
+          .order("display_order",{ascending:true})
+          .order("created_at",{ascending:true});
+        if(photosError)throw photosError;
+
+        area.innerHTML=domains.map((item,index)=>{
+          const extra=(photos||[]).filter(photo=>String(photo.domain_id)===String(item.id));
+          const urls=[];
+          if(item.image_url)urls.push(item.image_url);
+          extra.forEach(photo=>{if(photo.image_url&&!urls.includes(photo.image_url))urls.push(photo.image_url);});
+          const images=urls.map((url,i)=>`
+            <img class="domain-card-image domain-slide ${i===0?"active":""}"
+              src="${escapeHTML(url)}"
+              alt="Photo ${i+1} : ${escapeHTML(item.title)}"
+              loading="${index===0&&i===0?"eager":"lazy"}">
+          `).join("");
+          return `
+            <article class="card domain-card" data-domain-card="${escapeHTML(item.id)}">
+              ${urls.length?`
+                <div class="domain-carousel" data-domain-carousel>
+                  <div class="domain-carousel-images">${images}</div>
+                  ${urls.length>1?`
+                    <button class="domain-carousel-arrow prev" type="button" aria-label="Photo précédente">‹</button>
+                    <button class="domain-carousel-arrow next" type="button" aria-label="Photo suivante">›</button>
+                    <div class="domain-carousel-count">1 / ${urls.length}</div>
+                  `:""}
+                </div>
+              `:''}
+              <h3>${escapeHTML(item.title)}</h3>
+              <p>${escapeHTML(item.description||"")}</p>
+            </article>
+          `;
+        }).join("");
+
+        area.querySelectorAll("[data-domain-carousel]").forEach(carousel=>{
+          const slides=Array.from(carousel.querySelectorAll(".domain-slide"));
+          if(slides.length<2)return;
+          let current=0;
+          const count=carousel.querySelector(".domain-carousel-count");
+          const show=n=>{
+            current=(n+slides.length)%slides.length;
+            slides.forEach((slide,i)=>slide.classList.toggle("active",i===current));
+            if(count)count.textContent=(current+1)+" / "+slides.length;
+          };
+          let timer=setInterval(()=>show(current+1),3500);
+          const restart=()=>{clearInterval(timer);timer=setInterval(()=>show(current+1),3500);};
+          carousel.querySelector(".prev")?.addEventListener("click",()=>{show(current-1);restart();});
+          carousel.querySelector(".next")?.addEventListener("click",()=>{show(current+1);restart();});
+          carousel.addEventListener("mouseenter",()=>clearInterval(timer));
+          carousel.addEventListener("mouseleave",restart);
+          carousel.addEventListener("touchstart",()=>clearInterval(timer),{passive:true});
+          carousel.addEventListener("touchend",restart,{passive:true});
+        });
       }catch(error){
         area.innerHTML='<div class="domain-empty">Les domaines d’intervention sont momentanément indisponibles. Veuillez réessayer plus tard.</div>';
         console.error("Erreur chargement domaines AJUSP:",error);
