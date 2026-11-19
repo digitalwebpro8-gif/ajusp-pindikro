@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -62,7 +61,7 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .form-group input[type="checkbox"]{width:auto;margin-right:7px}
 .image-picker{display:inline-flex;align-items:center;gap:8px;background:#f0f5f1;color:var(--dark);border:2px dashed #9ab6a2;padding:12px 16px;border-radius:7px;margin-top:5px}
 .image-picker:hover{background:#e0eee4}
-#projectImageFile,#domainImageFiles,#bannerImageFile{display:none}
+#projectImageFile,#domainImageFiles,#bannerImageFile,#executivePhotoFile{display:none}
 #projectImagePreview{display:none;max-width:220px;max-height:150px;object-fit:cover;border-radius:8px;margin-top:12px;border:1px solid #dce5de}
 #bannerCurrentPreview,#bannerNewPreview{display:block;width:100%;max-width:850px;max-height:320px;object-fit:cover;border-radius:9px;margin-top:12px;border:1px solid #dce5de;background:#f0f5f1}
 #bannerNewPreview{display:none}
@@ -83,6 +82,13 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .cotisation-stat strong{display:block;color:var(--dark);font-size:22px;margin-top:6px}
 .action-buttons{display:flex;gap:6px;flex-wrap:wrap}
 .action-buttons button{padding:7px 9px;font-size:12px}
+
+/* BUREAU EXÉCUTIF */
+.executive-photo{width:65px;height:65px;object-fit:cover;border-radius:50%;border:2px solid #dce5de}
+.executive-form-photo{display:none;max-width:150px;max-height:150px;object-fit:cover;border-radius:10px;margin-top:10px;border:1px solid #dce5de}
+.executive-table-name{display:flex;align-items:center;gap:10px;min-width:200px}
+.executive-table-name strong{display:block;color:var(--dark)}
+.executive-no-photo{width:65px;height:65px;border-radius:50%;background:#edf3ee;color:var(--green);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold}
 footer{text-align:center;padding:25px;background:var(--dark);color:white;font-size:13px;line-height:1.7;margin-top:35px}
 @media(max-width:600px){header{padding:18px}header h1{font-size:19px}main{margin-top:20px}.panel{padding:15px}}
 </style>
@@ -226,6 +232,67 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 </table></div>
 </section>
 
+<!-- NOUVELLE RUBRIQUE : BUREAU EXÉCUTIF -->
+<section class="panel admin-only" id="executivePanel">
+<div class="panel-header">
+<h2>Gestion du Bureau exécutif</h2>
+<button class="refresh" id="refreshExecutiveBtn" type="button">Actualiser</button>
+</div>
+<p>Ajoute et présente les membres du Bureau exécutif de l'AJUSP sur le futur espace public dédié.</p>
+<div class="notice">Cette rubrique permet de gérer les noms, les fonctions, les photos et l'ordre de présentation des membres. Seul un administrateur actif peut effectuer ces opérations.</div>
+
+<h3 id="executiveFormTitle">Ajouter un membre du Bureau exécutif</h3>
+<form id="executiveForm">
+<div class="form-grid">
+<div class="form-group">
+<label for="executiveName">Nom et prénoms *</label>
+<input id="executiveName" type="text" maxlength="200" required placeholder="Nom et prénoms du membre">
+</div>
+<div class="form-group">
+<label for="executiveFunction">Fonction au sein du bureau *</label>
+<input id="executiveFunction" type="text" maxlength="150" required placeholder="Ex. : Président">
+</div>
+<div class="form-group">
+<label for="executiveOrder">Ordre de présentation</label>
+<input id="executiveOrder" type="number" min="0" step="1" value="1">
+</div>
+<div class="form-group">
+<label>Photo du membre</label>
+<input id="executivePhotoFile" type="file" accept="image/jpeg,image/png,image/webp">
+<button type="button" class="image-picker" id="chooseExecutivePhotoBtn">📷 Choisir une photo</button>
+<div class="locked">Formats JPG, PNG et WEBP. Taille maximale : 5 Mo.</div>
+<div id="executivePhotoFileName" class="locked" aria-live="polite"></div>
+<img id="executivePhotoPreview" class="executive-form-photo" alt="Aperçu de la photo">
+</div>
+</div>
+<div class="form-group">
+<label for="executiveBio">Présentation du membre (facultatif)</label>
+<textarea id="executiveBio" maxlength="2000" placeholder="Quelques mots sur le membre, son parcours ou ses responsabilités..."></textarea>
+</div>
+<div class="form-group">
+<label><input id="executivePublished" type="checkbox" checked> Publier ce membre sur le site public</label>
+</div>
+<div class="action-buttons">
+<button type="submit" class="primary" id="saveExecutiveBtn">Enregistrer le membre</button>
+<button type="button" class="secondary" id="cancelExecutiveEditBtn" hidden>Annuler</button>
+</div>
+<p id="executiveFormMessage" style="margin-top:12px;white-space:pre-wrap"></p>
+</form>
+
+<hr style="border:0;border-top:1px solid #e7ece8;margin:25px 0">
+<h3>Membres enregistrés</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Membre</th><th>Fonction</th><th>Présentation</th><th>Ordre</th><th>Publication</th><th>Actions</th></tr>
+</thead>
+<tbody id="executiveTable">
+<tr><td colspan="6" class="empty">Chargement des membres...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
 <section class="panel admin-only" id="domainsPanel">
 <div class="panel-header"><h2>Gestion des domaines d'intervention</h2><button class="refresh" id="refreshDomainsBtn" type="button">Actualiser</button></div>
 <p>Gère les domaines présentés dans la rubrique « Nos domaines d'intervention » de la page d'accueil.</p>
@@ -327,6 +394,12 @@ let editingDomainId=null,domainRows=[],editingDomainImageUrl=null,domainImageRow
 let currentBannerUrl="https://ajusp-pindikro-usl8.vercel.app/banniere-ajusp.jpeg";
 let selectedBannerFile=null,bannerPreviewObjectUrl=null;
 
+/* NOUVEL ÉTAT DU BUREAU EXÉCUTIF */
+let executiveRows=[];
+let editingExecutiveId=null;
+let editingExecutivePhotoUrl=null;
+let executivePreviewObjectUrl=null;
+
 const functions=[
 {value:"president",label:"Président"},
 {value:"vice_president_1",label:"Premier vice-président"},
@@ -396,7 +469,8 @@ const path="banniere/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
 const {error:uploadError}=await client.storage.from("project-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
 if(uploadError)throw uploadError;
 const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
-if(!url)throw new Error("Adresse publique de l'image indisponible.");const {error}=await client.from("site_settings").upsert({key:"home_banner",value:url,updated_at:new Date().toISOString()},{onConflict:"key"});
+if(!url)throw new Error("Adresse publique de l'image indisponible.");
+const {error}=await client.from("site_settings").upsert({key:"home_banner",value:url,updated_at:new Date().toISOString()},{onConflict:"key"});
 if(error)throw error;
 currentBannerUrl=url;$("bannerCurrentPreview").src=url;
 selectedBannerFile=null;$("bannerImageFile").value="";$("bannerImageFileName").textContent="";
@@ -654,6 +728,255 @@ if(error){showMessage("Suppression impossible : "+error.message);return;}if(!dat
 if(String(editingProjectId)===String(id))resetProjectForm();showMessage("Projet supprimé.","success");await loadProjects();
 }
 
+/* BUREAU EXÉCUTIF */
+function resetExecutiveForm(){
+$("executiveForm").reset();
+editingExecutiveId=null;
+editingExecutivePhotoUrl=null;
+$("executivePhotoFile").value="";
+$("executivePhotoFileName").textContent="";
+$("executivePhotoPreview").removeAttribute("src");
+$("executivePhotoPreview").style.display="none";
+revokePreview(executivePreviewObjectUrl);
+executivePreviewObjectUrl=null;
+$("executiveFormTitle").textContent="Ajouter un membre du Bureau exécutif";
+$("saveExecutiveBtn").textContent="Enregistrer le membre";
+$("cancelExecutiveEditBtn").hidden=true;
+$("executivePublished").checked=true;
+$("executiveOrder").value=String(executiveRows.length+1);
+$("executiveFormMessage").textContent="";
+}
+
+async function loadExecutiveMembers(){
+if(!isAdmin)return;
+const table=$("executiveTable");
+table.innerHTML='<tr><td colspan="6" class="empty">Chargement des membres...</td></tr>';
+
+const {data,error}=await client
+.from("executive_members")
+.select("id,full_name,fonction,photo_url,bio,display_order,is_published,created_at")
+.order("display_order",{ascending:true})
+.order("created_at",{ascending:true});
+
+if(error){
+console.error(error);
+table.innerHTML=`<tr><td colspan="6" class="empty">Erreur de chargement : ${safeText(error.message)}</td></tr>`;
+showMessage("Impossible de charger les membres du Bureau exécutif : "+error.message);
+return;
+}
+
+executiveRows=data||[];
+
+if(!executiveRows.length){
+table.innerHTML='<tr><td colspan="6" class="empty">Aucun membre du Bureau exécutif enregistré. Tu peux ajouter le premier membre ci-dessus.</td></tr>';
+return;
+}
+
+table.innerHTML=executiveRows.map(member=>{
+const photo=member.photo_url
+?`<img class="executive-photo" src="${safeText(member.photo_url)}" alt="Photo de ${safeText(member.full_name)}">`
+:'<div class="executive-no-photo">👤</div>';
+
+return `<tr>
+<td><div class="executive-table-name">${photo}<div><strong>${safeText(member.full_name)}</strong></div></div></td>
+<td>${safeText(member.fonction)}</td>
+<td>${safeText(member.bio||"—")}</td>
+<td>${safeText(member.display_order)}</td>
+<td>${member.is_published?'<span class="status approved">Publié</span>':'<span class="status pending">Masqué</span>'}</td>
+<td><div class="action-buttons">
+<button type="button" class="secondary" data-executive-action="edit" data-id="${safeText(member.id)}">Modifier</button>
+<button type="button" class="approve" data-executive-action="toggle" data-id="${safeText(member.id)}">${member.is_published?"Masquer":"Publier"}</button>
+<button type="button" class="danger" data-executive-action="delete" data-id="${safeText(member.id)}">Supprimer</button>
+</div></td>
+</tr>`;
+}).join("");
+}
+
+function editExecutiveMember(id){
+if(!isAdmin)return;
+const member=executiveRows.find(x=>String(x.id)===String(id));
+if(!member)return;
+
+editingExecutiveId=member.id;
+editingExecutivePhotoUrl=member.photo_url||null;
+
+$("executiveName").value=member.full_name||"";
+$("executiveFunction").value=member.fonction||"";
+$("executiveOrder").value=member.display_order??1;
+$("executiveBio").value=member.bio||"";
+$("executivePublished").checked=Boolean(member.is_published);
+$("executivePhotoFile").value="";
+
+if(editingExecutivePhotoUrl){
+$("executivePhotoPreview").src=editingExecutivePhotoUrl;
+$("executivePhotoPreview").style.display="block";
+$("executivePhotoFileName").textContent="Photo actuelle conservée si aucune nouvelle photo n'est choisie.";
+}else{
+$("executivePhotoPreview").removeAttribute("src");
+$("executivePhotoPreview").style.display="none";
+$("executivePhotoFileName").textContent="Aucune photo enregistrée.";
+}
+
+$("executiveFormTitle").textContent="Modifier un membre du Bureau exécutif";
+$("saveExecutiveBtn").textContent="Enregistrer les modifications";
+$("cancelExecutiveEditBtn").hidden=false;
+$("executivePanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function saveExecutiveMember(event){
+event.preventDefault();
+
+if(!isAdmin){
+$("executiveFormMessage").textContent="Seul un administrateur peut gérer le Bureau exécutif.";
+return;
+}
+
+const full_name=$("executiveName").value.trim();
+const fonction=$("executiveFunction").value.trim();
+const bio=$("executiveBio").value.trim()||null;
+const display_order=Number($("executiveOrder").value);
+const is_published=$("executivePublished").checked;
+const file=$("executivePhotoFile").files[0]||null;
+
+if(!full_name||!fonction){
+$("executiveFormMessage").textContent="Le nom et la fonction sont obligatoires.";
+return;
+}
+
+if(!Number.isInteger(display_order)||display_order<0){
+$("executiveFormMessage").textContent="L'ordre de présentation doit être un nombre entier positif ou égal à zéro.";
+return;
+}
+
+if(file&&(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>5*1024*1024)){
+$("executiveFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo. Choisis une image JPG, PNG ou WEBP de 5 Mo maximum.";
+return;
+}
+
+const button=$("saveExecutiveBtn");
+const wasEditing=Boolean(editingExecutiveId);
+button.disabled=true;
+button.textContent="Enregistrement...";
+$("executiveFormMessage").textContent="";
+
+try{
+let photo_url=editingExecutivePhotoUrl;
+
+if(file){
+$("executiveFormMessage").textContent="Téléversement de la photo...";
+const ext={"image/jpeg":"jpg","image/png":"png","image/webp":"webp"}[file.type];
+const path="bureau/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+
+const {error:uploadError}=await client.storage
+.from("project-images")
+.upload(path,file,{
+cacheControl:"3600",
+upsert:false,
+contentType:file.type
+});
+
+if(uploadError)throw uploadError;
+
+photo_url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+
+if(!photo_url)throw new Error("Impossible de récupérer l'adresse publique de la photo.");
+}
+
+const payload={
+full_name,
+fonction,
+photo_url,
+bio,
+display_order,
+is_published
+};
+
+const result=wasEditing
+?await client.from("executive_members").update(payload).eq("id",editingExecutiveId).select("id")
+:await client.from("executive_members").insert(payload).select("id");
+
+if(result.error)throw result.error;
+
+if(!result.data?.length){
+throw new Error("Aucun membre enregistré. Vérifie les autorisations de la table executive_members.");
+}
+
+const message=wasEditing
+?"Les informations du membre ont été modifiées avec succès."
+:"Le membre a été ajouté au Bureau exécutif avec succès.";
+
+resetExecutiveForm();
+$("executiveFormMessage").textContent=message;
+showMessage(message,"success");
+await loadExecutiveMembers();
+
+}catch(error){
+console.error(error);
+$("executiveFormMessage").textContent="Erreur : "+error.message;
+}finally{
+button.disabled=false;
+button.textContent=editingExecutiveId?"Enregistrer les modifications":"Enregistrer le membre";
+}
+}
+
+async function toggleExecutivePublication(id){
+if(!isAdmin)return;
+const member=executiveRows.find(x=>String(x.id)===String(id));
+if(!member)return;
+
+const next=!member.is_published;
+
+if(!confirm(next
+?"Publier "+member.full_name+" sur le site public ?"
+:"Masquer "+member.full_name+" sur le site public ?"))return;
+
+const {data,error}=await client.from("executive_members")
+.update({is_published:next})
+.eq("id",id)
+.select("id");
+
+if(error){
+showMessage("Modification impossible : "+error.message);
+return;
+}
+
+if(!data?.length){
+showMessage("Aucune modification effectuée. Vérifie les autorisations.");
+return;
+}
+
+showMessage(next?"Membre publié sur le site public.":"Membre masqué sur le site public.","success");
+await loadExecutiveMembers();
+}
+
+async function deleteExecutiveMember(id){
+if(!isAdmin)return;
+const member=executiveRows.find(x=>String(x.id)===String(id));
+if(!member)return;
+
+if(!confirm("Supprimer définitivement "+member.full_name+" du Bureau exécutif ?"))return;
+
+const {data,error}=await client.from("executive_members")
+.delete()
+.eq("id",id)
+.select("id");
+
+if(error){
+showMessage("Suppression impossible : "+error.message);
+return;
+}
+
+if(!data?.length){
+showMessage("Aucun membre supprimé. Vérifie les autorisations.");
+return;
+}
+
+if(String(editingExecutiveId)===String(id))resetExecutiveForm();
+
+showMessage("Le membre a été supprimé du Bureau exécutif.","success");
+await loadExecutiveMembers();
+}
+
 /* DOMAINES ET PHOTOS */
 function renderDomainImageGallery(){
 const gallery=$("domainImageGallery");gallery.innerHTML="";
@@ -716,124 +1039,119 @@ const description=$("domainDescription").value.trim();
 const order=Number($("domainOrder").value);
 
 if(!title||!description){
- $("domainFormMessage").textContent="Titre et description obligatoires.";
- return;
+$("domainFormMessage").textContent="Titre et description obligatoires.";
+return;
 }
 if(!Number.isInteger(order)||order<0){
- $("domainFormMessage").textContent="Ordre invalide.";
- return;
+$("domainFormMessage").textContent="Ordre invalide.";
+return;
 }
 for(const f of files){
- if(!["image/jpeg","image/png","image/webp","image/gif"].includes(f.type)||f.size>5*1024*1024){
-  $("domainFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo : "+f.name;
-  return;
- }
+if(!["image/jpeg","image/png","image/webp","image/gif"].includes(f.type)||f.size>5*1024*1024){
+$("domainFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo : "+f.name;
+return;
+}
 }
 
 const button=$("saveDomainBtn");
 const wasEditing=Boolean(editingDomainId);
 const normalizedTitle=title.toLocaleLowerCase("fr").trim();
 
-/* Si le formulaire est en mode ajout mais que le domaine existe déjà,
-   on réutilise ce domaine au lieu d'en créer un second. */
 const matchingDomain=!wasEditing
- ? domainRows.find(x=>(x.title||"").toLocaleLowerCase("fr").trim()===normalizedTitle)
- : null;
+?domainRows.find(x=>(x.title||"").toLocaleLowerCase("fr").trim()===normalizedTitle)
+:null;
 const existingDomain=wasEditing
- ? domainRows.find(x=>String(x.id)===String(editingDomainId))
- : matchingDomain;
+?domainRows.find(x=>String(x.id)===String(editingDomainId))
+:matchingDomain;
 
 let targetDomainId=wasEditing?editingDomainId:(matchingDomain?.id||null);
 const existingImages=wasEditing
- ? [...(domainImageRows||[])]
- : [...(existingDomain?.images||[])];
+?[...(domainImageRows||[])]
+:[...(existingDomain?.images||[])];
 
 const originalMainImage=wasEditing
- ? (editingDomainImageUrl||existingDomain?.image_url||null)
- : (existingDomain?.image_url||null);
+?(editingDomainImageUrl||existingDomain?.image_url||null)
+:(existingDomain?.image_url||null);
 
 button.disabled=true;
 button.textContent="Enregistrement...";
 
 try{
- const removeMainImage=$("domainRemoveImage").checked;
- const payload={
-  title,
-  description,
-  icon:$("domainIcon").value.trim()||null,
-  display_order:order,
-  image_url:removeMainImage?null:originalMainImage,
-  is_published:$("domainPublished").checked
- };
+const removeMainImage=$("domainRemoveImage").checked;
+const payload={
+title,
+description,
+icon:$("domainIcon").value.trim()||null,
+display_order:order,
+image_url:removeMainImage?null:originalMainImage,
+is_published:$("domainPublished").checked
+};
 
- if(targetDomainId){
-  const {data,error}=await client.from("intervention_domains")
-   .update(payload).eq("id",targetDomainId).select("id");
-  if(error)throw error;
-  if(!data?.length)throw new Error("Domaine non modifié. Vérifie les autorisations.");
- }else{
-  const {data,error}=await client.from("intervention_domains")
-   .insert(payload).select("id");
-  if(error)throw error;
-  if(!data?.length)throw new Error("Domaine non créé.");
-  targetDomainId=data[0].id;
- }
+if(targetDomainId){
+const {data,error}=await client.from("intervention_domains")
+.update(payload).eq("id",targetDomainId).select("id");
+if(error)throw error;
+if(!data?.length)throw new Error("Domaine non modifié. Vérifie les autorisations.");
+}else{
+const {data,error}=await client.from("intervention_domains")
+.insert(payload).select("id");
+if(error)throw error;
+if(!data?.length)throw new Error("Domaine non créé.");
+targetDomainId=data[0].id;
+}
 
- let firstUploadedUrl=null;
- if(files.length){
-  const imagePayload=[];
-  const maxOrder=existingImages.reduce((max,img)=>Math.max(max,Number(img.display_order)||0),0);
+let firstUploadedUrl=null;
+if(files.length){
+const imagePayload=[];
+const maxOrder=existingImages.reduce((max,img)=>Math.max(max,Number(img.display_order)||0),0);
 
-  for(let i=0;i<files.length;i++){
-   const f=files[i];
-   $("domainFormMessage").textContent=`Envoi de la photo ${i+1} sur ${files.length}...`;
-   const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
-   const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
-   const {error}=await client.storage.from("project-images").upload(path,f,{
-    cacheControl:"3600",upsert:false,contentType:f.type
-   });
-   if(error)throw error;
+for(let i=0;i<files.length;i++){
+const f=files[i];
+$("domainFormMessage").textContent=`Envoi de la photo ${i+1} sur ${files.length}...`;
+const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+const {error}=await client.storage.from("project-images").upload(path,f,{
+cacheControl:"3600",upsert:false,contentType:f.type
+});
+if(error)throw error;
 
-   const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
-   if(!url)throw new Error("Adresse publique indisponible pour "+f.name);
-   if(!firstUploadedUrl)firstUploadedUrl=url;
+const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+if(!url)throw new Error("Adresse publique indisponible pour "+f.name);
+if(!firstUploadedUrl)firstUploadedUrl=url;
 
-   imagePayload.push({
-    domain_id:targetDomainId,
-    image_url:url,
-    display_order:maxOrder+i+1
-   });
-  }
+imagePayload.push({
+domain_id:targetDomainId,
+image_url:url,
+display_order:maxOrder+i+1
+});
+}
 
-  const {error:imageError}=await client.from("intervention_domain_images").insert(imagePayload);
-  if(imageError)throw imageError;
- }
+const {error:imageError}=await client.from("intervention_domain_images").insert(imagePayload);
+if(imageError)throw imageError;
+}
 
- /* Conserver l'image principale existante lors d'un simple ajout de photos.
-    La première nouvelle photo devient l'image principale uniquement si
-    aucune image principale n'existe ou si l'ancienne a été retirée. */
- if(firstUploadedUrl&&(!originalMainImage||removeMainImage)){
-  const {error:mainError}=await client.from("intervention_domains")
-   .update({image_url:firstUploadedUrl}).eq("id",targetDomainId);
-  if(mainError)throw mainError;
- }
+if(firstUploadedUrl&&(!originalMainImage||removeMainImage)){
+const {error:mainError}=await client.from("intervention_domains")
+.update({image_url:firstUploadedUrl}).eq("id",targetDomainId);
+if(mainError)throw mainError;
+}
 
- let msg;
- if(wasEditing)msg="Domaine modifié avec succès. Les anciennes photos ont été conservées.";
- else if(matchingDomain)msg="Domaine existant mis à jour. Les nouvelles photos ont été ajoutées sans créer de doublon.";
- else msg="Domaine ajouté avec succès.";
+let msg;
+if(wasEditing)msg="Domaine modifié avec succès. Les anciennes photos ont été conservées.";
+else if(matchingDomain)msg="Domaine existant mis à jour. Les nouvelles photos ont été ajoutées sans créer de doublon.";
+else msg="Domaine ajouté avec succès.";
 
- resetDomainForm();
- $("domainFormMessage").textContent=msg;
- showMessage(msg,"success");
- await loadDomains();
+resetDomainForm();
+$("domainFormMessage").textContent=msg;
+showMessage(msg,"success");
+await loadDomains();
 
 }catch(error){
- console.error(error);
- $("domainFormMessage").textContent="Erreur : "+(error?.message||String(error));
+console.error(error);
+$("domainFormMessage").textContent="Erreur : "+(error?.message||String(error));
 }finally{
- button.disabled=false;
- button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";
+button.disabled=false;
+button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";
 }
 }
 async function toggleDomain(id){
@@ -913,7 +1231,16 @@ showMessage("Cotisation supprimée.","success");await loadCotisations();
 /* ACTUALISATION */
 async function loadDashboard(){
 hideMessage();
-if(isAdmin)await Promise.all([loadMembersCount(),loadRequests(),loadProjects(),loadDomains(),loadOptionalCount("news","newsCount"),loadProfiles(),loadBanner()]);
+if(isAdmin)await Promise.all([
+loadMembersCount(),
+loadRequests(),
+loadProjects(),
+loadDomains(),
+loadExecutiveMembers(),
+loadOptionalCount("news","newsCount"),
+loadProfiles(),
+loadBanner()
+]);
 if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
 }
 
@@ -953,6 +1280,71 @@ $("projectsTable").addEventListener("click",async e=>{
 const b=e.target.closest("button[data-project-action]");if(!b)return;b.disabled=true;
 try{if(b.dataset.projectAction==="edit")editProject(b.dataset.id);if(b.dataset.projectAction==="toggle")await toggleProjectPublication(b.dataset.id);if(b.dataset.projectAction==="delete")await deleteProject(b.dataset.id);}
 finally{b.disabled=false;}
+});
+
+/* ÉVÉNEMENTS BUREAU EXÉCUTIF */
+$("chooseExecutivePhotoBtn").addEventListener("click",()=>$("executivePhotoFile").click());
+
+$("executivePhotoFile").addEventListener("change",()=>{
+const file=$("executivePhotoFile").files[0]||null;
+const preview=$("executivePhotoPreview");
+
+revokePreview(executivePreviewObjectUrl);
+executivePreviewObjectUrl=null;
+
+if(!file){
+$("executivePhotoFileName").textContent=editingExecutivePhotoUrl
+?"Photo actuelle conservée."
+:"Aucune photo sélectionnée.";
+if(!editingExecutivePhotoUrl){
+preview.removeAttribute("src");
+preview.style.display="none";
+}
+return;
+}
+
+if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+$("executiveFormMessage").textContent="Format non accepté. Choisis JPG, PNG ou WEBP.";
+$("executivePhotoFile").value="";
+$("executivePhotoFileName").textContent="Format de fichier refusé.";
+return;
+}
+
+if(file.size>5*1024*1024){
+$("executiveFormMessage").textContent="La photo dépasse 5 Mo.";
+$("executivePhotoFile").value="";
+$("executivePhotoFileName").textContent="Fichier trop volumineux.";
+return;
+}
+
+$("executiveFormMessage").textContent="";
+$("executivePhotoFileName").textContent="Photo sélectionnée : "+file.name;
+executivePreviewObjectUrl=URL.createObjectURL(file);
+preview.src=executivePreviewObjectUrl;
+preview.style.display="block";
+});
+
+$("executiveForm").addEventListener("submit",saveExecutiveMember);
+$("cancelExecutiveEditBtn").addEventListener("click",resetExecutiveForm);
+$("refreshExecutiveBtn").addEventListener("click",loadExecutiveMembers);
+
+$("executiveTable").addEventListener("click",async e=>{
+const button=e.target.closest("button[data-executive-action]");
+if(!button)return;
+
+button.disabled=true;
+
+try{
+const action=button.dataset.executiveAction;
+const id=button.dataset.id;
+
+if(action==="edit")editExecutiveMember(id);
+if(action==="toggle")await toggleExecutivePublication(id);
+if(action==="delete")await deleteExecutiveMember(id);
+
+}finally{
+button.disabled=false;
+}
 });
 
 /* ÉVÉNEMENTS DOMAINES */
@@ -998,7 +1390,10 @@ if(isAdmin)await loadDashboard();
 else if(canManageSupport)await Promise.all([loadDonations(),loadPartnerships(),loadSkills()]);
 if(canManageCotisations)await loadCotisationMembers();
 await loadCotisations();
-resetCotisationForm();resetProjectForm();resetDomainForm();
+resetCotisationForm();
+resetProjectForm();
+resetDomainForm();
+resetExecutiveForm();
 }
 })();
 </script>
