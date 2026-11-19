@@ -707,40 +707,134 @@ if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Phot
 domainImageRows=domainImageRows.filter(x=>String(x.id)!==String(id));renderDomainImageGallery();showMessage("Photo supprimée.","success");await loadDomains();
 }
 async function saveDomain(event){
-event.preventDefault();if(!isAdmin)return;
-const files=Array.from($("domainImageFiles").files||[]),title=$("domainTitle").value.trim(),description=$("domainDescription").value.trim(),order=Number($("domainOrder").value);
-if(!title||!description){$("domainFormMessage").textContent="Titre et description obligatoires.";return;}
-if(!Number.isInteger(order)||order<0){$("domainFormMessage").textContent="Ordre invalide.";return;}
-for(const f of files){if(!["image/jpeg","image/png","image/webp","image/gif"].includes(f.type)||f.size>5*1024*1024){$("domainFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo : "+f.name;return;}}
-const button=$("saveDomainBtn"),wasEditing=Boolean(editingDomainId);button.disabled=true;button.textContent="Enregistrement...";
+event.preventDefault();
+if(!isAdmin)return;
+
+const files=Array.from($("domainImageFiles").files||[]);
+const title=$("domainTitle").value.trim();
+const description=$("domainDescription").value.trim();
+const order=Number($("domainOrder").value);
+
+if(!title||!description){
+ $("domainFormMessage").textContent="Titre et description obligatoires.";
+ return;
+}
+if(!Number.isInteger(order)||order<0){
+ $("domainFormMessage").textContent="Ordre invalide.";
+ return;
+}
+for(const f of files){
+ if(!["image/jpeg","image/png","image/webp","image/gif"].includes(f.type)||f.size>5*1024*1024){
+  $("domainFormMessage").textContent="Format non accepté ou photo supérieure à 5 Mo : "+f.name;
+  return;
+ }
+}
+
+const button=$("saveDomainBtn");
+const wasEditing=Boolean(editingDomainId);
+const normalizedTitle=title.toLocaleLowerCase("fr").trim();
+
+/* Si le formulaire est en mode ajout mais que le domaine existe déjà,
+   on réutilise ce domaine au lieu d'en créer un second. */
+const matchingDomain=!wasEditing
+ ? domainRows.find(x=>(x.title||"").toLocaleLowerCase("fr").trim()===normalizedTitle)
+ : null;
+const existingDomain=wasEditing
+ ? domainRows.find(x=>String(x.id)===String(editingDomainId))
+ : matchingDomain;
+
+let targetDomainId=wasEditing?editingDomainId:(matchingDomain?.id||null);
+const existingImages=wasEditing
+ ? [...(domainImageRows||[])]
+ : [...(existingDomain?.images||[])];
+
+const originalMainImage=wasEditing
+ ? (editingDomainImageUrl||existingDomain?.image_url||null)
+ : (existingDomain?.image_url||null);
+
+button.disabled=true;
+button.textContent="Enregistrement...";
+
 try{
-const payload={title,description,icon:$("domainIcon").value.trim()||null,display_order:order,image_url:$("domainRemoveImage").checked?null:editingDomainImageUrl,is_published:$("domainPublished").checked};
-let domainId=editingDomainId;
-if(wasEditing){
-const {data,error}=await client.from("intervention_domains").update(payload).eq("id",editingDomainId).select("id");if(error)throw error;if(!data?.length)throw new Error("Domaine non modifié.");
-}else{
-const {data,error}=await client.from("intervention_domains").insert(payload).select("id");if(error)throw error;if(!data?.length)throw new Error("Domaine non créé.");domainId=data[0].id;
+ const removeMainImage=$("domainRemoveImage").checked;
+ const payload={
+  title,
+  description,
+  icon:$("domainIcon").value.trim()||null,
+  display_order:order,
+  image_url:removeMainImage?null:originalMainImage,
+  is_published:$("domainPublished").checked
+ };
+
+ if(targetDomainId){
+  const {data,error}=await client.from("intervention_domains")
+   .update(payload).eq("id",targetDomainId).select("id");
+  if(error)throw error;
+  if(!data?.length)throw new Error("Domaine non modifié. Vérifie les autorisations.");
+ }else{
+  const {data,error}=await client.from("intervention_domains")
+   .insert(payload).select("id");
+  if(error)throw error;
+  if(!data?.length)throw new Error("Domaine non créé.");
+  targetDomainId=data[0].id;
+ }
+
+ let firstUploadedUrl=null;
+ if(files.length){
+  const imagePayload=[];
+  const maxOrder=existingImages.reduce((max,img)=>Math.max(max,Number(img.display_order)||0),0);
+
+  for(let i=0;i<files.length;i++){
+   const f=files[i];
+   $("domainFormMessage").textContent=`Envoi de la photo ${i+1} sur ${files.length}...`;
+   const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
+   const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
+   const {error}=await client.storage.from("project-images").upload(path,f,{
+    cacheControl:"3600",upsert:false,contentType:f.type
+   });
+   if(error)throw error;
+
+   const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;
+   if(!url)throw new Error("Adresse publique indisponible pour "+f.name);
+   if(!firstUploadedUrl)firstUploadedUrl=url;
+
+   imagePayload.push({
+    domain_id:targetDomainId,
+    image_url:url,
+    display_order:maxOrder+i+1
+   });
+  }
+
+  const {error:imageError}=await client.from("intervention_domain_images").insert(imagePayload);
+  if(imageError)throw imageError;
+ }
+
+ /* Conserver l'image principale existante lors d'un simple ajout de photos.
+    La première nouvelle photo devient l'image principale uniquement si
+    aucune image principale n'existe ou si l'ancienne a été retirée. */
+ if(firstUploadedUrl&&(!originalMainImage||removeMainImage)){
+  const {error:mainError}=await client.from("intervention_domains")
+   .update({image_url:firstUploadedUrl}).eq("id",targetDomainId);
+  if(mainError)throw mainError;
+ }
+
+ let msg;
+ if(wasEditing)msg="Domaine modifié avec succès. Les anciennes photos ont été conservées.";
+ else if(matchingDomain)msg="Domaine existant mis à jour. Les nouvelles photos ont été ajoutées sans créer de doublon.";
+ else msg="Domaine ajouté avec succès.";
+
+ resetDomainForm();
+ $("domainFormMessage").textContent=msg;
+ showMessage(msg,"success");
+ await loadDomains();
+
+}catch(error){
+ console.error(error);
+ $("domainFormMessage").textContent="Erreur : "+(error?.message||String(error));
+}finally{
+ button.disabled=false;
+ button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";
 }
-if(files.length){
-const imagePayload=[];
-for(let i=0;i<files.length;i++){
-const f=files[i];$("domainFormMessage").textContent=`Envoi de la photo ${i+1} sur ${files.length}...`;
-const ext=(f.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");
-const path="domaines/"+Date.now()+"-"+crypto.randomUUID()+"."+ext;
-const {error}=await client.storage.from("project-images").upload(path,f,{cacheControl:"3600",upsert:false,contentType:f.type});if(error)throw error;
-const url=client.storage.from("project-images").getPublicUrl(path).data?.publicUrl;if(!url)throw new Error("Adresse publique indisponible pour "+f.name);
-imagePayload.push({domain_id:domainId,image_url:url,display_order:domainImageRows.length+i+1});
-}
-const {error:imageError}=await client.from("intervention_domain_images").insert(imagePayload);if(imageError)throw imageError;
-if(imagePayload.length){
-const {error:mainError}=await client.from("intervention_domains").update({image_url:imagePayload[0].image_url}).eq("id",domainId);
-if(mainError)throw mainError;
-}
-}
-const msg=wasEditing?"Domaine modifié avec succès.":"Domaine ajouté avec succès.";
-resetDomainForm();$("domainFormMessage").textContent=msg;showMessage(msg,"success");await loadDomains();
-}catch(error){console.error(error);$("domainFormMessage").textContent="Erreur : "+error.message;}
-finally{button.disabled=false;button.textContent=editingDomainId?"Enregistrer les modifications":"Enregistrer le domaine";}
 }
 async function toggleDomain(id){
 const x=domainRows.find(y=>String(y.id)===String(id));if(!x)return;const next=!x.is_published;
