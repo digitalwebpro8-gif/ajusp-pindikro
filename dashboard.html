@@ -634,8 +634,9 @@ if(canManageCotisations){
  if(r.status==="pending"){
   buttons.push(`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(r.id)}">Confirmer reçu</button>`);
   buttons.push(`<button class="reject" data-support-action="donation-reject" data-id="${safeText(r.id)}">Rejeter</button>`);
- }else if(r.status==="confirmed"&&(r.email||r.phone)){
-  buttons.push(`<button class="secondary" data-finance-reply="donation" data-id="${safeText(r.id)}" data-name="${safeText(r.donor_name||"Donateur")}" data-email="${safeText(r.email||"")}" data-phone="${safeText(r.phone||"")}">Répondre</button>`);
+ }
+ if((r.status==="pending"||r.status==="confirmed")&&(r.email||r.phone)){
+  buttons.push(`<button class="secondary" data-finance-reply="donation" data-id="${safeText(r.id)}" data-name="${safeText(r.donor_name||"Donateur")}" data-email="${safeText(r.email||"")}" data-phone="${safeText(r.phone||"")}" data-status="${safeText(r.status)}">Répondre</button>`);
  }
  if(buttons.length)actions=`<div class="action-buttons">${buttons.join("")}</div>`;
 }
@@ -1236,8 +1237,11 @@ function openFinanceReply(button){
  $("financeReplyChannel").value=email?"email":"sms";
  $("financeReplySubjectGroup").hidden=!email;
  $("financeReplySubject").required=Boolean(email);
+ const donationPending=type==="donation"&&button.dataset.status==="pending";
  $("financeReplyMessage").value=type==="donation"
-  ?"Bonjour "+financeReplyTarget.name+",\n\nNous vous remercions pour votre don et vous confirmons sa bonne réception par l'AJUSP Pindikro. Votre soutien contribue au développement de notre village.\n\nEnsemble pour un avenir meilleur.\nL'équipe de l'AJUSP Pindikro."
+  ?(donationPending
+    ?"Bonjour "+financeReplyTarget.name+",\n\nNous avons bien reçu votre proposition de don destinée à l'AJUSP Pindikro. Nous vous remercions pour votre générosité et reviendrons vers vous après vérification de la réception effective du don.\n\nEnsemble pour un avenir meilleur.\nL'équipe de l'AJUSP Pindikro."
+    :"Bonjour "+financeReplyTarget.name+",\n\nNous vous remercions pour votre don et vous confirmons sa bonne réception par l'AJUSP Pindikro. Votre soutien contribue au développement de notre village.\n\nEnsemble pour un avenir meilleur.\nL'équipe de l'AJUSP Pindikro.")
   :"Bonjour "+financeReplyTarget.name+",\n\nNous vous confirmons la bonne réception de votre cotisation par l'AJUSP Pindikro. Nous vous remercions pour votre engagement et votre contribution à nos actions.\n\nEnsemble pour un avenir meilleur.\nLe trésorier de l'AJUSP Pindikro.";
  $("financeReplyFeedback").textContent="";
  updateFinanceReplyChannel();
