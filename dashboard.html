@@ -157,8 +157,8 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 <div class="notice">Seul l'administrateur technique peut modifier les responsabilités et les droits associés.</div>
 <p id="responsablesInfo">Chargement des membres...</p>
 <div class="table-wrap"><table>
-<thead><tr><th>Nom et prénoms</th><th>Rôle technique</th><th>Fonction associative</th><th>Statut</th><th>Gestion</th></tr></thead>
-<tbody id="profilesTable"><tr><td colspan="5" class="empty">Chargement...</td></tr></tbody>
+<thead><tr><th>Nom et prénoms</th><th>E-mail du membre</th><th>Rôle technique</th><th>Fonction associative</th><th>Statut</th><th>Gestion</th></tr></thead>
+<tbody id="profilesTable"><tr><td colspan="6" class="empty">Chargement...</td></tr></tbody>
 </table></div>
 </section>
 
@@ -579,17 +579,32 @@ async function loadOptionalCount(name,id){
 const {count,error}=await client.from(name).select("*",{count:"exact",head:true});$(id).textContent=error?"—":(count??0);if(error)console.warn(error);
 }
 async function loadProfiles(){
-const table=$("profilesTable");table.innerHTML='<tr><td colspan="5" class="empty">Chargement...</td></tr>';
-const {data,error}=await client.from("profiles").select("id,full_name,role,fonction,status,created_at").order("created_at",{ascending:true});
-if(error){console.error(error);table.innerHTML='<tr><td colspan="5" class="empty">Impossible de charger les profils.</td></tr>';$("responsablesInfo").textContent="Erreur : "+error.message;return;}
+const table=$("profilesTable");table.innerHTML='<tr><td colspan="6" class="empty">Chargement...</td></tr>';
+const {data,error}=await client.from("profiles").select("id,full_name,email,role,fonction,status,created_at").order("created_at",{ascending:true});
+if(error){console.error(error);table.innerHTML='<tr><td colspan="6" class="empty">Impossible de charger les profils.</td></tr>';$("responsablesInfo").textContent="Erreur : "+error.message;return;}
 const rows=data||[];$("responsablesInfo").textContent=rows.length+" profil(s) enregistré(s).";
-if(!rows.length){table.innerHTML='<tr><td colspan="5" class="empty">Aucun membre enregistré.</td></tr>';return;}
+if(!rows.length){table.innerHTML='<tr><td colspan="6" class="empty">Aucun membre enregistré.</td></tr>';return;}
 table.innerHTML=rows.map(p=>{
 const protectedUser=p.id===TECHNICAL_ADMIN_ID;
 const opts=functions.map(f=>`<option value="${f.value}" ${p.fonction===f.value?"selected":""}>${f.label}</option>`).join("");
 const management=isTechnicalAdmin&&!protectedUser?`<select id="fonction-${safeText(p.id)}"><option value="">Aucune fonction</option>${opts}</select><br><button class="save-function" data-action="save-function" data-id="${safeText(p.id)}">Enregistrer</button>`:protectedUser?'<span class="locked">Compte technique protégé</span>':'<span class="locked">Consultation uniquement</span>';
-return `<tr><td><strong>${safeText(p.full_name||"Sans nom")}</strong></td><td>${safeText(p.role)}</td><td>${safeText(functionLabel(p.fonction))}</td><td>${safeText(p.status)}</td><td>${management}</td></tr>`;
+const emailManagement=isTechnicalAdmin&&!protectedUser?`<input type="email" id="email-${safeText(p.id)}" value="${safeText(p.email||"")}" placeholder="adresse@exemple.com" autocomplete="email" style="min-width:190px;width:100%;padding:8px;border:1px solid #ccd5ce;border-radius:6px"><button type="button" class="save-function" data-action="save-email" data-id="${safeText(p.id)}">Enregistrer l'e-mail</button>`:safeText(p.email||"—");
+return `<tr><td><strong>${safeText(p.full_name||"Sans nom")}</strong></td><td>${emailManagement}</td><td>${safeText(p.role)}</td><td>${safeText(functionLabel(p.fonction))}</td><td>${safeText(p.status)}</td><td>${management}</td></tr>`;
 }).join("");
+}
+async function saveMemberEmail(id){
+if(!isTechnicalAdmin||id===TECHNICAL_ADMIN_ID)return;
+const input=$("email-"+id);if(!input)return;
+const email=input.value.trim().toLowerCase();
+if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMessage("Veuillez saisir une adresse e-mail valide.");input.focus();return;}
+const button=document.querySelector(`button[data-action="save-email"][data-id="${id}"]`);if(button){button.disabled=true;button.textContent="Enregistrement...";}
+const {data,error}=await client.from("profiles").update({email:email||null}).eq("id",id).select("id,full_name,email");
+if(button){button.disabled=false;button.textContent="Enregistrer l'e-mail";}
+if(error){showMessage("Impossible d'enregistrer l'e-mail : "+error.message);return;}
+if(!data?.length){showMessage("Aucun profil modifié. Vérifie les autorisations Supabase.");return;}
+showMessage("Adresse e-mail enregistrée pour "+(data[0].full_name||"ce membre")+".","success");
+await loadProfiles();
+await loadCotisations();
 }
 async function saveFunction(id){
 if(!isTechnicalAdmin||id===TECHNICAL_ADMIN_ID)return;
@@ -1374,7 +1389,7 @@ const b=e.target.closest("button[data-action]");if(!b)return;b.disabled=true;
 try{if(b.dataset.action==="approve")await approveRequest(b.dataset.id);if(b.dataset.action==="reject")await rejectRequest(b.dataset.id);}
 finally{b.disabled=false;}
 });
-$("profilesTable").addEventListener("click",e=>{const b=e.target.closest("button[data-action='save-function']");if(b)saveFunction(b.dataset.id);});
+$("profilesTable").addEventListener("click",e=>{const b=e.target.closest("button[data-action]");if(!b)return;if(b.dataset.action==="save-function")saveFunction(b.dataset.id);if(b.dataset.action==="save-email")saveMemberEmail(b.dataset.id);});
 $("refreshBtn").addEventListener("click",loadDashboard);
 $("refreshProfilesBtn").addEventListener("click",loadProfiles);
 $("refreshDonationsBtn").addEventListener("click",loadDonations);
