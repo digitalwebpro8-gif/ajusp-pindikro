@@ -90,6 +90,15 @@ select{padding:9px;border:1px solid #ccd5ce;border-radius:6px;max-width:230px;wi
 .executive-table-name strong{display:block;color:var(--dark)}
 .executive-no-photo{width:65px;height:65px;border-radius:50%;background:#edf3ee;color:var(--green);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold}
 footer{text-align:center;padding:25px;background:var(--dark);color:white;font-size:13px;line-height:1.7;margin-top:35px}
+.reply-modal{position:fixed;inset:0;background:rgba(10,25,18,.62);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}
+.reply-modal[hidden]{display:none}
+.reply-card{background:#fff;width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:12px;padding:22px;box-shadow:0 15px 45px rgba(0,0,0,.25)}
+.reply-card h2{margin:0 0 8px;color:var(--dark)}
+.reply-card .form-group{margin-top:14px}
+.reply-card .reply-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.reply-card .reply-actions button{flex:1}
+.reply-target{font-size:13px;color:var(--gray);background:#f0f5f1;padding:10px;border-radius:6px;overflow-wrap:anywhere}
+.reply-hint{font-size:12px;color:var(--gray);line-height:1.5}
 @media(max-width:600px){header{padding:18px}header h1{font-size:19px}main{margin-top:20px}.panel{padding:15px}}
 </style>
 </head>
@@ -373,6 +382,39 @@ footer{text-align:center;padding:25px;background:var(--dark);color:white;font-si
 <a href="depenses.html" class="finance-quick-link">Recettes et dépenses</a>
 </div>
 </section>
+<div id="financeReplyModal" class="reply-modal" hidden>
+  <div class="reply-card" role="dialog" aria-modal="true" aria-labelledby="financeReplyTitle">
+    <h2 id="financeReplyTitle">Répondre au contributeur</h2>
+    <p id="financeReplyTarget" class="reply-target"></p>
+    <form id="financeReplyForm">
+      <div class="form-group">
+        <label for="financeReplyChannel">Moyen d'envoi *</label>
+        <select id="financeReplyChannel" required>
+          <option value="email">E-mail</option>
+          <option value="sms">SMS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="financeReplyRecipient">Destinataire</label>
+        <input id="financeReplyRecipient" type="text" readonly style="width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:6px;background:#f8faf8">
+      </div>
+      <div class="form-group" id="financeReplySubjectGroup">
+        <label for="financeReplySubject">Objet du message *</label>
+        <input id="financeReplySubject" type="text" maxlength="160" value="Confirmation de réception – AJUSP Pindikro" required style="width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:6px">
+      </div>
+      <div class="form-group">
+        <label for="financeReplyMessage">Votre message *</label>
+        <textarea id="financeReplyMessage" maxlength="1200" required placeholder="Rédige le message à envoyer..." style="width:100%;min-height:130px;padding:10px;border:1px solid #ccd5ce;border-radius:6px"></textarea>
+      </div>
+      <p class="reply-hint">L'envoi sera effectué au contact enregistré dans Supabase. Pour les SMS, le numéro doit être joignable au format international (+225...).</p>
+      <p id="financeReplyFeedback" style="white-space:pre-wrap"></p>
+      <div class="reply-actions">
+        <button type="submit" class="primary" id="sendFinanceReplyBtn">Envoyer</button>
+        <button type="button" class="secondary" id="closeFinanceReplyBtn">Fermer</button>
+      </div>
+    </form>
+  </div>
+</div>
 </main>
 
 <footer>Association Jeunesse Unie et Solidaire de Pindikro (AJUSP)<br>Ensemble pour un avenir meilleur</footer>
@@ -388,6 +430,7 @@ const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 
 let currentUser=null,isTechnicalAdmin=false,isAdmin=false,canManageCotisations=false,canManageSupport=false;
+let financeReplyTarget=null;
 let editingCotisationId=null,cotisationRows=[];
 let editingProjectId=null,projectRows=[],editingProjectImageUrl=null,projectPreviewObjectUrl=null;
 let editingDomainId=null,domainRows=[],editingDomainImageUrl=null,domainImageRows=[];
@@ -585,7 +628,17 @@ table.innerHTML=data.map(renderRow).join("");
 }
 async function loadDonations(){
 await loadSupportTable("donationsTable","donations","id,donor_name,amount,currency,phone,email,message,status,created_at",r=>{
-const actions=canManageCotisations&&r.status==="pending"?`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(r.id)}">Confirmer reçu</button><button class="reject" data-support-action="donation-reject" data-id="${safeText(r.id)}">Rejeter</button>`:"—";
+let actions="—";
+if(canManageCotisations){
+ const buttons=[];
+ if(r.status==="pending"){
+  buttons.push(`<button class="approve" data-support-action="donation-confirm" data-id="${safeText(r.id)}">Confirmer reçu</button>`);
+  buttons.push(`<button class="reject" data-support-action="donation-reject" data-id="${safeText(r.id)}">Rejeter</button>`);
+ }else if(r.status==="confirmed"&&(r.email||r.phone)){
+  buttons.push(`<button class="secondary" data-finance-reply="donation" data-id="${safeText(r.id)}" data-name="${safeText(r.donor_name||"Donateur")}" data-email="${safeText(r.email||"")}" data-phone="${safeText(r.phone||"")}">Répondre</button>`);
+ }
+ if(buttons.length)actions=`<div class="action-buttons">${buttons.join("")}</div>`;
+}
 return `<tr><td><strong>${safeText(r.donor_name)}</strong>${r.message?`<br><small>${safeText(r.message)}</small>`:""}</td><td>${formatFCFA(r.amount)}${r.currency&&r.currency!=="FCFA"?" ("+safeText(r.currency)+")":""}</td><td>${safeText(r.phone||"—")}</td><td>${safeText(r.email||"—")}</td><td>${formatDate(r.created_at)}</td><td>${statusLabel(r.status)}</td><td>${actions}</td></tr>`;
 },7,"Aucune proposition de don.");
 }
@@ -1169,6 +1222,68 @@ if(error){showMessage(error.message);return;}if(!data?.length){showMessage("Doma
 if(String(editingDomainId)===String(id))resetDomainForm();showMessage("Domaine supprimé.","success");await loadDomains();
 }
 
+/* RÉPONSES AUX DONATEURS ET AUX MEMBRES */
+function openFinanceReply(button){
+ if(!canManageCotisations)return;
+ const type=button.dataset.financeReply;
+ const email=(button.dataset.email||"").trim();
+ const phone=(button.dataset.phone||"").trim();
+ if(!email&&!phone){showMessage("Aucune adresse e-mail ou aucun numéro de téléphone n'est enregistré pour ce contributeur.");return;}
+ financeReplyTarget={type,id:button.dataset.id,name:button.dataset.name||"Contributeur",email,phone};
+ $("financeReplyTitle").textContent=type==="donation"?"Répondre au donateur":"Répondre au membre";
+ $("financeReplyTarget").textContent=financeReplyTarget.name+" — "+(type==="donation"?"Don":"Cotisation");
+ $("financeReplyChannel").innerHTML=(email?'<option value="email">E-mail</option>':"")+(phone?'<option value="sms">SMS</option>':"");
+ $("financeReplyChannel").value=email?"email":"sms";
+ $("financeReplySubjectGroup").hidden=!email;
+ $("financeReplySubject").required=Boolean(email);
+ $("financeReplyMessage").value=type==="donation"
+  ?"Bonjour "+financeReplyTarget.name+",\n\nNous vous remercions pour votre don et vous confirmons sa bonne réception par l'AJUSP Pindikro. Votre soutien contribue au développement de notre village.\n\nEnsemble pour un avenir meilleur.\nL'équipe de l'AJUSP Pindikro."
+  :"Bonjour "+financeReplyTarget.name+",\n\nNous vous confirmons la bonne réception de votre cotisation par l'AJUSP Pindikro. Nous vous remercions pour votre engagement et votre contribution à nos actions.\n\nEnsemble pour un avenir meilleur.\nLe trésorier de l'AJUSP Pindikro.";
+ $("financeReplyFeedback").textContent="";
+ updateFinanceReplyChannel();
+ $("financeReplyModal").hidden=false;
+}
+function updateFinanceReplyChannel(){
+ const channel=$("financeReplyChannel").value;
+ const recipient=channel==="email"?financeReplyTarget?.email:financeReplyTarget?.phone;
+ $("financeReplyRecipient").value=recipient||"";
+ $("financeReplySubjectGroup").hidden=channel!=="email";
+ $("financeReplySubject").required=channel==="email";
+ $("financeReplyMessage").maxLength=channel==="sms"?1200:1200;
+}
+function closeFinanceReply(){
+ $("financeReplyModal").hidden=true;
+ $("financeReplyForm").reset();
+ financeReplyTarget=null;
+}
+async function sendFinanceReply(event){
+ event.preventDefault();
+ if(!canManageCotisations||!financeReplyTarget){$("financeReplyFeedback").textContent="Accès non autorisé.";return;}
+ const channel=$("financeReplyChannel").value;
+ const message=$("financeReplyMessage").value.trim();
+ const subject=$("financeReplySubject").value.trim();
+ if(!message){$("financeReplyFeedback").textContent="Rédige un message avant l'envoi.";return;}
+ if(channel==="email"&&!subject){$("financeReplyFeedback").textContent="L'objet du message est obligatoire.";return;}
+ const button=$("sendFinanceReplyBtn");
+ button.disabled=true;button.textContent="Envoi en cours...";
+ $("financeReplyFeedback").textContent="Transmission sécurisée en cours...";
+ try{
+  const {data,error}=await client.functions.invoke("send-finance-message",{
+   body:{type:financeReplyTarget.type,record_id:financeReplyTarget.id,channel,message,subject:channel==="email"?subject:undefined}
+  });
+  if(error)throw error;
+  if(data?.success!==true)throw new Error(data?.message||"L'envoi n'a pas été confirmé.");
+  $("financeReplyFeedback").textContent=(channel==="email"?"E-mail":"SMS")+" envoyé avec succès à "+(data.recipient||"ce contributeur")+".";
+  showMessage("Message envoyé au contributeur.","success");
+  setTimeout(closeFinanceReply,1600);
+ }catch(error){
+  console.error(error);
+  $("financeReplyFeedback").textContent="Échec de l'envoi : "+(error?.message||String(error))+". Vérifie que la fonction Supabase et les paramètres Brevo sont configurés.";
+ }finally{
+  button.disabled=false;button.textContent="Envoyer";
+ }
+}
+
 /* COTISATIONS */
 async function loadCotisationMembers(){
 if(!canManageCotisations)return;const select=$("cotMember");select.innerHTML='<option value="">Chargement...</option>';
@@ -1179,7 +1294,7 @@ select.innerHTML='<option value="">Sélectionner un membre</option>'+data.map(m=
 }
 async function loadCotisations(){
 const table=$("cotisationsTable");$("cotisationsMessage").textContent="Chargement...";table.innerHTML="";
-const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,nature,objet,created_at,profiles(full_name)").order("date_paiement",{ascending:false});
+const {data,error}=await client.from("cotisations").select("id,member_id,montant,periode,date_paiement,mode_paiement,statut,description,nature,objet,created_at,profiles(full_name,email,phone)").order("date_paiement",{ascending:false});
 if(error){$("cotisationsMessage").textContent="Impossible de charger les cotisations : "+error.message;table.innerHTML='<tr><td colspan="9" class="empty">Erreur de chargement.</td></tr>';console.error(error);return;}
 cotisationRows=data||[];const confirmed=cotisationRows.filter(x=>x.statut==="confirmee"),waiting=cotisationRows.filter(x=>x.statut==="en_attente");
 $("cotTotalConfirme").textContent=formatFCFA(confirmed.reduce((s,x)=>s+Number(x.montant||0),0));
@@ -1189,7 +1304,8 @@ $("cotisationsMessage").textContent=cotisationRows.length+" cotisation(s) enregi
 table.innerHTML=cotisationRows.map(r=>{
 const nature=r.nature==="exceptionnelle"?"Exceptionnelle":"Mensuelle";
 const objet=r.nature==="exceptionnelle"?(r.objet||"—"):"—";
-const actions=canManageCotisations?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(r.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(r.id)}">Supprimer</button></div></td>`:"";
+const replyButton=r.statut==="confirmee"&&(r.profiles?.email||r.profiles?.phone)?`<button type="button" class="secondary" data-finance-reply="cotisation" data-id="${safeText(r.id)}" data-name="${safeText(r.profiles?.full_name||"Membre")}" data-email="${safeText(r.profiles?.email||"")}" data-phone="${safeText(r.profiles?.phone||"")}">Répondre</button>`:"";
+const actions=canManageCotisations?`<td><div class="action-buttons"><button type="button" class="secondary" data-cot-action="edit" data-id="${safeText(r.id)}">Modifier</button><button type="button" class="danger" data-cot-action="delete" data-id="${safeText(r.id)}">Supprimer</button>${replyButton}</div></td>`:"";
 return `<tr><td>${safeText(r.profiles?.full_name||"Membre")}</td><td>${nature}</td><td>${safeText(objet)}</td><td>${safeText(r.periode)}</td><td>${formatFCFA(r.montant)}</td><td>${formatDate(r.date_paiement)}</td><td>${safeText(r.mode_paiement||"—")}</td><td>${cotStatusLabel(r.statut)}</td>${actions}</tr>`;
 }).join("");
 }
@@ -1262,6 +1378,7 @@ $("donationForm").addEventListener("submit",saveDonation);
 $("refreshPartnershipsBtn").addEventListener("click",loadPartnerships);
 $("refreshSkillsBtn").addEventListener("click",loadSkills);
 $("donationsTable").addEventListener("click",handleSupportAction);
+$("donationsTable").addEventListener("click",e=>{const b=e.target.closest("button[data-finance-reply]");if(b)openFinanceReply(b);});
 $("partnershipsTable").addEventListener("click",handleSupportAction);
 $("skillsTable").addEventListener("click",handleSupportAction);
 
@@ -1379,6 +1496,11 @@ const b=e.target.closest("button[data-cot-action]");if(!b)return;b.disabled=true
 try{if(b.dataset.cotAction==="edit")editCotisation(b.dataset.id);if(b.dataset.cotAction==="delete")await deleteCotisation(b.dataset.id);}
 finally{b.disabled=false;}
 });
+$("cotisationsTable").addEventListener("click",e=>{const b=e.target.closest("button[data-finance-reply]");if(b)openFinanceReply(b);});
+$("financeReplyChannel").addEventListener("change",updateFinanceReplyChannel);
+$("financeReplyForm").addEventListener("submit",sendFinanceReply);
+$("closeFinanceReplyBtn").addEventListener("click",closeFinanceReply);
+$("financeReplyModal").addEventListener("click",e=>{if(e.target.id==="financeReplyModal")closeFinanceReply();});
 
 $("logoutBtn").addEventListener("click",async()=>{
 const {error}=await client.auth.signOut();if(error){showMessage("Erreur de déconnexion : "+error.message);return;}window.location.href="connexion.html";
